@@ -726,3 +726,11 @@ main > details > summary.panelhead h2 { letter-spacing:0; }
  .cardcontrols .orientation-widget svg { width:32px; height:34px; }
  .poseheader { gap:8px; padding:12px; }
 }
+
+/* Nested cards sit within the parent border, never on it. */
+.posedesign { margin:0 14px 14px; gap:12px; }
+#operationForm { margin:0 14px 14px; }
+.posecard { box-sizing:border-box; width:auto; padding:14px; border-radius:9px; }
+.poseheader { margin:0; }
+.poseheader small { display:block; color:var(--muted); font-size:11px; margin-top:3px; }
+@media(max-width:620px) { .posedesign,#operationForm { margin:0 12px 12px; } }
