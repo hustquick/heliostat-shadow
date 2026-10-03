@@ -437,7 +437,7 @@ function fitProjectionPlaceholder() {
   label.setAttribute("x", width / 2); label.setAttribute("y", height / 2);
   label.style.fontSize = "32px";
   const measured = label.getBBox();
-  const scale = Math.min(width * .82 / measured.width, height * .82 / measured.height);
+  const scale = Math.min(width * .9 / measured.width, height * .9 / measured.height);
   if (!Number.isFinite(scale) || scale <= 0) return;
   label.style.fontSize = `${32 * scale}px`;
   const fitted = label.getBBox();
