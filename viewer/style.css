@@ -788,3 +788,9 @@ main > details:is(.panel,.poseeditor,.mobile-manage) > .carddescription {
 .management-actions { gap:12px; }
 .management-actions > button { min-height:38px; padding:9px 14px; border-radius:8px; }
 @media(max-width:620px) { #viewMode { min-width:0; width:100%; } }
+
+/* Keep all three field-management actions on one balanced row. */
+.management-actions { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+.management-actions > button { min-width:0; width:100%; padding:9px 6px; }
+.management-actions > #layoutStatus { grid-column:1 / -1; }
+@media(max-width:620px) { .management-actions { gap:8px; } .management-actions > button { font-size:12px; } }
