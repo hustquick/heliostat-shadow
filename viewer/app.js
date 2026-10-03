@@ -431,6 +431,9 @@ function draw2D() {
   sourcesCard.classList.add("sources-empty");
   $("counts").textContent = "0 实际重叠光路";
   if (!concentrating) {
+    svg.setAttribute("viewBox", "0 0 100 100");
+    const emptyLabel = svgElement("text", {x:50,y:50,class:"empty-projection-label"});
+    emptyLabel.textContent = "镜面零位"; svg.append(emptyLabel);
     $("planeNote").textContent="";
     $("areaNote").replaceChildren();
     const notice=document.createElement("p"); notice.className="inactive-notice"; notice.textContent="镜面朝下平躺 · 聚光输出 0"; $("areaNote").append(notice);

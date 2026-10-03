@@ -794,3 +794,12 @@ main > details:is(.panel,.poseeditor,.mobile-manage) > .carddescription {
 .management-actions > button { min-width:0; width:100%; padding:9px 6px; }
 .management-actions > #layoutStatus { grid-column:1 / -1; }
 @media(max-width:620px) { .management-actions { gap:8px; } .management-actions > button { font-size:12px; } }
+
+/* Every top-level card owns its frame at every viewport size. */
+main > details { border:1px solid var(--line); background:var(--panel); overflow:hidden; min-width:0; box-sizing:border-box; }
+#projection .empty-projection-label { fill:var(--muted); opacity:.45; font-size:5px; text-anchor:middle; font-weight:400; }
+/* Target selection is a single row of equal-height controls. */
+#selectMirror input,#selectMirror button,#viewMode { height:40px; min-height:40px; box-sizing:border-box; margin-bottom:0; }
+#selectMirror { align-items:flex-end; }
+#viewMode { align-self:flex-end; }
+#mobileManageActions > button { height:40px; min-height:40px; box-sizing:border-box; }
