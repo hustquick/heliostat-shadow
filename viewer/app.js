@@ -429,18 +429,18 @@ function draw2D() {
   $("candidates").replaceChildren();
   const sourcesCard = $("candidates").closest("details");
   sourcesCard.classList.add("sources-empty");
+  $("counts").textContent = "0 实际重叠光路";
   if (!concentrating) {
     $("planeNote").textContent="";
-    $("counts").textContent="零位"; $("areaNote").replaceChildren();
+    $("areaNote").replaceChildren();
     const notice=document.createElement("p"); notice.className="inactive-notice"; notice.textContent="镜面朝下平躺 · 聚光输出 0"; $("areaNote").append(notice);
     return;
   }
-  if (poseOverrides.size) { $("planeNote").textContent="图案展示模式：二维投影与效率计算暂不适用；恢复跟踪后显示。"; $("counts").textContent="自定义展示姿态"; $("areaNote").textContent=""; return; }
+  if (poseOverrides.size) { $("planeNote").textContent="图案展示模式：二维投影与效率计算暂不适用；恢复跟踪后显示。"; $("areaNote").textContent=""; return; }
   if (!target?.daylight) {
     $("planeNote").textContent = !target
       ? "正在更新投影…"
       : "夜间：阴影、遮挡及姿态不适用。";
-    $("counts").textContent = !target ? "计算中…" : "无有效光路";
     $("areaNote").textContent = "";
     return;
   }

@@ -762,8 +762,8 @@ main > details:is(.panel,.poseeditor,.mobile-manage) > :last-child { margin-bott
 main > details:is(.panel,.poseeditor,.mobile-manage) > .posedesign .posecard, main > details:is(.panel,.poseeditor,.mobile-manage) > #operationForm { padding:var(--card-inset); }
 main > details:is(.panel,.poseeditor,.mobile-manage) > .poseheader { padding-left:0; padding-right:0; }
 
-/* Empty source cards retain their heading without empty tables or status text. */
-main > details.sources-empty > :not(summary) { display:none; }
+/* Keep the source count and guidance; omit only the empty table. */
+main > details.sources-empty > .tablewrap { display:none; }
 
 /* Functional guidance always follows the content, separated by a quiet rule. */
 main > details:is(.panel,.poseeditor,.mobile-manage) > .carddescription {
