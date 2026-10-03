@@ -1066,7 +1066,6 @@ async function init() {
     $("sourceNote").textContent=[meta.layout_status + "。", loc?.note, d.note, d.model_receiver_note, meta.note]
       .filter(Boolean).join(" ");
   }
-  $("mobileReceiverNote").textContent = $("source").textContent + "。" + $("sourceNote").textContent;
   for (const t of meta.timestamps) {
     const item = localItem(t);
     if (!timesByDate.has(item.date)) timesByDate.set(item.date, []);

@@ -826,3 +826,7 @@ main > details { border:1px solid var(--line); background:var(--panel); overflow
 #operationForm .posefields input { height:38px; min-height:38px; box-sizing:border-box; }
 #operationForm > .carddescription { grid-column:1 / -1; }
 @media(max-width:760px) { #operationForm { grid-template-columns:minmax(0,1fr); } #operationForm > button { margin-top:12px; justify-self:start; } }
+
+#operationForm .posefields label { margin-bottom:0; }
+#mobileParameters > .receiver-notes { display:block; margin:12px var(--card-inset) var(--card-bottom); color:var(--muted); line-height:1.7; font-size:12px; }
+.receiver-notes > #sourceNote { margin-top:8px; }
