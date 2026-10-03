@@ -74,6 +74,10 @@ scene.add(new THREE.AxesHelper(90));
 const raycaster = new THREE.Raycaster(),
   pointer = new THREE.Vector2();
 function frameVisible(direction, up) {
+  // Read the live viewport: its height can change before ResizeObserver runs.
+  const viewport = $("scene").getBoundingClientRect();
+  if (viewport.width > 0 && viewport.height > 0)
+    camera.aspect = viewport.width / viewport.height;
   camera.up.copy(up);
   const points = [];
   if (frame?.daylight) {
@@ -97,7 +101,12 @@ function frameVisible(direction, up) {
     distance = Math.max(distance, depth + Math.abs(q.dot(right))/tanH,
       depth + Math.abs(q.dot(vertical))/tanV);
   }
-  camera.position.copy(centre).addScaledVector(forward, distance * 1.15);
+  const fittedDistance = distance * 1.15;
+  // OrbitControls must not clamp the fitted distance on narrow screens.
+  controls.maxDistance = Math.max(4500, fittedDistance * 2);
+  camera.far = Math.max(10000, fittedDistance * 4);
+  camera.updateProjectionMatrix();
+  camera.position.copy(centre).addScaledVector(forward, fittedDistance);
   controls.target.copy(centre);
   controls.update();
 }
