@@ -804,3 +804,6 @@ main > details { border:1px solid var(--line); background:var(--panel); overflow
 #viewMode { align-self:flex-end; }
 #mobileManageActions > button { height:40px; min-height:40px; box-sizing:border-box; }
 #selectMirror { margin:0; }
+/* Mobile empty-state lettering resembles a quiet draft-paper watermark. */
+#projection .empty-projection-label { dominant-baseline:central; letter-spacing:1px; }
+@media(max-width:620px) { #projection .empty-projection-label { writing-mode:vertical-rl; text-orientation:upright; letter-spacing:3px; font-size:9px; } }
