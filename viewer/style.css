@@ -845,3 +845,8 @@ main > details { border:1px solid var(--line); background:var(--panel); overflow
 }
 /* Plant selection uses the same control height as the basic-information row. */
 #plant { height:40px; min-height:40px; box-sizing:border-box; padding:8px 12px; }
+
+.spatial[open] { display:flex; flex-direction:column; }
+main > details.spatial > .scene-description { margin-top:auto; }
+.scene-description > p { margin:0; }
+.scene-description > p + p { margin-top:8px; }
