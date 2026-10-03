@@ -550,8 +550,8 @@ function draw2D() {
     transport.append(card("余弦效率", f.eta_cosine), card("沿程透过率", f.eta_atmosphere), card("接收器截获率", f.eta_intercept));
     $("metrics").append(transport);
   }
-  const area = view.areas.target,
-    lost = mode === "joint" ? area - view.areas.visible : view.areas[mode];
+  const area = Math.max(0, view.areas.target),
+    lost = Math.max(0, Math.min(area, mode === "joint" ? area - view.areas.visible : view.areas[mode]));
   const areaNote = $("areaNote");
   areaNote.replaceChildren();
   const heading=document.createElement("h3"); heading.textContent="镜面 "+selected; areaNote.append(heading);
