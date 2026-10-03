@@ -669,3 +669,6 @@ code { color:#b8eaf2; }
 .efficiency-scale strong,.efficiency-scale span { flex:none; white-space:nowrap; }
 .efficiency-scale i { flex:1 1 0; min-width:0; }
 @media(max-width:600px) { .efficiency-scale { gap:6px; font-size:10px; } .efficiency-scale strong { margin-left:0; } }
+/* Hiding the efficiency legend must not resize the 3D card during start/stop. */
+.efficiency-scale,.efficiency-scale[hidden] { display:flex; height:26px; min-height:26px; box-sizing:content-box; }
+.efficiency-scale[hidden] { visibility:hidden; }
