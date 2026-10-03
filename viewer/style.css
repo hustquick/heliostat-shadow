@@ -843,3 +843,5 @@ main > details { border:1px solid var(--line); background:var(--panel); overflow
  #selectMirror button { padding:8px; }
  #viewMode { width:100%; min-width:0; padding:8px; }
 }
+/* Plant selection uses the same control height as the basic-information row. */
+#plant { height:40px; min-height:40px; box-sizing:border-box; padding:8px 12px; }
