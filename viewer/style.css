@@ -605,3 +605,10 @@ code { color:#b8eaf2; }
 @media(max-width:900px) {
   .poseeditor, .mobile-manage { margin:10px 8px 24px; padding:12px; width:auto; box-sizing:border-box; border-radius:9px; }
 }
+
+/* Stable compact status rows on every client; long messages never overlap. */
+#status { grid-template-columns:minmax(0,1fr); grid-template-rows:1.5em 1.5em 1.5em; height:4.5em; }
+#statusHeading { grid-column:1; grid-row:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#statusDetail { grid-column:1; grid-row:2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#statusTime { grid-column:1; grid-row:3; overflow:hidden; }
+@media(max-width:600px) { #status { grid-template-columns:minmax(0,1fr); } .panelhead h2,.panelhead button { white-space:nowrap; } }

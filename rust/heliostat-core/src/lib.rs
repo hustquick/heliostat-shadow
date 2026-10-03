@@ -394,16 +394,7 @@ fn resolve_mobile_mirrors(plant: &MobilePlant, sun: Vec3) -> Result<Vec<Heliosta
     {
         return Ok(mirrors.clone());
     }
-    let mirrors = if plant
-        .config
-        .get("tower_assignment_strategy")
-        .and_then(serde_json::Value::as_str)
-        != Some("field_gain")
-    {
-        resolve_independent_mirrors(plant, sun)?
-    } else {
-        resolve_greedy_mirrors(plant, sun)?
-    };
+    let mirrors = resolve_independent_mirrors(plant, sun)?;
     let mut cache = CACHE
         .get_or_init(|| Mutex::new(Vec::new()))
         .lock()
@@ -415,6 +406,7 @@ fn resolve_mobile_mirrors(plant: &MobilePlant, sun: Vec3) -> Result<Vec<Heliosta
     Ok(mirrors)
 }
 
+#[cfg(any(feature = "python-bindings", test))]
 fn resolve_greedy_mirrors(plant: &MobilePlant, sun: Vec3) -> Result<Vec<HeliostatInput>, String> {
     if plant
         .config
@@ -1266,18 +1258,9 @@ impl MobileRuntime {
         path: &str,
         payload: &serde_json::Value,
     ) -> Result<serde_json::Value, String> {
-        if method == "GET"
-            && matches!(path, "frame" | "target" | "efficiencies")
-            && let Some(strategy) = payload
-                .get("tower_strategy")
-                .and_then(serde_json::Value::as_str)
-        {
-            if !matches!(strategy, "independent" | "field_gain") {
-                return Err("invalid tower strategy".into());
-            }
-            self.bundle.plants[self.active].config["tower_assignment_strategy"] =
-                serde_json::json!(strategy);
-        }
+        // Client requests always use the established fast policy. Research is offline only.
+        self.bundle.plants[self.active].config["tower_assignment_strategy"] =
+            serde_json::json!("independent");
         match (method, path) {
             ("GET", "health") => Ok(
                 serde_json::json!({"status":"ok","mode":"offline","rust_core":true,"rust_core_version":env!("CARGO_PKG_VERSION")}),
@@ -2094,7 +2077,7 @@ mod python {
             .map_err(|e| PyValueError::new_err(e.to_string()))?;
         let sun: Vec3 = serde_json::from_value(value["sun"].clone())
             .map_err(|e| PyValueError::new_err(e.to_string()))?;
-        let mirrors = resolve_mobile_mirrors(&plant, sun).map_err(PyValueError::new_err)?;
+        let mirrors = resolve_greedy_mirrors(&plant, sun).map_err(PyValueError::new_err)?;
         serde_json::to_string(
             &serde_json::json!({"mirrors":mirrors,"report":assignment_report(&plant,sun)}),
         )
@@ -2188,7 +2171,7 @@ mod tests {
         .unwrap();
         let plant: MobilePlant = serde_json::from_value(payload["plant"].clone()).unwrap();
         let sun: Vec3 = serde_json::from_value(payload["sun"].clone()).unwrap();
-        let resolved = resolve_mobile_mirrors(&plant, sun).unwrap();
+        let resolved = resolve_greedy_mirrors(&plant, sun).unwrap();
         let report = assignment_report(&plant, sun);
         let receivers = receivers_from_config(&plant.config).unwrap();
         let energy = |mirrors: Vec<HeliostatInput>| {
@@ -2236,7 +2219,7 @@ mod tests {
         assert!(report["converged"].as_bool().unwrap());
         let mut limited = plant.clone();
         limited.config["tower_switch_max_rounds"] = serde_json::json!(0);
-        let unchanged = resolve_mobile_mirrors(&limited, sun).unwrap();
+        let unchanged = resolve_greedy_mirrors(&limited, sun).unwrap();
         let limited_report = assignment_report(&limited, sun);
         assert_eq!(limited_report["stop_reason"], "round_budget");
         assert_eq!(limited_report["converged"], false);
@@ -2266,7 +2249,7 @@ mod tests {
         );
         assert_eq!(
             runtime.bundle.plants[0].config["tower_assignment_strategy"],
-            "field_gain"
+            "independent"
         );
     }
 

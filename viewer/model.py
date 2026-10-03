@@ -195,15 +195,8 @@ class ViewerModel:
         """Assign each flexible mirror to the tower with maximum received power."""
         if not self.dynamic_tower_assignment or not any(m.tower_id == 'auto' for m in self.mirrors):
             return self.mirrors
-        if self.config.get('tower_assignment_strategy', 'independent') == 'independent':
-            self._tower_assignment_report = {'strategy':'independent'}
-            return self._independent_mirrors_for_sun(sun_to_sky)
-        from rust_core import resolve_towers
-        resolution = resolve_towers(self.mirrors, sun_to_sky, self.config)
-        self._tower_assignment_report = resolution["report"]
-        rows = resolution["mirrors"]
-        return tuple(replace(mirror, tower_id=row['tower_id'], aim_point=tuple(row['aim_point']))
-                     for mirror, row in zip(self.mirrors, rows))
+        self._tower_assignment_report = {'strategy':'independent'}
+        return self._independent_mirrors_for_sun(sun_to_sky)
 
     def _independent_mirrors_for_sun(self, sun_to_sky):
         proxy = []

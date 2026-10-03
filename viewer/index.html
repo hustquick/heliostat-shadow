@@ -182,8 +182,6 @@
     <details class="poseeditor" id="operationSettings">
       <summary>聚光启停参数 <span id="operationState" role="status"></span></summary>
       <p>启动：DNI 与太阳高度角均高于启动临界值。停止：两者均低于停止临界值；太阳高度角 ≤ 0° 时直接停止。其他区间保持原状态。</p>
-      <label id="towerStrategyControl">双塔选塔策略<select id="towerStrategy"><option value="independent">单镜效率优先（旧方案，默认）</option><option value="field_gain">全场收益优先（串行切换，较慢）</option></select></label>
-      <p id="towerAssignmentNote" role="status"></p>
       <form id="operationForm" class="posecard">
         <div class="posefields">
           <label>启动 DNI / W·m⁻²<input id="startDni" type="number" min="0" step="any" required></label>
