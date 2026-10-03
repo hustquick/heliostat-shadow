@@ -44,6 +44,10 @@ pub struct MobileWeather {
     pub step_seconds: i64,
     pub dni_w_m2: Vec<f64>,
     pub temperature_c: f64,
+    #[serde(default)]
+    pub temperature_series_c: Vec<f64>,
+    #[serde(default)]
+    pub temperature_source: String,
     pub source: String,
 }
 
@@ -804,9 +808,13 @@ impl MobileRuntime {
             .get("altitude_m")
             .and_then(serde_json::Value::as_f64)
             .unwrap_or(0.0);
+        let temperature = plant.weather.temperature_series_c.get(index).copied();
         let pressure_hpa = 1013.25 * (1.0 - 2.25577e-5 * altitude).max(0.01).powf(5.25588);
-        let refraction = RefractionCorrection::new(pressure_hpa, plant.weather.temperature_c)
-            .map_err(|e| e.to_string())?;
+        let refraction = RefractionCorrection::new(
+            pressure_hpa,
+            temperature.unwrap_or(plant.weather.temperature_c),
+        )
+        .map_err(|e| e.to_string())?;
         let dt = delta_t::estimate_from_date_like(time.date_naive()).map_err(|e| e.to_string())?;
         let position = SolarPositions::new()
             .at(
@@ -839,7 +847,7 @@ impl MobileRuntime {
         if elevation <= 0.0 {
             return Ok(serde_json::json!({
                 "timestamp": time.to_rfc3339(), "local_time": local_time, "daylight": false,
-                "dni": 0.0, "temperature": plant.weather.temperature_c, "elevation": elevation,
+                "dni": 0.0, "temperature": temperature, "temperature_source": plant.weather.temperature_source, "elevation": elevation,
                 "sun": sun, "centres": plant.mirrors.iter().map(|m| m.centre).collect::<Vec<_>>(),
                 "vertices": [], "eta_joint": null
             }));
@@ -849,7 +857,7 @@ impl MobileRuntime {
         let vertices: Vec<[Vec3; 4]> = field.poses.iter().map(|pose| pose.vertices).collect();
         Ok(serde_json::json!({
             "timestamp": time.to_rfc3339(), "local_time": local_time, "daylight": true,
-            "dni": dni, "temperature": plant.weather.temperature_c, "elevation": elevation,
+            "dni": dni, "temperature": temperature, "temperature_source": plant.weather.temperature_source, "elevation": elevation,
             "sun": sun, "vertices": vertices,
             "tower_ids": field.mirrors.iter().map(|m| &m.tower_id).collect::<Vec<_>>(),
             "eta_joint": vec![serde_json::Value::Null; field.mirrors.len()],

@@ -78,6 +78,8 @@ def build_bundle(output: Path, plant_ids: list[str] | None = None) -> dict:
                     "step_seconds": 3600,
                     "dni_w_m2": [round(float(value), 3) for value in dni_values],
                     "temperature_c": 12.0,
+                    "temperature_series_c": [] if model.clear_sky else [float(value) for value in model.weather["temperature_c"]],
+                    "temperature_source": "unavailable" if model.clear_sky else "historical",
                     "source": weather_source,
                 },
                 "mirrors": [mirror_payload(mirror) for mirror in model.mirrors],

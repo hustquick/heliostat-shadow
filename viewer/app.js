@@ -385,7 +385,7 @@ function drawFrame() {
   }
   $("weatherDni").textContent = frame.dni.toFixed(1);
   $("weatherElevation").textContent = frame.elevation.toFixed(2);
-  $("weatherTemperature").textContent = frame.temperature.toFixed(1);
+  $("weatherTemperature").textContent = Number.isFinite(frame.temperature) ? frame.temperature.toFixed(1) : "暂无数据";
 }
 function svgPath(parts) {
   return parts

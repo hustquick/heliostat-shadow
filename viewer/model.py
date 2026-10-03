@@ -169,7 +169,7 @@ class ViewerModel:
                              temperature=float(row.temperature_c))
             result = dict(timestamp=ts.isoformat(), local_time=ts.tz_convert(c['timezone']).isoformat(),
                           daylight=sun.is_daylight, dni=dni,
-                          temperature=float(row.temperature_c), elevation=float(sun.solar_pos.elevation.iloc[0]),
+                          temperature=None if self.clear_sky else float(row.temperature_c), temperature_source='unavailable' if self.clear_sky else 'historical', elevation=float(sun.solar_pos.elevation.iloc[0]),
                           sun=sun.sun_to_sky.tolist())
             prepared = None
             if sun.is_daylight:
