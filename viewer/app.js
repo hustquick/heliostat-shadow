@@ -420,6 +420,25 @@ function insideParts(p, parts) {
       insideRing(p, poly.outer) && !poly.holes.some((h) => insideRing(p, h)),
   );
 }
+function fitProjectionPlaceholder() {
+  const svg = $("projection"), label = svg.querySelector(".empty-projection-label");
+  if (!label) return;
+  const {width, height} = svg.getBoundingClientRect();
+  if (width <= 0 || height <= 0) return;
+  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+  label.removeAttribute("transform");
+  label.setAttribute("x", width / 2); label.setAttribute("y", height / 2);
+  label.style.fontSize = "32px";
+  const measured = label.getBBox();
+  const scale = Math.min(width * .82 / measured.width, height * .82 / measured.height);
+  if (!Number.isFinite(scale) || scale <= 0) return;
+  label.style.fontSize = `${32 * scale}px`;
+  const fitted = label.getBBox();
+  label.setAttribute("transform", `translate(${width / 2 - fitted.x - fitted.width / 2} ${height / 2 - fitted.y - fitted.height / 2})`);
+}
+new ResizeObserver(fitProjectionPlaceholder).observe($("projection"));
+window.addEventListener("resize", fitProjectionPlaceholder);
+
 function draw2D() {
   const svg = $("projection");
   if (!target && concentrating && !poseOverrides.size) return;
@@ -434,6 +453,7 @@ function draw2D() {
     svg.setAttribute("viewBox", "0 0 100 100");
     const emptyLabel = svgElement("text", {x:50,y:50,class:"empty-projection-label"});
     emptyLabel.textContent = "镜面零位"; svg.append(emptyLabel);
+    fitProjectionPlaceholder();
     $("planeNote").textContent="";
     $("areaNote").replaceChildren();
     const notice=document.createElement("p"); notice.className="inactive-notice"; notice.textContent="镜面朝下平躺 · 聚光输出 0"; $("areaNote").append(notice);
