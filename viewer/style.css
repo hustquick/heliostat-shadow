@@ -711,3 +711,18 @@ main > details > summary { flex-wrap:nowrap; }
 
 main > details > summary.panelhead { padding:10px 14px 10px 38px; gap:10px; min-height:48px; }
 main > details > summary.panelhead h2 { letter-spacing:0; }
+
+.spatial > .cardcontrols { justify-content:center; align-items:center; gap:10px; min-height:62px; }
+.cardcontrols .orientation-widget { position:static; transform:none; margin:0; padding:3px; box-shadow:none; flex:none; }
+.poseheader { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:12px 16px; }
+.poseheader p { margin:0; font-size:12px; line-height:1.5; }
+#poseReset { flex:none; width:94px; white-space:nowrap; }
+@media(max-width:620px) {
+ .spatial > .cardcontrols { gap:6px; margin:8px; flex-wrap:nowrap; }
+ .spatial > .cardcontrols > button { font-size:10px; padding:6px; min-height:36px; }
+ .spatial > .cardcontrols > label { font-size:10px; gap:3px; white-space:nowrap; }
+ .cardcontrols .orientation-widget { grid-template-columns:34px 32px; gap:2px; border-radius:8px; }
+ .cardcontrols .orientation-widget button { padding:0; min-width:0; min-height:36px; font-size:10px; }
+ .cardcontrols .orientation-widget svg { width:32px; height:34px; }
+ .poseheader { gap:8px; padding:12px; }
+}
