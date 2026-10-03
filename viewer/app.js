@@ -427,8 +427,8 @@ function draw2D() {
   $("metrics").replaceChildren();
   $("candidates").replaceChildren();
   if (!concentrating) {
-    $("planeNote").textContent="停止聚光：全场镜面朝下平躺，不向接收器聚光。";
-    $("counts").textContent="零位"; $("areaNote").textContent="聚光输出为 0；跟踪姿态效率不适用于当前零位。";
+    $("planeNote").textContent="镜面朝下平躺 · 聚光输出 0";
+    $("counts").textContent="零位"; $("areaNote").replaceChildren();
     return;
   }
   if (poseOverrides.size) { $("planeNote").textContent="图案展示模式：二维投影与效率计算暂不适用；恢复跟踪后显示。"; $("counts").textContent="自定义展示姿态"; $("areaNote").textContent=""; return; }

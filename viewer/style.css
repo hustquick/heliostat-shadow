@@ -634,3 +634,7 @@ code { color:#b8eaf2; }
 /* Equal reserved metric rows also hold the layout through nighttime and zero position. */
 #metrics { grid-template-rows:100px 64px 170px 64px; gap:8px; height:422px; box-sizing:content-box; }
 #metrics > * { min-height:0; box-sizing:border-box; }
+
+/* Empty summaries contain no duplicated notice or anonymous half-width grid item. */
+#areaNote:empty { visibility:hidden; }
+#planeNote { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-height:1.5em; }
