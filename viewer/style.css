@@ -650,3 +650,10 @@ code { color:#b8eaf2; }
 .projection-inactive { position:relative; }
 .projection-inactive #planeNote { position:absolute; top:112px; left:18px; right:18px; margin:0; }
 .projection-inactive #areaNote { visibility:hidden; }
+
+#areaNote > div { display:grid; grid-template-columns:auto minmax(0,1fr) 1.4em; gap:5px; }
+#areaNote > div strong { text-align:right; }
+#areaNote .area-unit { text-align:left; }
+.projection-inactive #areaNote { visibility:visible; }
+#areaNote .inactive-notice { grid-column:1 / -1; align-self:end; margin:0; white-space:nowrap; }
+.projection-inactive #planeNote { position:static; visibility:hidden; }

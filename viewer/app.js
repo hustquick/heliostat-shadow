@@ -428,8 +428,9 @@ function draw2D() {
   $("metrics").replaceChildren();
   $("candidates").replaceChildren();
   if (!concentrating) {
-    $("planeNote").textContent="镜面朝下平躺 · 聚光输出 0";
+    $("planeNote").textContent="";
     $("counts").textContent="零位"; $("areaNote").replaceChildren();
+    const notice=document.createElement("p"); notice.className="inactive-notice"; notice.textContent="镜面朝下平躺 · 聚光输出 0"; $("areaNote").append(notice);
     return;
   }
   if (poseOverrides.size) { $("planeNote").textContent="图案展示模式：二维投影与效率计算暂不适用；恢复跟踪后显示。"; $("counts").textContent="自定义展示姿态"; $("areaNote").textContent=""; return; }
@@ -557,8 +558,9 @@ function draw2D() {
   for (const [label,value] of [["轮廓面积",area.toFixed(3)+" m²"],["损失面积",lost.toFixed(3)+" m²"],["有效面积",(area-lost).toFixed(3)+" m²"],["反射面积",Number(target.reflective_area_m2).toFixed(3)+" m²"]]) {
     const item=document.createElement("div");
     const name=document.createElement("span"); name.textContent=label;
-    const number=document.createElement("strong"); number.textContent=value;
-    item.append(name,number); areaNote.append(item);
+    const number=document.createElement("strong"); number.textContent=value.replace(" m²", "");
+    const unit=document.createElement("span"); unit.className="area-unit"; unit.textContent="m²";
+    item.append(name,number,unit); areaNote.append(item);
   }
   const modes = mode === "joint" ? ["shadow", "blocking"] : [mode];
   let candidates = 0,
