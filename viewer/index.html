@@ -73,8 +73,8 @@
       </aside>
     </div>
     <div class="statusline">
-      <span id="status" role="status" aria-live="polite">正在载入镜场…</span
-      ><span id="weather"></span>
+      <div id="status" role="status" aria-live="polite"><span id="statusHeading">正在载入镜场…</span><span id="statusDetail"></span><time id="statusTime"></time></div>
+      <div id="weather"><div><span>DNI</span><span id="weatherDni">—</span><span>W/m²</span></div><div><span>太阳高度</span><span id="weatherElevation">—</span><span>°</span></div><div><span>气温</span><span id="weatherTemperature">—</span><span>℃</span></div></div>
     </div>
     <main>
       <section class="panel spatial">
@@ -179,11 +179,6 @@
       <div id="mobileManageActions"></div>
       <p>导入坐标或创建重排布局。此处操作会保存在本设备。</p>
     </details>
-    <details class="mobile-manage" id="mobileParameters"><summary>接收器参数与模型说明</summary><p id="mobileReceiverNote"></p></details>
-    <footer>
-      <div id="source"></div>
-      <div id="sourceNote"></div>
-    </footer>
     <details class="poseeditor" id="operationSettings">
       <summary>聚光启停参数 <span id="operationState" role="status"></span></summary>
       <p>启动：DNI 与太阳高度角均高于启动临界值。停止：两者均低于停止临界值；太阳高度角 ≤ 0° 时直接停止。其他区间保持原状态。</p>
@@ -226,6 +221,12 @@
         </section>
       </div><p class="posehint">展示姿态与光学计算分开；效率仍对应太阳跟踪姿态。</p>
     </details>
+    <details class="mobile-manage" id="mobileParameters"><summary>接收器参数与模型说明</summary><p id="mobileReceiverNote"></p></details>
+    <footer>
+      <div id="source"></div>
+      <div id="sourceNote"></div>
+    </footer>
+
     <dialog id="importDialog">
       <form id="importForm" method="dialog" class="dialogform">
         <div class="dialoghead"><h2>导入新的定日镜场</h2><button type="button" data-close>×</button></div>

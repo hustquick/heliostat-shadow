@@ -383,8 +383,9 @@ function drawFrame() {
     overview();
     cameraFramed = true;
   }
-  $("weather").textContent =
-    `DNI ${frame.dni.toFixed(1)} W/m² · 太阳高度 ${frame.elevation.toFixed(2)}° · 气温 ${frame.temperature.toFixed(1)} ℃`;
+  $("weatherDni").textContent = frame.dni.toFixed(1);
+  $("weatherElevation").textContent = frame.elevation.toFixed(2);
+  $("weatherTemperature").textContent = frame.temperature.toFixed(1);
 }
 function svgPath(parts) {
   return parts
@@ -680,12 +681,16 @@ async function apiPost(path, body) {
   return data;
 }
 function status(text, error = false) {
-  $("status").textContent = webglUnavailable
-    ? `${text} · 此设备未启用 WebGL，三维视图不可用，二维分析和所有镜场控制仍可使用。`
-    : text;
+  const parts = text.split(" · ");
+  const heading = parts.shift();
+  const details = parts.filter(part => !/^\d{4}-\d{2}-\d{2}T/.test(part));
+  $("statusHeading").textContent = heading;
+  $("statusDetail").textContent = details.join(" · ") + (webglUnavailable
+    ? " · 此设备未启用 WebGL，三维视图不可用。" : "");
+  $("statusTime").textContent = frame?.local_time ? frame.local_time.replace("T", " ") : "";
   $("status").classList.toggle("error", error);
-  $("status").title = $("status").textContent;
-  $("status").scrollTop = 0;
+  $("status").title = text;
+
 }
 function formatRange(values, digits = 3) {
   const [minimum, maximum] = values;

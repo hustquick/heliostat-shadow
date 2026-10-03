@@ -585,3 +585,23 @@ code { color:#b8eaf2; }
 .metric-transport { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
 .metric-fixed .metric,.metric-transport .metric { min-width:0; }
 @media(max-width:760px) { .metric-total strong { font-size:28px; } .metric-transport { gap:6px; } }
+
+/* Fixed status slots: changing time and numeric widths never move labels. */
+.statusline { grid-template-columns: minmax(0,1fr); gap:8px; }
+#status { display:grid; grid-template-columns:100px minmax(0,1fr); grid-template-rows:3em 1.5em; line-height:1.5; }
+#statusHeading { grid-column:1; grid-row:1; }
+#statusDetail { grid-column:2; grid-row:1; overflow:auto; }
+#statusTime { grid-column:1 / -1; grid-row:2; font-variant-numeric:tabular-nums; white-space:nowrap; }
+#weather { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; height:3em; line-height:1.5; color:var(--muted); }
+#weather > div { display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-content:start; gap:4px; }
+#weather > div > span:nth-child(2) { text-align:right; font-variant-numeric:tabular-nums; }
+@media(max-width:600px) {
+  #status { grid-template-columns:76px minmax(0,1fr); }
+  #weather > div { grid-template-columns:1fr auto; }
+  #weather > div > span:first-child { grid-column:1 / -1; }
+}
+
+.poseeditor { background:var(--panel); border:1px solid var(--line); border-radius:9px; }
+@media(max-width:900px) {
+  .poseeditor, .mobile-manage { margin:10px 8px 24px; padding:12px; width:auto; box-sizing:border-box; border-radius:9px; }
+}
