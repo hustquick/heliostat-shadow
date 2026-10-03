@@ -817,3 +817,5 @@ main > details { border:1px solid var(--line); background:var(--panel); overflow
 .projection-stage > #metrics { padding-left:var(--card-inset); padding-right:var(--card-inset); box-sizing:border-box; }
 .projection-stage > :is(#planeNote,#areaNote) { margin-left:var(--card-inset); margin-right:var(--card-inset); box-sizing:border-box; width:auto; }
 .projection-inactive .projection-stage > #projection { min-height:0; max-height:none; }
+/* Use the same vertical empty-canvas watermark on all four clients. */
+#projection .empty-projection-label { writing-mode:vertical-rl; text-orientation:upright; letter-spacing:3px; }
