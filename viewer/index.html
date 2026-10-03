@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>塔式镜场设计与优化</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script type="importmap">
+      { "imports": { "three": "./vendor/three.module.js" } }
+    </script>
+  </head>
+  <body>
+    <header>
+      <div>
+        <span class="eyebrow">SOLAR TOWER / OPTICAL LAB</span>
+        <h1>塔式镜场设计与优化 <span>三维 × 二维</span></h1>
+      </div>
+      <div class="badge" id="plantBadge">载入电厂数据库…</div>
+    </header>
+    <div class="controlarea">
+      <div class="controlstack">
+        <section class="workspacebar" aria-label="电厂与布局管理">
+          <label>当前电厂 / 布局 <select id="plant"></select></label>
+          <button id="importPlant">导入定日镜坐标</button>
+          <button id="rearrange">镜场重排</button>
+          <button id="exportCoordinates">导出全场坐标</button>
+          <span id="layoutStatus"></span>
+        </section>
+        <section class="toolbar" aria-label="时间与目标镜控制">
+          <label>当地日期 <input type="date" id="date" /></label
+          ><label
+            ><span id="timezoneLabel">时刻</span>
+            <select id="time"></select
+          ></label>
+          <button id="prev" title="上一采样时刻">←</button
+          ><button id="play">逐时播放</button
+          ><button id="next" title="下一采样时刻">→</button>
+          <div class="divider"></div>
+          <form id="selectMirror">
+            <label
+              >目标镜
+              <input
+                id="mirror"
+                list="mirrorIds"
+                value="G261"
+                autocomplete="off"
+                aria-label="目标镜编号" /></label
+            ><datalist id="mirrorIds"></datalist><button type="submit">选择</button>
+          </form>
+          <button id="focus">聚焦目标</button
+          ><button id="overview">全场视角</button
+          ><select id="viewMode" aria-label="三维视图操作">
+            <option value="overview" selected>全场视角</option>
+            <option value="focus">聚焦目标</option>
+          </select>
+        </section>
+      </div>
+      <aside class="heliostat-summary" aria-labelledby="heliostatSummaryTitle">
+        <div class="summary-title">
+          <span id="heliostatSummaryTitle">全场定日镜</span>
+          <strong id="heliostatSpecMode">载入参数…</strong>
+        </div>
+        <dl>
+          <div><dt>外形</dt><dd id="heliostatShape">—</dd></div>
+          <div><dt>镜面宽度</dt><dd id="heliostatWidth">—</dd></div>
+          <div><dt>镜面高度</dt><dd id="heliostatHeight">—</dd></div>
+          <div><dt>有效反射面积</dt><dd id="heliostatArea">—</dd></div>
+          <div>
+            <dt>镜心离地高度</dt>
+            <dd id="heliostatGroundHeight">—</dd>
+          </div>
+        </dl>
+      </aside>
+    </div>
+    <div class="statusline">
+      <span id="status" role="status" aria-live="polite">正在载入镜场…</span
+      ><span id="weather"></span>
+    </div>
+    <main>
+      <section class="panel spatial">
+        <div class="panelhead">
+          <h2>01 / 三维镜场</h2>
+          <div class="paneltools">
+            <button id="efficiencyColor" type="button" aria-pressed="false">效率着色</button>
+            <button id="towerColor" type="button" aria-pressed="false" hidden>按目标塔着色</button>
+            <label><input type="checkbox" id="neighbors" />仅目标与候选镜</label>
+          </div>
+        </div>
+        <div id="scene" aria-label="三维镜场，可拖动旋转、滚轮缩放、点击选镜">
+          <div class="orientation-widget" aria-label="三维视图归位">
+            <button id="viewIso" type="button" aria-label="等轴测全场视图" title="等轴测全场视图">
+              <svg viewBox="0 0 76 68" aria-hidden="true">
+                <path d="M38 34V8" class="axis axis-u" />
+                <path d="M38 34L14 48" class="axis axis-e" />
+                <path d="M38 34l24 14" class="axis axis-n" />
+                <path d="M38 8l-4 8M38 8l4 8M14 48l9-1M14 48l4-8M62 48l-9-1M62 48l-4-8" class="axis-arrow" />
+                <text x="42" y="12">U</text><text x="7" y="57">E</text><text x="64" y="57">N</text>
+              </svg>
+            </button>
+            <button id="viewTop" type="button" aria-label="东-北俯视图" title="东-北俯视图">俯视<br /><small>E–N</small></button>
+          </div>
+          <div id="night" hidden>
+            太阳在地平线以下<br /><small
+              >仅显示镜面中心；姿态与几何效率不适用</small
+            >
+          </div>
+          <div id="hover"></div>
+        </div>
+        <div class="legend">
+          <span><i style="background: #ffcc47"></i>目标</span
+          ><span><i style="background: #6c8d9b"></i>候选</span
+          ><span><i style="background: #3199ed"></i>阴影</span
+          ><span><i style="background: #f68b4b"></i>遮挡</span
+          ><span><i style="background: #ad7bdb"></i>重叠</span>
+        </div>
+        <div id="efficiencyScale" class="efficiency-scale" hidden>
+          <span id="efficiencyMin"></span><i></i><span id="efficiencyMax"></span>
+          <strong>总光学效率</strong>
+        </div>
+        <div class="hint">
+          拖动旋转 · 右键平移 · 滚轮缩放 ·
+          单击镜面选中。“效率着色”按每面镜的总光学效率由蓝色（低）至红色（高）显示，
+          开启后仅用加粗绿色外边框标出目标镜，不叠加候选镜或阴影/遮挡颜色。
+          多塔电厂可用“按目标塔着色”查看当前时刻的镜面分区。
+        </div>
+        <div class="hint">
+          方向：品红色入射 −s，橙色反射 r，绿色法向 n；坐标轴：红 E、绿 N、蓝
+          U。塔柱仅为位置示意。
+        </div>
+      </section>
+      <section class="panel flat">
+        <div class="panelhead">
+          <h2>02 / 目标镜投影</h2>
+          <select id="plane" aria-label="二维坐标平面">
+            <option value="mirror">共同镜面平面</option>
+            <option value="ray">光线法向平面</option>
+          </select>
+        </div>
+        <div class="tabs" role="group" aria-label="损失显示模式">
+          <button data-mode="joint" class="active">联合</button
+          ><button data-mode="shadow">阴影</button
+          ><button data-mode="blocking">遮挡</button>
+        </div>
+        <svg
+          id="projection"
+          role="img"
+          aria-label="目标镜二维损失区域"
+          viewBox="-10 -10 20 20"
+        ></svg>
+        <div id="planeNote" class="hint"></div>
+        <div id="metrics" class="metrics"></div>
+        <div class="hint" id="areaNote"></div>
+      </section>
+      <section class="panel candidates">
+        <div class="panelhead">
+          <h2>03 / 候选镜追踪</h2>
+          <span id="counts"></span>
+        </div>
+        <p class="hint">
+          悬停表格或二维着色区，高亮对应镜面；点击编号切换目标。单镜遮挡面积可能重叠，不能直接相加。
+        </p>
+        <div class="tablewrap">
+          <table>
+            <thead>
+              <tr>
+                <th>镜面</th>
+                <th>光路</th>
+                <th>判断</th>
+                <th>镜面重叠面积 m²</th>
+              </tr>
+            </thead>
+            <tbody id="candidates"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+    <details id="mobileManage" class="mobile-manage">
+      <summary>镜场管理</summary>
+      <div id="mobileManageActions"></div>
+      <p>导入坐标或创建重排布局。此处操作会保存在本设备。</p>
+    </details>
+    <details class="mobile-manage" id="mobileParameters"><summary>接收器参数与模型说明</summary><p id="mobileReceiverNote"></p></details>
+    <footer>
+      <div id="source"></div>
+      <div id="sourceNote"></div>
+    </footer>
+    <details class="poseeditor" id="operationSettings">
+      <summary>聚光启停参数 <span id="operationState" role="status"></span></summary>
+      <p>启动：DNI 与太阳高度角均高于启动临界值。停止：两者均低于停止临界值；太阳高度角 ≤ 0° 时直接停止。其他区间保持原状态。</p>
+      <form id="operationForm" class="posecard">
+        <div class="posefields">
+          <label>启动 DNI / W·m⁻²<input id="startDni" type="number" min="0" step="any" required></label>
+          <label>启动太阳高度角 / °<input id="startElevation" type="number" min="0" max="90" step="any" required></label>
+          <label>停止 DNI / W·m⁻²<input id="stopDni" type="number" min="0" step="any" required></label>
+          <label>停止太阳高度角 / °<input id="stopElevation" type="number" min="0" max="90" step="any" required></label>
+        </div>
+        <button type="submit">保存并应用</button>
+        <p>参数按电厂应用于当前运行。初始状态为停止；默认临界值是可编辑的演示设置。停止时全场镜面朝下平躺，暂停图案展示，启动后恢复。</p>
+      </form>
+    </details>
+    <details class="poseeditor">
+      <summary>镜面朝向与图案展示</summary>
+      <div class="poseheader"><p>用文字、图片或自定义朝向设计镜场展示。图案镜面保持灰色。</p><button id="poseReset">恢复跟踪</button></div>
+      <div class="posedesign">
+        <section class="posecard"><h3>文字图案</h3>
+          <label for="poseText">文字内容</label><textarea id="poseText" rows="3" placeholder="输入文字，可换行"></textarea>
+          <div class="poseactions"><div class="fonttools" aria-label="文字大小">
+            <button id="poseFontDecrease" title="减小文字" aria-label="减小文字">A−</button>
+            <span id="poseFontLabel">自动</span><input id="poseFontSize" type="hidden" value="0" />
+            <button id="poseFontIncrease" title="增大文字" aria-label="增大文字">A+</button>
+          </div><button id="poseTextApply" class="primary">生成文字图案</button></div>
+          <p class="posehint">自动适配镜场范围，生成时替换当前展示。</p>
+        </section>
+        <section class="posecard"><h3>图片图案</h3><p class="posehint">黑色区域对应水平镜面，白色区域保留跟踪姿态。</p>
+          <label class="poseupload" for="poseImage">选择图案图片<input id="poseImage" type="file" accept="image/*" /></label>
+        </section>
+        <section class="posecard posemanual"><h3>镜面朝向</h3>
+          <div class="posefields">
+            <label class="posewide">镜面编号<input id="poseIds" placeholder="例如 C0261,C0262；留空按行选择" /></label>
+            <label>行中心 y / m<input id="poseY" type="number" value="0" /></label>
+            <label>行半宽 / m<input id="poseTolerance" type="number" min="0" value="5" /></label>
+            <label>法向倾角 / °<input id="poseTilt" type="number" min="0" max="90" value="0" /></label>
+            <label>法向方位角 / °<input id="poseAzimuth" type="number" value="0" /></label>
+          </div><div class="poseactions"><label class="posecheck"><input id="poseAppend" type="checkbox" />叠加到当前展示</label><button id="poseApply">应用朝向</button></div>
+          <p class="posehint">倾角 0° 为水平镜面；方位角从北向东增加。</p>
+        </section>
+      </div><p class="posehint">展示姿态与光学计算分开；效率仍对应太阳跟踪姿态。</p>
+    </details>
+    <dialog id="importDialog">
+      <form id="importForm" method="dialog" class="dialogform">
+        <div class="dialoghead"><h2>导入新的定日镜场</h2><button type="button" data-close>×</button></div>
+        <p class="hint">CSV 至少包含 <code>x,y</code>（ENU、米）。可选列：mirror_id、z、width、height、aim_x、aim_y、aim_z、roll_deg、mount_type。</p>
+        <div class="formgrid">
+          <label>电厂名称<input name="name" required placeholder="例如：试验镜场 A" /></label>
+          <label>坐标 CSV<input name="file" type="file" accept=".csv,text/csv" required /></label>
+          <label>纬度 °<input name="latitude" type="number" step="any" value="37.562" required /></label>
+          <label>经度 °<input name="longitude" type="number" step="any" value="-5.33" required /></label>
+          <label>时区<input name="timezone" value="UTC" required /></label>
+          <label>海拔 m<input name="altitude_m" type="number" step="any" value="0" required /></label>
+          <label>塔顶瞄准高度 m<input name="optical_height_m" type="number" step="any" value="140" required /></label>
+          <label>接收器半径 m<input name="receiver_radius_m" type="number" step="any" value="4" required /></label>
+          <label>接收器高度 m<input name="receiver_height_m" type="number" step="any" value="10.5" required /></label>
+          <label>默认镜宽 m<input name="mirror_width_m" type="number" step="any" value="12.305" required /></label>
+          <label>默认镜高 m<input name="mirror_height_m" type="number" step="any" value="9.752" required /></label>
+        </div>
+        <div class="dialogactions"><button type="button" data-close>取消</button><button type="submit" class="primary">导入并切换</button></div>
+      </form>
+    </dialog>
+    <dialog id="rearrangeDialog">
+      <form id="rearrangeForm" method="dialog" class="dialogform">
+        <div class="dialoghead"><h2>镜场重排</h2><button type="button" data-close>×</button></div>
+        <p class="hint">保持当前镜面数量和电厂参数，创建一份新的可切换布局。重排结果会保存，不覆盖原布局。</p>
+        <div class="formgrid">
+          <label>排布方法<select name="scheme"><option value="campo">Campo 径向交错</option><option value="curved">非圆曲线交错</option><option value="free">自由价值场</option></select></label>
+          <label>安全间距 m<input name="separation_m" type="number" step="any" value="1" /></label>
+          <label>第二区径向系数<input name="dr2" type="number" step="any" value="0.9" /></label>
+          <label>第三区径向系数<input name="dr3" type="number" step="any" value="1.8" /></label>
+          <label>南北曲线偏移 m<input name="north_south_m" type="number" step="any" value="-25" /></label>
+          <label>二阶方位偏移 m<input name="ellipticity_m" type="number" step="any" value="15" /></label>
+          <label>自由场最小镜距 m<input name="spacing_m" type="number" step="any" value="16" /></label>
+          <label>自由场北侧比例<input name="north_fraction" type="number" min="0.05" max="0.95" step="0.05" value="0.6" /></label>
+        </div>
+        <div class="dialogactions"><button type="button" data-close>取消</button><button type="submit" class="primary">创建重排布局</button></div>
+      </form>
+    </dialog>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

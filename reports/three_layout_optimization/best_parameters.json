@@ -1,0 +1,30 @@
+{
+  "Campo优化圆形交错": {
+    "proxy_objective": 2018.6416339478167,
+    "parameters": {
+      "dr2": 0.9,
+      "dr3": 1.8
+    },
+    "minimum_spacing_m": 15.312905825250342
+  },
+  "非圆曲线交错": {
+    "proxy_objective": 1982.5439524923822,
+    "parameters": {
+      "north_south_offset_m": -25.0,
+      "ellipticity_offset_m": 15.0,
+      "security_distance_m": 3.0
+    },
+    "minimum_spacing_m": 15.95343853534236
+  },
+  "价值场自由排布": {
+    "proxy_objective": 2016.7755459693444,
+    "parameters": {
+      "spacing_m": 16.0,
+      "boundary_radius_m": 1100,
+      "north_south": 0.0,
+      "ellipticity": 0.0,
+      "selected_north_fraction": 0.6
+    },
+    "minimum_spacing_m": 16.759142657993667
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "calibration_plant": "ps10",
+  "calibration_mirrors": 624,
+  "representative_samples": 4,
+  "grid_candidates": 275,
+  "screening_seconds": 0.20273008395452052,
+  "one_full_field_sample_seconds": 0.05231670802459121,
+  "validation_candidates_per_round": 3,
+  "geometry_core": "Rust via _heliostat_rust",
+  "scaling_model": "screen N^1.5; full geometry N^1.15; planning estimate only"
+}

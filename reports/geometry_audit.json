@@ -1,0 +1,36 @@
+{
+  "timestamp_utc": "2023-03-21T08:10:00Z",
+  "source_hashes_match": true,
+  "checks": [
+    {
+      "mirror_id": "G1",
+      "max_absolute_error": 2.5417445925768334e-12
+    },
+    {
+      "mirror_id": "G201",
+      "max_absolute_error": 1.3323786518526504e-12
+    },
+    {
+      "mirror_id": "G601",
+      "max_absolute_error": 2.664501952409637e-11
+    },
+    {
+      "mirror_id": "G1001",
+      "max_absolute_error": 0.0
+    },
+    {
+      "mirror_id": "G1501",
+      "max_absolute_error": 2.7701729798934593e-11
+    },
+    {
+      "mirror_id": "G2001",
+      "max_absolute_error": 2.220446049250313e-16
+    },
+    {
+      "mirror_id": "G2650",
+      "max_absolute_error": 0.0
+    }
+  ],
+  "scalar_and_unfiltered_max_absolute_error": 2.7701729798934593e-11,
+  "note": "Prepared path versus original scalar API and unfiltered candidates for seven full-field targets; independent sampled rays are also covered by unit tests."
+}

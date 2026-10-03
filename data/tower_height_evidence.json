@@ -1,0 +1,10 @@
+{
+  "tower_height_m": 140.0,
+  "primary_source": "https://www.group.sener/proyecto/gemasolar/",
+  "source_organization": "Sener (EPC designer and contractor)",
+  "source_field": "Altura de la torre: 140 m",
+  "corroborating_source": "https://solarpaces.nlr.gov/project/gemasolar-thermosolar-plant-solar-tres",
+  "verified_date": "2026-09-29",
+  "rejected_as_actual_tower_height_m": 116,
+  "note": "Actual tower height is confirmed. Exact receiver aim elevation relative to mirror centres requires surveyed pedestal and receiver datum; 140 m is retained as the nominal model aim height without invented offsets."
+}

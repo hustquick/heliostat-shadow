@@ -1,0 +1,50 @@
+{
+  "layout": {
+    "rows": 2650,
+    "missing_cells": 0,
+    "duplicate_ids": 0,
+    "duplicate_coordinates": 0,
+    "radius_min_m": 80.99944950430219,
+    "radius_max_m": 857.0005694805576,
+    "x_range_m": [
+      -730.633,
+      730.633
+    ],
+    "y_range_m": [
+      -531.494,
+      856.793
+    ],
+    "datum": "flat mirror-centre plane; no surveyed terrain or pedestal elevations",
+    "layout_classification": "public map-extracted Gemasolar research reconstruction, not owner as-built survey",
+    "minimum_centre_separation_m": 15.0,
+    "alternative_fluxspt_rows": 2649,
+    "alternative_issue": "2649 rows, one less than the 2650 reported plant count; not padded or used as the baseline"
+  },
+  "radiation": {
+    "source": "PVGIS-SARAH3 satellite-derived historical irradiance",
+    "is_on_site_measurement": false,
+    "rows": 8760,
+    "duplicate_times": 0,
+    "missing_cells": 0,
+    "cadence_minutes": 60,
+    "timestamp_minute": 10,
+    "start_utc": "2023-01-01 00:10:00+00:00",
+    "end_utc": "2023-12-31 23:10:00+00:00",
+    "reconstructed_hours": 0,
+    "positive_dni_hours": 3998,
+    "maximum_dni_w_m2": 967.02,
+    "annual_dni_kwh_m2_hourly_sample_estimate": 2305.97873,
+    "integration_note": "Sum of hourly SARAH instantaneous samples times 1 h; approximate irradiation, not continuous measurements.",
+    "location": {
+      "latitude": 37.5607,
+      "longitude": -5.3316,
+      "elevation": 167.0
+    },
+    "raw_api_timestamp_description": "hourly averages"
+  },
+  "input_sha256": {
+    "data/raw/gemasolar/map_layout.csv": "c66ccbfee8c6b652a5f64e3e26b6dda4e7a3bd0dc92bc0253e7bf6093a1baf8f",
+    "data/raw/radiation/pvgis_sarah3_2023.json": "b738be3d0463dab120b1ead8910d210427cea9e6d11d1139ca4fc3aef383e3e4",
+    "data/gemasolar_config.json": "28189368781cf664d1fb5079496baf186f648ba37c34dab5ee3fad65b98203ed"
+  }
+}

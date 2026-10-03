@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const {defaultOperationParameters:p,nextOperationState:next,validateOperationParameters:validate,parkedVertices} = await import('data:text/javascript;base64,'+readFileSync(new URL('../viewer/operation.js',import.meta.url)).toString('base64'));
+assert.equal(next(false,201,11,p),true);
+assert.equal(next(false,200,11,p),false);
+assert.equal(next(false,201,10,p),false);
+assert.equal(next(false,201,9,p),false);
+assert.equal(next(true,99,4,p),false);
+assert.equal(next(true,100,4,p),true);
+assert.equal(next(true,99,5,p),true);
+assert.equal(next(true,99,11,p),true);
+assert.equal(next(true,300,4,p),true);
+assert.equal(next(true,300,0,p),false);
+assert.equal(next(true,300,-5,p),false);
+assert.equal(next(true,NaN,12,p),false);
+assert.throws(()=>validate({...p,startDni:50}));
+assert.throws(()=>validate({...p,stopElevation:-1}));
+let state=false;for(const [dni,elevation,expected] of [[150,8,false],[300,20,true],[150,8,true],[99,4,false],[150,8,false]]){state=next(state,dni,elevation,p);assert.equal(state,expected);}
+const vertices=parkedVertices([2,3,5],4,6);assert.deepEqual(vertices,[[0,6,5],[4,6,5],[4,0,5],[0,0,5]]);
+const u=vertices[1].map((x,j)=>x-vertices[0][j]),v=vertices[3].map((x,j)=>x-vertices[0][j]);assert.ok(u[0]*v[1]-u[1]*v[0]<0);
+console.log('Operation thresholds, hysteresis, night and downward parking passed');

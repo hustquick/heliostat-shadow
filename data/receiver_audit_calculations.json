@@ -1,0 +1,362 @@
+[
+  {
+    "plant": "gemasolar",
+    "timestamp": "2023-03-21T11:10:00+00:00",
+    "mirrors": 2650,
+    "minimum": 0.23978209502297865,
+    "mean": 0.5082813521087594,
+    "minimum_mirror": "G2650",
+    "factors": {
+      "eta_cosine": 0.8217133185566128,
+      "eta_shadow": 1.0,
+      "eta_blocking": 1.0,
+      "eta_joint": 1.0,
+      "mirror_reflectivity": 0.88,
+      "mirror_cleanliness": 0.95,
+      "eta_atmosphere": 0.9062750889273592,
+      "eta_intercept": 0.38515017913769894
+    },
+    "interpretation": "参数化/研究重建场，非实测效率",
+    "receiver_geometry_status": "literature-baseline"
+  },
+  {
+    "plant": "gemasolar-campo",
+    "timestamp": "2023-03-21T11:10:00+00:00",
+    "mirrors": 2650,
+    "minimum": 0.23193607056523302,
+    "mean": 0.5095086160661232,
+    "minimum_mirror": "C3728",
+    "factors": {
+      "eta_cosine": 0.6245722057827592,
+      "eta_shadow": 1.0,
+      "eta_blocking": 0.9850472002457656,
+      "eta_joint": 0.9850472002457656,
+      "mirror_reflectivity": 0.88,
+      "mirror_cleanliness": 0.95,
+      "eta_atmosphere": 0.9155488939033395,
+      "eta_intercept": 0.49253917740421677
+    },
+    "interpretation": "参数化/研究重建场，非实测效率",
+    "receiver_geometry_status": "literature-baseline"
+  },
+  {
+    "plant": "gemasolar-curved",
+    "timestamp": "2023-03-21T11:10:00+00:00",
+    "mirrors": 2650,
+    "minimum": 0.18048827668235942,
+    "mean": 0.47212368249765085,
+    "minimum_mirror": "N3730",
+    "factors": {
+      "eta_cosine": 0.6007509850340987,
+      "eta_shadow": 1.0,
+      "eta_blocking": 1.0,
+      "eta_joint": 1.0,
+      "mirror_reflectivity": 0.88,
+      "mirror_cleanliness": 0.95,
+      "eta_atmosphere": 0.9045311949407996,
+      "eta_intercept": 0.3973055941999884
+    },
+    "interpretation": "参数化/研究重建场，非实测效率",
+    "receiver_geometry_status": "literature-baseline"
+  },
+  {
+    "plant": "gemasolar-free",
+    "timestamp": "2023-03-21T11:10:00+00:00",
+    "mirrors": 2650,
+    "minimum": 0.08981119950884706,
+    "mean": 0.4379303887810966,
+    "minimum_mirror": "V09242",
+    "factors": {
+      "eta_cosine": 0.8464527965419552,
+      "eta_shadow": 1.0,
+      "eta_blocking": 0.4435640582828605,
+      "eta_joint": 0.4435640582828605,
+      "mirror_reflectivity": 0.88,
+      "mirror_cleanliness": 0.95,
+      "eta_atmosphere": 0.8974976792886733,
+      "eta_intercept": 0.3188098952825206
+    },
+    "interpretation": "参数化/研究重建场，非实测效率",
+    "receiver_geometry_status": "literature-baseline"
+  },
+  {
+    "plant": "ps10",
+    "timestamp": "2023-03-21T11:00:00+00:00",
+    "mirrors": 624,
+    "minimum": 0.4364904275701665,
+    "mean": 0.6172719848719583,
+    "minimum_mirror": "C0589",
+    "factors": {
+      "eta_cosine": 0.578685778313313,
+      "eta_shadow": 1.0,
+      "eta_blocking": 0.9912238798188817,
+      "eta_joint": 0.9912238798188817,
+      "mirror_reflectivity": 0.88,
+      "mirror_cleanliness": 0.95,
+      "eta_atmosphere": 0.9609928277365053,
+      "eta_intercept": 0.9471826505631042
+    },
+    "interpretation": "参数化/研究重建场，非实测效率",
+    "receiver_geometry_status": "unsupported-geometry"
+  },
+  {
+    "plant": "crescent-dunes",
+    "timestamp": "2023-03-21T19:00:00+00:00",
+    "mirrors": 10347,
+    "minimum": 0.19849606421136795,
+    "mean": 0.4735972663678375,
+    "minimum_mirror": "C10202",
+    "factors": {
+      "eta_cosine": 0.47693083819043847,
+      "eta_shadow": 1.0,
+      "eta_blocking": 1.0,
+      "eta_joint": 1.0,
+      "mirror_reflectivity": 0.88,
+      "mirror_cleanliness": 0.95,
+      "eta_atmosphere": 0.8379667225840358,
+      "eta_intercept": 0.5941053258585404
+    },
+    "interpretation": "参数化/研究重建场，非实测效率",
+    "receiver_geometry_status": "published"
+  },
+  {
+    "plant": "khi-solar-one",
+    "timestamp": "2023-03-21T10:00:00+00:00",
+    "mirrors": 4120,
+    "minimum": 0.27182900325473536,
+    "mean": 0.5378000245036104,
+    "minimum_mirror": "C4059",
+    "factors": {
+      "eta_cosine": 0.5867476464266215,
+      "eta_shadow": 1.0,
+      "eta_blocking": 1.0,
+      "eta_joint": 1.0,
+      "mirror_reflectivity": 0.88,
+      "mirror_cleanliness": 0.95,
+      "eta_atmosphere": 0.900561115089481,
+      "eta_intercept": 0.6153539152129014
+    },
+    "interpretation": "参数化/研究重建场，非实测效率",
+    "receiver_geometry_status": "unsupported-geometry"
+  },
+  {
+    "plant": "cerro-dominador",
+    "timestamp": "2023-03-21T15:00:00+00:00",
+    "mirrors": 10600,
+    "minimum": 0.12153085164291395,
+    "mean": 0.41074858452896257,
+    "minimum_mirror": "C10515",
+    "factors": {
+      "eta_cosine": 0.5178769828291165,
+      "eta_shadow": 1.0,
+      "eta_blocking": 1.0,
+      "eta_joint": 1.0,
+      "mirror_reflectivity": 0.88,
+      "mirror_cleanliness": 0.95,
+      "eta_atmosphere": 0.7968712658650545,
+      "eta_intercept": 0.3522617495247597
+    },
+    "interpretation": "参数化/研究重建场，非实测效率",
+    "receiver_geometry_status": "published"
+  },
+  {
+    "plant": "noor-iii",
+    "timestamp": "2023-03-21T12:00:00+00:00",
+    "mirrors": 2650,
+    "minimum": 0.4991389290199447,
+    "mean": 0.673546577365936,
+    "minimum_mirror": "C2650",
+    "factors": {
+      "eta_cosine": 0.6560807686385,
+      "eta_shadow": 1.0,
+      "eta_blocking": 1.0,
+      "eta_joint": 1.0,
+      "mirror_reflectivity": 0.88,
+      "mirror_cleanliness": 0.95,
+      "eta_atmosphere": 0.924883485674327,
+      "eta_intercept": 0.9839450217613018
+    },
+    "interpretation": "参数化/研究重建场，非实测效率",
+    "receiver_geometry_status": "published"
+  },
+  {
+    "plant": "shouhang-dunhuang-i",
+    "timestamp": "2023-03-21T04:00:00+00:00",
+    "mirrors": 1525,
+    "minimum": 0.3735078174706524,
+    "mean": 0.6134651168714527,
+    "minimum_mirror": "C1509",
+    "factors": {
+      "eta_cosine": 0.5133736910354258,
+      "eta_shadow": 1.0,
+      "eta_blocking": 1.0,
+      "eta_joint": 1.0,
+      "mirror_reflectivity": 0.92,
+      "mirror_cleanliness": 0.95,
+      "eta_atmosphere": 0.9465897385521908,
+      "eta_intercept": 0.8794129620696589
+    },
+    "interpretation": "参数化/研究重建场，非实测效率",
+    "receiver_geometry_status": "unverified-estimate"
+  },
+  {
+    "plant": "shouhang-dunhuang-ii",
+    "timestamp": "2023-03-21T04:00:00+00:00",
+    "mirrors": 12121,
+    "minimum": 0.24318561042547274,
+    "mean": 0.5371350838952746,
+    "minimum_mirror": "C12076",
+    "factors": {
+      "eta_cosine": 0.4455845824911874,
+      "eta_shadow": 1.0,
+      "eta_blocking": 1.0,
+      "eta_joint": 1.0,
+      "mirror_reflectivity": 0.92,
+      "mirror_cleanliness": 0.95,
+      "eta_atmosphere": 0.8458738688735953,
+      "eta_intercept": 0.7382282776431051
+    },
+    "interpretation": "参数化/研究重建场，非实测效率",
+    "receiver_geometry_status": "published"
+  },
+  {
+    "plant": "powerchina-qinghai-gonghe",
+    "timestamp": "2023-03-21T04:00:00+00:00",
+    "mirrors": 30016,
+    "minimum": 0.27628939675617203,
+    "mean": 0.5063245653398296,
+    "minimum_mirror": "C00140",
+    "factors": {
+      "eta_cosine": 0.5412556044735721,
+      "eta_shadow": 1.0,
+      "eta_blocking": 0.9555135387111139,
+      "eta_joint": 0.9555135387111139,
+      "mirror_reflectivity": 0.88,
+      "mirror_cleanliness": 0.95,
+      "eta_atmosphere": 0.9083084343059068,
+      "eta_intercept": 0.703534408037252
+    },
+    "interpretation": "参数化/研究重建场，非实测效率",
+    "receiver_geometry_status": "published"
+  },
+  {
+    "plant": "luneng-haixi",
+    "timestamp": "2023-03-21T04:00:00+00:00",
+    "mirrors": 4400,
+    "minimum": 0.20655024084408236,
+    "mean": 0.4931578895243736,
+    "minimum_mirror": "C4304",
+    "factors": {
+      "eta_cosine": 0.48075410508162725,
+      "eta_shadow": 1.0,
+      "eta_blocking": 1.0,
+      "eta_joint": 1.0,
+      "mirror_reflectivity": 0.88,
+      "mirror_cleanliness": 0.95,
+      "eta_atmosphere": 0.8986972207000629,
+      "eta_intercept": 0.5718511889255316
+    },
+    "interpretation": "参数化/研究重建场，非实测效率",
+    "receiver_geometry_status": "unverified-estimate"
+  },
+  {
+    "plant": "supcon-delingha-10",
+    "timestamp": "2023-03-21T04:00:00+00:00",
+    "mirrors": 22500,
+    "minimum": 0.13600074907366044,
+    "mean": 0.4588304990007609,
+    "minimum_mirror": "C22338",
+    "factors": {
+      "eta_cosine": 0.4463336454247133,
+      "eta_shadow": 1.0,
+      "eta_blocking": 1.0,
+      "eta_joint": 1.0,
+      "mirror_reflectivity": 0.88,
+      "mirror_cleanliness": 0.95,
+      "eta_atmosphere": 0.920951584917624,
+      "eta_intercept": 0.3957661055861827
+    },
+    "interpretation": "参数化/研究重建场，非实测效率",
+    "receiver_geometry_status": "unverified-estimate"
+  },
+  {
+    "plant": "supcon-delingha-50",
+    "timestamp": "2023-03-21T04:00:00+00:00",
+    "mirrors": 27135,
+    "minimum": 0.17157406654086588,
+    "mean": 0.4633700687150141,
+    "minimum_mirror": "C00157",
+    "factors": {
+      "eta_cosine": 0.480305461058929,
+      "eta_shadow": 1.0,
+      "eta_blocking": 0.9745970723599382,
+      "eta_joint": 0.9745970723599382,
+      "mirror_reflectivity": 0.88,
+      "mirror_cleanliness": 0.95,
+      "eta_atmosphere": 0.881078758572961,
+      "eta_intercept": 0.4976087507537598
+    },
+    "interpretation": "参数化/研究重建场，非实测效率",
+    "receiver_geometry_status": "published"
+  },
+  {
+    "plant": "ceec-hami",
+    "timestamp": "2023-03-21T04:00:00+00:00",
+    "mirrors": 14500,
+    "minimum": 0.15665073023481854,
+    "mean": 0.4734675246612179,
+    "minimum_mirror": "C14426",
+    "factors": {
+      "eta_cosine": 0.4254264370031823,
+      "eta_shadow": 1.0,
+      "eta_blocking": 1.0,
+      "eta_joint": 1.0,
+      "mirror_reflectivity": 0.88,
+      "mirror_cleanliness": 0.95,
+      "eta_atmosphere": 0.8694049354550494,
+      "eta_intercept": 0.506616780289527
+    },
+    "interpretation": "参数化/研究重建场，非实测效率",
+    "receiver_geometry_status": "published"
+  },
+  {
+    "plant": "yumen-xinneng-beam-down",
+    "timestamp": "2023-03-21T04:00:00+00:00",
+    "mirrors": 13015,
+    "minimum": 0.07810803149539318,
+    "mean": 0.34526334445210655,
+    "minimum_mirror": "C12932",
+    "factors": {
+      "eta_cosine": 0.5178145499991074,
+      "eta_shadow": 1.0,
+      "eta_blocking": 0.8192909090874727,
+      "eta_joint": 0.8192909090874727,
+      "mirror_reflectivity": 0.88,
+      "mirror_cleanliness": 0.95,
+      "eta_atmosphere": 0.9012701919776573,
+      "eta_intercept": 0.2443554457093612
+    },
+    "interpretation": "参数化/研究重建场，非实测效率",
+    "receiver_geometry_status": "unsupported-geometry"
+  },
+  {
+    "plant": "ctg-hengji-guazhou-dual-tower",
+    "timestamp": "2023-03-21T04:00:00+00:00",
+    "mirrors": 26944,
+    "minimum": 0.39156439983351865,
+    "mean": 0.6233532947688363,
+    "minimum_mirror": "D00224",
+    "factors": {
+      "eta_cosine": 0.5253412997310581,
+      "eta_shadow": 1.0,
+      "eta_blocking": 0.9489178468921784,
+      "eta_joint": 0.9489178468921784,
+      "mirror_reflectivity": 0.94,
+      "mirror_cleanliness": 0.95,
+      "eta_atmosphere": 0.9291793024177685,
+      "eta_intercept": 0.9466339037346074
+    },
+    "interpretation": "参数化/研究重建场，非实测效率",
+    "receiver_geometry_status": "unverified-estimate"
+  }
+]

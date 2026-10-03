@@ -1,0 +1,51 @@
+[
+  {
+    "path": "data/raw/gemasolar/fluxspt_layout.csv",
+    "url": "https://raw.githubusercontent.com/LiuZengqiang/CSPHeliostatFieldLayout/34ece6400c2754d3667bcebca90c00446fa39eaf/Gemasolar_FluxSPT/layout.csv",
+    "retrieved_at_utc": "2026-09-30T03:44:15.193856+00:00",
+    "sha256": "b3bbe0fee6de1f70f8e0ee5c5ea39964eea766f838cf6e48dc2fc9953538650b",
+    "bytes": 85159
+  },
+  {
+    "path": "data/raw/gemasolar/map_layout.csv",
+    "url": "https://raw.githubusercontent.com/LiuZengqiang/CSPHeliostatFieldLayout/34ece6400c2754d3667bcebca90c00446fa39eaf/Gemasolar/layout.csv",
+    "retrieved_at_utc": "2026-09-30T03:44:16.333192+00:00",
+    "sha256": "c66ccbfee8c6b652a5f64e3e26b6dda4e7a3bd0dc92bc0253e7bf6093a1baf8f",
+    "bytes": 57598
+  },
+  {
+    "path": "data/raw/gemasolar/parameters.xlsx",
+    "url": "https://raw.githubusercontent.com/LiuZengqiang/CSPHeliostatFieldLayout/34ece6400c2754d3667bcebca90c00446fa39eaf/Gemasolar/parameters.xlsx",
+    "retrieved_at_utc": "2026-09-30T03:44:17.528287+00:00",
+    "sha256": "8061c19ebf6c139b765195f583b4ea383ab621b858066a3057005ee92d4a26cc",
+    "bytes": 13741
+  },
+  {
+    "path": "data/raw/gemasolar/source_readme.md",
+    "url": "https://raw.githubusercontent.com/LiuZengqiang/CSPHeliostatFieldLayout/34ece6400c2754d3667bcebca90c00446fa39eaf/readme.md",
+    "retrieved_at_utc": "2026-09-30T03:44:18.669859+00:00",
+    "sha256": "abb9376f0051de7e04f9cf94d8fe4cea7290f1b34667309c676b0f6018b23223",
+    "bytes": 13033
+  },
+  {
+    "path": "data/raw/gemasolar/LICENSE",
+    "url": "https://raw.githubusercontent.com/LiuZengqiang/CSPHeliostatFieldLayout/34ece6400c2754d3667bcebca90c00446fa39eaf/LICENSE",
+    "retrieved_at_utc": "2026-09-30T03:44:19.777520+00:00",
+    "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+    "bytes": 35149
+  },
+  {
+    "path": "data/raw/gemasolar/fluxspt_readme.txt",
+    "url": "https://raw.githubusercontent.com/LiuZengqiang/CSPHeliostatFieldLayout/34ece6400c2754d3667bcebca90c00446fa39eaf/RelatedTools/FluxSPT/readme.txt",
+    "retrieved_at_utc": "2026-09-30T03:44:20.957411+00:00",
+    "sha256": "78c24fdaa3f7289494b7a852d5ca8f5ebdec5e2d4334b557ac0e98b301a56fb9",
+    "bytes": 1415
+  },
+  {
+    "path": "data/raw/radiation/pvgis_sarah3_2023.json",
+    "url": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=37.5607&lon=-5.3316&startyear=2023&endyear=2023&raddatabase=PVGIS-SARAH3&trackingtype=2&components=1&usehorizon=1&outputformat=json&pvcalculation=0",
+    "retrieved_at_utc": "2026-09-30T03:44:25.515311+00:00",
+    "sha256": "b738be3d0463dab120b1ead8910d210427cea9e6d11d1139ca4fc3aef383e3e4",
+    "bytes": 982828
+  }
+]

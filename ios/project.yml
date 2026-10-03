@@ -1,0 +1,56 @@
+name: HeliostatViewerIOS
+options:
+  bundleIdPrefix: com.hustquick
+  deploymentTarget:
+    iOS: "16.0"
+settings:
+  base:
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "20001"
+    SWIFT_VERSION: "6.0"
+targets:
+  HeliostatViewer:
+    type: application
+    platform: iOS
+    sources:
+      - HeliostatViewer
+      - path: ../viewer
+        type: folder
+        buildPhase: resources
+      - path: ../build/mobile
+        type: folder
+        buildPhase: resources
+      - path: ../data/processed/gemasolar_dni_2023.csv
+        buildPhase: resources
+    dependencies:
+      - framework: Frameworks/HeliostatCore.xcframework
+        embed: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.hustquick.heliostatviewer
+        PRODUCT_NAME: 塔式镜场设计与优化
+        INFOPLIST_KEY_CFBundleDisplayName: 塔式镜场设计与优化
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        SWIFT_OBJC_BRIDGING_HEADER: HeliostatViewer/HeliostatViewer-Bridging-Header.h
+        HEADER_SEARCH_PATHS: "$(SRCROOT)/../rust/heliostat-core/include"
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SUPPORTS_MACCATALYST: false
+    info:
+      path: HeliostatViewer/Info.plist
+      properties:
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+schemes:
+  HeliostatViewer:
+    build:
+      targets:
+        HeliostatViewer: all
+    run:
+      config: Debug
+    archive:
+      config: Release

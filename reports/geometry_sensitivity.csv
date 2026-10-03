@@ -1,0 +1,7 @@
+time_utc,scenario,dni_w_m2,geometric_usable_mw,eta_joint_weighted,interpretation
+2023-06-21T12:10:00Z,baseline_140m_12.305x9.752,800,204.23830727773483,0.9960460526300378,"geometry sensitivity at FIXED artificial DNI, not historical power"
+2023-06-21T12:10:00Z,optical_height_116m,800,200.22056593580382,0.9941414729488499,"geometry sensitivity at FIXED artificial DNI, not historical power"
+2023-06-21T12:10:00Z,envelope_11.5x10.4,800,204.56168016019535,0.9976231039060474,"geometry sensitivity at FIXED artificial DNI, not historical power"
+2023-12-21T12:10:00Z,baseline_140m_12.305x9.752,800,190.3213418105392,0.979311688618791,"geometry sensitivity at FIXED artificial DNI, not historical power"
+2023-12-21T12:10:00Z,optical_height_116m,800,185.93692105755815,0.9682001098670697,"geometry sensitivity at FIXED artificial DNI, not historical power"
+2023-12-21T12:10:00Z,envelope_11.5x10.4,800,189.58479352561602,0.9755217282402255,"geometry sensitivity at FIXED artificial DNI, not historical power"

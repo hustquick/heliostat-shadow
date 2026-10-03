@@ -1,0 +1,22 @@
+{
+  "baseline": "PS10 catalogue parameterised reconstruction; not an as-built coordinate survey",
+  "representative_samples": [
+    "2023-03-21T12:00:00+01:00",
+    "2023-06-21T12:00:00+02:00",
+    "2023-09-21T12:00:00+02:00",
+    "2023-12-21T12:00:00+01:00"
+  ],
+  "mirrors": 624,
+  "grid_candidates": 275,
+  "clearance_m": 16.620499351813308,
+  "accepted_moves": 28,
+  "baseline_receiver_incident_w": 160206229.80807185,
+  "final_receiver_incident_w": 162973800.98268056,
+  "relative_receiver_power_gain": 0.017275053397887596,
+  "baseline_optical_efficiency": 0.5973574840356097,
+  "final_optical_efficiency": 0.6076768664699528,
+  "relative_gain_limit": 0.0002,
+  "full_validation_candidates": 3,
+  "search_receiver_quadrature_order": 16,
+  "final_receiver_quadrature_order": 64
+}

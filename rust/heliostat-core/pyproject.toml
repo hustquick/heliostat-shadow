@@ -1,0 +1,13 @@
+[build-system]
+requires = ["maturin>=1.9,<2"]
+build-backend = "maturin"
+
+[project]
+name = "heliostat-rust-core"
+version = "1.0.0"
+requires-python = ">=3.10"
+
+[tool.maturin]
+features = ["python-bindings"]
+module-name = "_heliostat_rust"
+

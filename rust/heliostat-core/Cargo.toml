@@ -1,0 +1,33 @@
+[package]
+name = "heliostat-core"
+version = "1.0.0"
+edition = "2024"
+description = "Cross-platform heliostat shadow and blocking geometry core"
+license = "MIT"
+
+[lib]
+name = "_heliostat_rust"
+crate-type = ["rlib", "staticlib", "cdylib"]
+
+[features]
+default = []
+python-bindings = ["dep:pyo3"]
+android-jni = ["dep:jni"]
+
+[dependencies]
+chrono = { version = "0.4.42", default-features = false, features = ["std"] }
+chrono-tz = "0.10.4"
+csv = "1.3.1"
+flate2 = "1.1.2"
+geo = "0.33.1"
+jni = { version = "0.21.1", optional = true }
+pyo3 = { version = "0.29.2", features = ["extension-module"], optional = true }
+rayon = "1.11.0"
+solar-positioning = "0.7.0"
+rstar = "0.12.2"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.145"
+thiserror = "2.0.17"
+
+[dev-dependencies]
+approx = "0.5.1"

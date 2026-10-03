@@ -1,0 +1,2 @@
+# Keep bundled upstream JavaScript byte-for-byte identical to the pinned package.
+viewer/vendor/*.js -whitespace linguist-vendored

@@ -1,0 +1,21 @@
+{
+  "full_mirror_time_rows": 127200,
+  "daylight_timestamps": 48,
+  "mirror_count_each_time": 2650,
+  "duplicate_mirror_time_rows": 0,
+  "all_efficiencies_in_unit_interval": true,
+  "joint_loss_ordering_passed": true,
+  "mirror_power_sum_matches_field_summary": true,
+  "daily_sums_match_hourly": true,
+  "sequential_energy_balance_passed": true,
+  "cosine_applied_once": true,
+  "full_optical_chain_balance_passed": true,
+  "distance_range_m": [
+    159.77770565371625,
+    864.4130792243692
+  ],
+  "atmospheric_loss_range_percent": [
+    2.5076938554964845,
+    9.372494167756296
+  ]
+}

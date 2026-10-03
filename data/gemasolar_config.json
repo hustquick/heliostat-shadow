@@ -1,0 +1,64 @@
+{
+  "latitude": 37.5607,
+  "longitude": -5.3316,
+  "timezone": "Europe/Madrid",
+  "altitude_m": 167.0,
+  "expected_mirrors": 2650,
+  "mirror_width_m": 12.305,
+  "mirror_height_m": 9.752,
+  "reflective_area_m2": 115.7,
+  "optical_height_m": 140.0,
+  "receiver_radius_m": 4.0,
+  "year": 2023,
+  "selected_local_dates": [
+    "2023-03-21",
+    "2023-06-21",
+    "2023-09-21",
+    "2023-12-21"
+  ],
+  "source_revision": "34ece6400c2754d3667bcebca90c00446fa39eaf",
+  "parameter_notes": {
+    "location": "Global Energy Observatory lists 37.5607 N, -5.3316 E as the Gemasolar plant location. It is used as the project-site point, not claimed as a surveyed tower-centre coordinate.",
+    "altitude_m": "PVGIS API DEM elevation = 167 m at the corrected project-site coordinate; source workbook reports 168 m.",
+    "dimensions": "12.305 m horizontal width and 9.752 m height follow Collado/Guallar 2013 and Gemasolar research literature. Repository parameter workbook swaps these labels; HelioCon gives another envelope (11.5 x 10.4 m). Model assumption retained explicitly.",
+    "optical_height_m": "Actual tower height is 140 m, confirmed by Sener EPC project page and NLR/SolarPACES. The calculation uses 140 m as nominal optical aiming height above the common mirror-centre datum. Exact receiver equator/pedestal/ground-datum offset is unverified; no invented correction is applied. 116 m is only a rejected literature sensitivity case, not the actual tower height.",
+    "receiver": "Finite cylindrical receiver model: radius 4 m and height 10.5 m, based on Sánchez-González et al. 2016 Gemasolar-like case (DOI 10.1016/j.solener.2015.12.055). The actual receiver geometry/aiming strategy is not fully public; nominal centre at 140 m is retained.",
+    "surface": "Each mirror is an opaque flat rectangle with azimuth/elevation mount. 115.7 m2 reflective aperture is distributed uniformly inside its envelope; facet gaps and focusing are not traced.",
+    "axes": "Interpret dataset x/y as East/North, consistent with published Gemasolar field convention and the north-extended layout; upstream CSV has no explicit axis metadata. Field rotation/survey control remains unverified.",
+    "height": "All centres use z=0 relative to a common centre plane. This avoids inventing pedestal elevation; real terrain is unavailable.",
+    "atmosphere": "Noone et al. 2012 equation 11; empirical slant-distance transmission assuming about 40 km visibility. Fixed clear-air scenario, not historical local visibility reconstructed from DNI; excludes mirror reflectivity and receiver interception.",
+    "mirror_reflectivity": "Literature scenario, not measured Sener reflectivity: Collado & Guallar 2016 Table 1 (doi:10.1016/j.solener.2016.06.065) and Sanchez-Gonzalez et al. (doi:10.1016/j.solener.2015.12.055), case study. Cleanliness=1 and interception=1 in main four-factor result; neither loss is modeled. Separate comparison scenarios may include cleanliness=0.95.",
+    "receiver_optics": "Interception integrates an equivalent Gaussian angular beam over the near side of the cylinder. Sun shape 2.51 mrad, slope 2.6 mrad, tracking 2.1 mrad from the cited Gemasolar-like case; receiver solar absorptivity 0.93 from Pérez-Álvarez et al. 2022. These are literature scenarios, not Gemasolar measurements.",
+    "receiver_thermal_efficiency": "Literature annual receiver efficiency scenario 0.8916 from Collado & Guallar 2016 Table 1 (RR=4 m, THT=140 m), not a transient thermal balance. It represents absorbed receiver heat after receiver thermal losses; use only for scenario output."
+  },
+  "tower_height_m": 140.0,
+  "tower_height_source": "https://www.group.sener/proyecto/gemasolar/",
+  "atmospheric_model": "clear_air_40km",
+  "mirror_reflectivity": 0.88,
+  "mirror_cleanliness": 0.95,
+  "receiver_height_m": 10.5,
+  "receiver_absorptivity": 0.93,
+  "sunshape_mrad": 2.51,
+  "slope_error_mrad": 2.6,
+  "tracking_error_mrad": 2.1,
+  "receiver_quadrature_order": 64,
+  "receiver_thermal_efficiency": 0.8916,
+  "coordinate_datum": "WGS 84",
+  "coordinate_accuracy": "published_project_site",
+  "coordinate_source_name": "Global Energy Observatory",
+  "coordinate_source_url": "https://globalenergyobservatory.org/geoid/43848",
+  "coordinate_note": "Global Energy Observatory 公布的 Gemasolar 电厂场址坐标；用于太阳位置计算，但不解释为塔中心测量控制点。",
+  "schema_version": "1.1",
+  "towers": [
+    {
+      "id": "tower-1",
+      "name": "主塔",
+      "base": [0.0, 0.0, 0.0],
+      "receiver": {
+        "centre": [0.0, 0.0, 140.0],
+        "radius": 4.0,
+        "height": 10.5
+      }
+    }
+  ]
+}
