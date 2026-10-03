@@ -83,7 +83,7 @@
           <div class="paneltools">
             <button id="efficiencyColor" type="button" aria-pressed="false">效率着色</button>
             <button id="towerColor" type="button" aria-pressed="false" hidden>按目标塔着色</button>
-            <label><input type="checkbox" id="neighbors" />仅目标与候选镜</label>
+            <label><input type="checkbox" id="neighbors" />仅目标与影响镜</label>
           </div>
         </div>
         <div id="scene" aria-label="三维镜场，可拖动旋转、滚轮缩放、点击选镜">
@@ -108,8 +108,7 @@
         </div>
         <div class="legend">
           <span><i style="background: #ffcc47"></i>目标</span
-          ><span><i style="background: #6c8d9b"></i>候选</span
-          ><span><i style="background: #3199ed"></i>阴影</span
+                    ><span><i style="background: #3199ed"></i>阴影</span
           ><span><i style="background: #f68b4b"></i>遮挡</span
           ><span><i style="background: #ad7bdb"></i>重叠</span>
         </div>
@@ -120,7 +119,7 @@
         <div class="hint">
           拖动旋转 · 右键平移 · 滚轮缩放 ·
           单击镜面选中。“效率着色”按每面镜的总光学效率由蓝色（低）至红色（高）显示，
-          开启后仅用加粗绿色外边框标出目标镜，不叠加候选镜或阴影/遮挡颜色。
+          开启后仅用加粗绿色外边框标出目标镜，不叠加影响镜或阴影/遮挡颜色。
           多塔电厂可用“按目标塔着色”查看当前时刻的镜面分区。
         </div>
         <div class="hint">
@@ -153,7 +152,7 @@
       </section>
       <section class="panel candidates">
         <div class="panelhead">
-          <h2>03 / 候选镜追踪</h2>
+          <h2>03 / 阴影与遮挡来源</h2>
           <span id="counts"></span>
         </div>
         <p class="hint">
@@ -175,12 +174,12 @@
       </section>
     </main>
     <details id="mobileManage" class="mobile-manage">
-      <summary>镜场管理</summary>
+      <summary>04 / 镜场管理</summary>
       <div id="mobileManageActions"></div>
       <p>导入坐标或创建重排布局。此处操作会保存在本设备。</p>
     </details>
     <details class="poseeditor" id="operationSettings">
-      <summary>聚光启停参数 <span id="operationState" role="status"></span></summary>
+      <summary>05 / 聚光启停参数 <span id="operationState" role="status"></span></summary>
       <p>启动：DNI 与太阳高度角均高于启动临界值。停止：两者均低于停止临界值；太阳高度角 ≤ 0° 时直接停止。其他区间保持原状态。</p>
       <form id="operationForm" class="posecard">
         <div class="posefields">
@@ -194,7 +193,7 @@
       </form>
     </details>
     <details class="poseeditor">
-      <summary>镜面朝向与图案展示</summary>
+      <summary>06 / 镜面朝向与图案展示</summary>
       <div class="poseheader"><p>用文字、图片或自定义朝向设计镜场展示。图案镜面保持灰色。</p><button id="poseReset">恢复跟踪</button></div>
       <div class="posedesign">
         <section class="posecard"><h3>文字图案</h3>
@@ -221,7 +220,7 @@
         </section>
       </div><p class="posehint">展示姿态与光学计算分开；效率仍对应太阳跟踪姿态。</p>
     </details>
-    <details class="mobile-manage" id="mobileParameters"><summary>接收器参数与模型说明</summary><p id="mobileReceiverNote"></p></details>
+    <details class="mobile-manage" id="mobileParameters"><summary>07 / 接收器参数与模型说明</summary><p id="mobileReceiverNote"></p></details>
     <footer>
       <div id="source"></div>
       <div id="sourceNote"></div>

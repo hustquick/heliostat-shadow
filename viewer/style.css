@@ -450,7 +450,7 @@ code { color:#b8eaf2; }
   body { min-width: 0; }
   header { padding: 10px 14px 8px; }
   header .eyebrow, header h1 span, .heliostat-summary, footer,
-  .candidates, .spatial > .hint, .legend { display: none; }
+  .spatial > .hint, .legend { display: none; }
   header h1 { margin: 0; font-size: 20px; }
   .controlarea { padding: 8px 10px; }
   .workspacebar, .toolbar { gap: 7px; align-items: end; }
@@ -672,3 +672,6 @@ code { color:#b8eaf2; }
 /* Hiding the efficiency legend must not resize the 3D card during start/stop. */
 .efficiency-scale,.efficiency-scale[hidden] { display:flex; height:26px; min-height:26px; box-sizing:content-box; }
 .efficiency-scale[hidden] { visibility:hidden; }
+
+#play { width:92px; min-width:92px; flex-shrink:0; white-space:nowrap; }
+@media(max-width:620px) { #play { width:100%; min-width:0; } .candidates { display:block; min-width:0; } .candidates .tablewrap { overflow:auto; } .candidates table { font-size:10px; width:100%; } .candidates th,.candidates td { padding:8px 6px; } .candidates .panelhead { flex-wrap:wrap; } }
