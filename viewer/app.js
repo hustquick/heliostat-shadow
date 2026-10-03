@@ -1072,6 +1072,13 @@ async function init() {
     $("sourceNote").textContent=[meta.layout_status + "。", loc?.note, d.note, d.model_receiver_note, meta.note]
       .filter(Boolean).join(" ");
   }
+  const temperatureLabels = {historical:"历史气象温度", era5_land_reanalysis:"ERA5-Land 历史再分析气温，非现场实测", illustrative_simulation:"模拟气温（季节与昼夜变化，非实测）"};
+  if (meta.temperature_source) {
+    $("sourceNote").append(document.createTextNode(" 气温：" + temperatureLabels[meta.temperature_source] + "。"));
+    if (meta.temperature_source === "era5_land_reanalysis") {
+      const link = document.createElement("a"); link.href="https://open-meteo.com/en/docs/historical-weather-api"; link.textContent="气温数据来源"; link.target="_blank"; $("sourceNote").append(link);
+    }
+  }
   for (const t of meta.timestamps) {
     const item = localItem(t);
     if (!timesByDate.has(item.date)) timesByDate.set(item.date, []);

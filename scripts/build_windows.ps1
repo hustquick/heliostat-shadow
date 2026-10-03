@@ -19,6 +19,7 @@ New-Item $Build,$Output,"$Root\windows\assets" -ItemType Directory -Force | Out-
   --add-data "$Root\viewer;viewer" `
   --add-data "$Root\data\gemasolar_config.json;data" `
   --add-data "$Root\data\power_tower_catalog.json;data" `
+  --add-data "$Root\data\temperature_archive.json;data" `
   --add-data "$Root\data\processed\gemasolar_layout.csv;data\processed" `
   --add-data "$Root\data\processed\gemasolar_dni_2023.csv;data\processed" `
   --add-data "$Root\reports\three_layout_optimization;reports\three_layout_optimization" `

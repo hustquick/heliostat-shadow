@@ -59,6 +59,7 @@ mkdir -p "${BUILD_ROOT}" "${OUTPUT_ROOT}" \
   --add-data "${ROOT}/viewer:viewer" \
   --add-data "${ROOT}/data/gemasolar_config.json:data" \
   --add-data "${ROOT}/data/power_tower_catalog.json:data" \
+  --add-data "${ROOT}/data/temperature_archive.json:data" \
   --add-data "${ROOT}/data/processed/gemasolar_layout.csv:data/processed" \
   --add-data "${ROOT}/data/processed/gemasolar_dni_2023.csv:data/processed" \
   --add-data "${ROOT}/reports/three_layout_optimization:reports/three_layout_optimization" \

@@ -22,6 +22,10 @@ def test_mobile_bundle_is_self_contained_and_deterministic(tmp_path):
         assert set(plant["mirrors"][0]) >= {
             "mirror_id", "centre", "width", "height", "aim_point", "tower_id"
         }
+    ps10 = next(plant for plant in payload["plants"] if plant["id"] == "ps10")
+    assert ps10["weather"]["temperature_source"] == "era5_land_reanalysis"
+    assert len(ps10["weather"]["temperature_series_c"]) == len(ps10["weather"]["dni_w_m2"]) == 8760
+    assert ps10["weather"]["temperature_series_c"][0] != 12.0
 
 
 def test_mobile_builds_package_shared_bundle_and_viewer():

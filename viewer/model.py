@@ -68,11 +68,33 @@ class ViewerModel:
             year = int(self.config.get('year', 2023))
             index = pd.date_range(f'{year}-01-01', f'{year + 1}-01-01', freq='h',
                                   inclusive='left', tz='UTC')
-            self.weather = pd.DataFrame({'time_utc': index, 'dni_w_m2': 0.,
-                                         'temperature_c': 12.})
+            self.weather = pd.DataFrame({'time_utc': index, 'dni_w_m2': 0.})
         else:
             self.weather = pd.read_csv(weather_path or root/'data/processed/gemasolar_dni_2023.csv')
         self.weather.index = pd.to_datetime(self.weather.time_utc, utc=True)
+        self.temperature_source = 'historical'
+        if self.clear_sky:
+            archive_path = root/'data/temperature_archive.json'
+            archive = json.loads(archive_path.read_text(encoding='utf-8')) if archive_path.exists() else {'plants': []}
+            profile = next((entry for entry in archive['plants']
+                            if abs(entry['latitude'] - self.config['latitude']) < 1e-5
+                            and abs(entry['longitude'] - self.config['longitude']) < 1e-5
+                            and entry['year'] == year), None)
+            if profile is not None and len(profile['temperature_series_c']) == len(self.weather):
+                self.weather['temperature_c'] = profile['temperature_series_c']
+                self.temperature_source = 'era5_land_reanalysis'
+            else:
+                # Explicit illustrative fallback for custom sites without an archive.
+                latitude = float(self.config['latitude'])
+                altitude = float(self.config.get('altitude_m', 0.))
+                day = self.weather.index.dayofyear.to_numpy()
+                solar_hour = self.weather.index.hour.to_numpy() + self.config['longitude'] / 15.
+                peak_day = 200 if latitude >= 0 else 18
+                seasonal = (5 + abs(latitude) * .3) * np.cos(2 * np.pi * (day - peak_day) / 365.25)
+                diurnal = 5 * np.cos(2 * np.pi * (solar_hour - 15) / 24)
+                self.weather['temperature_c'] = 27 - .52 * abs(latitude) - .006 * altitude + seasonal + diurnal
+                self.temperature_source = 'illustrative_simulation'
+
         self.cache = OrderedDict()
         self.optical_efficiency_cache = OrderedDict()
         self.lock = threading.RLock()
@@ -136,7 +158,7 @@ class ViewerModel:
                     flexible_mirrors=sum(mirror.tower_id == 'auto' for mirror in self.mirrors),
                     tower_assignment_policy=self.config.get('tower_assignment_policy', 'fixed'),
                     receiver=tower_payload[0]['receiver'],
-                    source=self.source, note=self.note,
+                    source=self.source, note=self.note, temperature_source=self.temperature_source,
                     default_mirror=self.ids[min(260, len(self.ids) - 1)],
                     heliostat_summary=heliostat_summary,
                     site_location=site_location,
@@ -172,7 +194,7 @@ class ViewerModel:
                              temperature=float(row.temperature_c))
             result = dict(timestamp=ts.isoformat(), local_time=ts.tz_convert(c['timezone']).isoformat(),
                           daylight=sun.is_daylight, dni=dni,
-                          temperature=None if self.clear_sky else float(row.temperature_c), temperature_source='unavailable' if self.clear_sky else 'historical', elevation=float(sun.solar_pos.elevation.iloc[0]),
+                          temperature=float(row.temperature_c), temperature_source=self.temperature_source, elevation=float(sun.solar_pos.elevation.iloc[0]),
                           sun=sun.sun_to_sky.tolist())
             prepared = None
             if sun.is_daylight:
