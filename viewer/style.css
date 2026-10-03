@@ -868,3 +868,5 @@ main > details.spatial > .scene-description { position:absolute; left:var(--card
 #weather > div:last-child { justify-content:flex-end; }
 @media(min-width:951px) { .controlarea { grid-template-columns:var(--primary-card-width,minmax(0,1.5fr)) minmax(0,1fr); } }
 .controlarea { column-gap:12px; }
+/* Keep the temperature value close to its label while reserving sign/digit space. */
+#weather > div:last-child > #weatherTemperature { flex-basis:5ch; width:5ch; text-align:left; }
