@@ -67,7 +67,7 @@ def test_catalog_selection_import_and_rearrangement(tmp_path):
     assert 800 < gonghe_radii.max() <= 823.4
     assert gonghe_layout['width'][0] == pytest.approx(5.8)
     assert gonghe_layout['height'][0] == pytest.approx(3.5)
-    gonghe_efficiencies = workspace.efficiencies('2023-03-21T04:00:00+00:00')
+    gonghe_efficiencies = workspace.efficiencies('2025-03-21T04:00:00+00:00')
     assert gonghe_efficiencies['minimum'] > .20
     assert gonghe_efficiencies['mean'] > .45
 
@@ -81,7 +81,7 @@ def test_catalog_selection_import_and_rearrangement(tmp_path):
     assert delingha['reported_mirrors'] == 27135
     assert delingha['field_efficiencies_deferred']
     assert delingha['efficiency_sample_count'] == 0
-    assert delingha['default_time'].startswith('2023-03-21T04:00:00')
+    assert delingha['default_time'].startswith('2025-03-21T04:00:00')
 
     dual = workspace.select('ctg-hengji-guazhou-dual-tower')
     assert len(dual['mirror_ids']) == 26944
@@ -167,7 +167,7 @@ def test_crescent_dunes_published_receiver_and_extent(tmp_path):
     assert model.config['receiver_radius_m'] == 7.9
     assert model.config['receiver_height_m'] == 35.
     assert max(np.hypot(*m.centre[:2]) for m in model.mirrors) == pytest.approx(1620.)
-    result = workspace.efficiencies('2023-03-21T19:00:00+00:00')
+    result = workspace.efficiencies('2025-03-21T19:00:00+00:00')
     i = int(np.argmin(result['values']))
     product = np.prod([result['factors'][k][i] for k in
         ('eta_cosine', 'eta_joint', 'eta_atmosphere', 'eta_intercept',

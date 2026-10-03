@@ -128,7 +128,7 @@ class ViewerWorkspace:
         layout, config = folder/'layout.csv', folder/'config.json'
         count = int(item.get('reported_heliostats') or 2650)
         fingerprint = hashlib.sha256(json.dumps(
-            {'model_version': CATALOG_MODEL_VERSION, 'plant': item},
+            {'model_version': CATALOG_MODEL_VERSION, 'simulation_year': 2025, 'plant': item},
             ensure_ascii=False, sort_keys=True,
         ).encode()).hexdigest()
         needs_build = not layout.exists() or not config.exists()
@@ -214,7 +214,7 @@ class ViewerWorkspace:
                         receiver_radius_m=receiver_radius,
                         receiver_height_m=receiver_height,
                         mirror_width_m=width, mirror_height_m=height,
-                        reflective_area_m2=area, year=2023,
+                        reflective_area_m2=area, year=2025,
                         heliostat_pedestal_height_m=item.get('heliostat_pedestal_height_m'),
                         heliostat_pedestal_height_source_url=item.get(
                             'heliostat_pedestal_height_source_url'),

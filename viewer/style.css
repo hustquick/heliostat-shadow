@@ -683,3 +683,28 @@ details > summary::before { content:""; display:inline-block; width:7px; height:
 details[open] > summary::before { transform:rotate(45deg); }
 details > .panelhead h2 { margin-right:auto; }
 details:not([open]) > .panelhead { border-bottom:0; }
+
+/* Shared numbered-card geometry: one parent, one gutter, one heading baseline. */
+main { gap:12px; padding:0 24px 20px; }
+main > details.poseeditor,main > details.mobile-manage { display:block; grid-column:1 / -1; width:auto; margin:0; padding:0; border-radius:12px; }
+main > details > summary { position:relative; display:flex; align-items:center; gap:10px; min-height:48px; padding:10px 14px 10px 38px; margin:0; box-sizing:border-box; font-size:14px; font-weight:600; color:var(--text); }
+main > details > summary::before { position:absolute; left:17px; top:50%; margin:-4px 0 0; }
+main > details > summary h2,main > details > summary .cardtitle { margin:0; font-size:14px; font-weight:600; line-height:1.5; font-variant-numeric:tabular-nums; }
+main > details > summary h2 { margin-right:auto; }
+main > details > p,main > details > #mobileManageActions { margin:12px 16px; }
+@media(max-width:900px) { main { padding:0 8px 16px; gap:12px; } main > details { margin:0; width:auto; border-radius:10px; } }
+@media(max-width:620px) {
+ .controlarea { padding:12px 10px 8px; }
+ .toolbar { row-gap:10px; padding-top:12px; }
+ #prev { grid-column:1; grid-row:2; } #play { grid-column:2 / span 4; grid-row:2; } #next { grid-column:6; grid-row:2; }
+ #selectMirror { grid-row:3; } #viewMode { grid-row:3; }
+ main > details > summary { min-height:48px; }
+ main > details > summary .paneltools { width:100%; margin-left:0; }
+ main > details.spatial > summary { flex-wrap:wrap; }
+ .statusline { padding:4px 10px 10px; }
+}
+
+.cardcontrols { display:flex; align-items:center; flex-wrap:wrap; gap:10px; margin:10px 14px; font-size:12px; }
+.cardcontrols label { display:flex; align-items:center; gap:6px; }
+.cardcontrols #operationState { font-size:12px; }
+main > details > summary { flex-wrap:nowrap; }
