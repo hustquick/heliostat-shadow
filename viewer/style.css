@@ -819,3 +819,10 @@ main > details { border:1px solid var(--line); background:var(--panel); overflow
 .projection-inactive .projection-stage > #projection { min-height:0; max-height:none; }
 /* Use the same vertical empty-canvas watermark on all four clients. */
 #projection .empty-projection-label { writing-mode:vertical-rl; text-orientation:upright; letter-spacing:3px; }
+/* Operation parameters and their action share one row when space permits. */
+#operationForm { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:start; column-gap:16px; }
+#operationForm .posefields { margin-bottom:0; }
+#operationForm > button { align-self:end; margin-top:0; height:38px; min-height:38px; white-space:nowrap; }
+#operationForm .posefields input { height:38px; min-height:38px; box-sizing:border-box; }
+#operationForm > .carddescription { grid-column:1 / -1; }
+@media(max-width:760px) { #operationForm { grid-template-columns:minmax(0,1fr); } #operationForm > button { margin-top:12px; justify-self:start; } }
