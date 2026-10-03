@@ -861,3 +861,10 @@ main > details.spatial > .scene-description { position:absolute; left:var(--card
 
 .direction-key { display:inline-flex; align-items:center; gap:5px; white-space:nowrap; }
 .direction-key > i { display:inline-block; width:9px; height:9px; flex:none; border-radius:2px; background:var(--key-color); }
+
+/* Basic information shares the first card's measured edges on all clients. */
+.controlstack,#weather { width:var(--primary-card-width,100%); max-width:100%; box-sizing:border-box; }
+#weather > div:nth-child(2) { justify-content:center; }
+#weather > div:last-child { justify-content:flex-end; }
+@media(min-width:951px) { .controlarea { grid-template-columns:var(--primary-card-width,minmax(0,1.5fr)) minmax(0,1fr); } }
+.controlarea { column-gap:12px; }
