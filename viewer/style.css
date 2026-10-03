@@ -764,3 +764,11 @@ main > details:is(.panel,.poseeditor,.mobile-manage) > .poseheader { padding-lef
 
 /* Empty source cards retain their heading without empty tables or status text. */
 main > details.sources-empty > :not(summary) { display:none; }
+
+/* Functional guidance always follows the content, separated by a quiet rule. */
+main > details:is(.panel,.poseeditor,.mobile-manage) > .carddescription {
+ margin:16px var(--card-inset) var(--card-bottom); padding-top:12px;
+ border-top:1px solid var(--border); color:var(--muted); font-size:11px; line-height:1.6;
+}
+
+.posecard > .carddescription { margin:12px 0 0; padding-top:10px; border-top:1px solid var(--border); color:var(--muted); line-height:1.6; }
