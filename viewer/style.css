@@ -803,3 +803,4 @@ main > details { border:1px solid var(--line); background:var(--panel); overflow
 #selectMirror { align-items:flex-end; }
 #viewMode { align-self:flex-end; }
 #mobileManageActions > button { height:40px; min-height:40px; box-sizing:border-box; }
+#selectMirror { margin:0; }
