@@ -421,10 +421,21 @@ function insideParts(p, parts) {
   );
 }
 const sceneDescription = document.querySelector(".scene-description");
-new ResizeObserver(() => {
+function sizeSceneArea() {
+  const card = sceneDescription.closest("details");
+  if (!card.open) return;
   const height = sceneDescription.getBoundingClientRect().height;
-  if (height > 0) sceneDescription.closest("details").style.setProperty("--scene-notes-space", `${height + 32}px`);
-}).observe(sceneDescription);
+  if (height <= 0) return;
+  card.style.setProperty("--scene-notes-space", `${height + 32}px`);
+  const scene = $("scene");
+  const available = card.clientHeight - scene.offsetTop - height - 32;
+  if (available > 0 && Math.abs(scene.getBoundingClientRect().height - available) > 1)
+    scene.style.height = `${available}px`;
+}
+const sceneAreaObserver = new ResizeObserver(sizeSceneArea);
+sceneAreaObserver.observe(sceneDescription);
+sceneAreaObserver.observe(sceneDescription.closest("details"));
+sceneDescription.closest("details").addEventListener("toggle", sizeSceneArea);
 
 function alignPlantSelectorWidth() {
   const card = document.querySelector("main > .spatial");

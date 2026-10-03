@@ -874,3 +874,7 @@ main > details.spatial > .scene-description { position:absolute; left:var(--card
 #weather > div > span:nth-child(2) { text-align:right; }
 #weather > div:last-child > #weatherTemperature { flex-basis:5ch; width:5ch; }
 #weather > div:first-child > span:last-child { margin-left:0.25em; }
+
+/* Bottom legends share the description area; the scene fills the remaining height. */
+.scene-description .legend { display:flex; justify-content:center; padding:0; margin:0 0 8px; }
+.scene-description .efficiency-scale { margin:0 0 8px; }
