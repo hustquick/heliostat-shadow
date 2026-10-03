@@ -77,14 +77,14 @@
       <div id="weather"><div><span>DNI</span><span id="weatherDni">—</span><span>W/m²</span></div><div><span>太阳高度</span><span id="weatherElevation">—</span><span>°</span></div><div><span>气温</span><span id="weatherTemperature">—</span><span>℃</span></div></div>
     </div>
     <main>
-      <section class="panel spatial">
-        <div class="panelhead">
+      <details class="panel spatial" open>
+        <summary class="panelhead">
           <h2>01 / 三维镜场</h2>
           <div class="paneltools">
             <button id="efficiencyColor" type="button" aria-pressed="false">效率着色</button>
             <button id="towerColor" type="button" aria-pressed="false" hidden>按目标塔着色</button>
             <label><input type="checkbox" id="neighbors" />仅目标与影响镜</label>
-          </div>
+          </summary>
         </div>
         <div id="scene" aria-label="三维镜场，可拖动旋转、滚轮缩放、点击选镜">
           <div class="orientation-widget" aria-label="三维视图归位">
@@ -126,15 +126,15 @@
           方向：品红色入射 −s，橙色反射 r，绿色法向 n；坐标轴：红 E、绿 N、蓝
           U。塔柱仅为位置示意。
         </div>
-      </section>
-      <section class="panel flat">
-        <div class="panelhead">
+      </details>
+      <details class="panel flat" open>
+        <summary class="panelhead">
           <h2>02 / 目标镜投影</h2>
           <select id="plane" aria-label="二维坐标平面">
             <option value="mirror">共同镜面平面</option>
             <option value="ray">光线法向平面</option>
           </select>
-        </div>
+        </summary>
         <div class="tabs" role="group" aria-label="损失显示模式">
           <button data-mode="joint" class="active">联合</button
           ><button data-mode="shadow">阴影</button
@@ -149,12 +149,12 @@
         <div id="planeNote" class="hint"></div>
         <div id="metrics" class="metrics"></div>
         <div class="hint" id="areaNote"></div>
-      </section>
-      <section class="panel candidates">
-        <div class="panelhead">
+      </details>
+      <details class="panel candidates" open>
+        <summary class="panelhead">
           <h2>03 / 阴影与遮挡来源</h2>
           <span id="counts"></span>
-        </div>
+        </summary>
         <p class="hint">
           悬停表格或二维着色区，高亮对应镜面；点击编号切换目标。单镜遮挡面积可能重叠，不能直接相加。
         </p>
@@ -171,7 +171,7 @@
             <tbody id="candidates"></tbody>
           </table>
         </div>
-      </section>
+      </details>
     </main>
     <details id="mobileManage" class="mobile-manage">
       <summary>04 / 镜场管理</summary>
