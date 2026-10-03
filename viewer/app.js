@@ -1082,9 +1082,6 @@ $("plant").onchange = async () => {
   try { await apiPost("plants/select", {plant_id:$("plant").value}); location.reload(); }
   catch(e) { status(e.message,true); controlsBusy(false); }
 };
-if (matchMedia("(max-width: 620px)").matches) {
-  $("mobileManageActions").append($("importPlant"), $("rearrange"), $("exportCoordinates"));
-}
 $("importPlant").onclick=()=>$("importDialog").showModal();
 $("rearrange").onclick=()=>$("rearrangeDialog").showModal();
 for (const b of document.querySelectorAll("[data-close]")) b.onclick=()=>b.closest("dialog").close();

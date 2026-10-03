@@ -21,10 +21,7 @@
       <div class="controlstack">
         <section class="workspacebar" aria-label="电厂与布局管理">
           <label>当前电厂 / 布局 <select id="plant"></select></label>
-          <button id="importPlant">导入定日镜坐标</button>
-          <button id="rearrange">镜场重排</button>
-          <button id="exportCoordinates">导出全场坐标</button>
-          <span id="layoutStatus"></span>
+
         </section>
         <section class="toolbar" aria-label="时间与目标镜控制">
           <label>当地日期 <input type="date" id="date" /></label
@@ -178,7 +175,11 @@
       </details>
     <details id="mobileManage" class="mobile-manage">
       <summary><span class="cardtitle">04 / 镜场管理</span></summary>
-      <div id="mobileManageActions"></div>
+      <div id="mobileManageActions" class="management-actions">          <button id="importPlant">导入定日镜坐标</button>
+          <button id="rearrange">镜场重排</button>
+          <button id="exportCoordinates">导出全场坐标</button>
+          <span id="layoutStatus"></span>
+      </div>
       <p class="carddescription">导入坐标或创建重排布局。此处操作会保存在本设备。</p>
     </details>
     <details class="poseeditor" id="operationSettings">
