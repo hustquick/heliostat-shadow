@@ -868,5 +868,9 @@ main > details.spatial > .scene-description { position:absolute; left:var(--card
 #weather > div:last-child { justify-content:flex-end; }
 @media(min-width:951px) { .controlarea { grid-template-columns:var(--primary-card-width,minmax(0,1.5fr)) minmax(0,1fr); } }
 .controlarea { column-gap:12px; }
-/* Keep the temperature value close to its label while reserving sign/digit space. */
-#weather > div:last-child > #weatherTemperature { flex-basis:5ch; width:5ch; text-align:left; }
+/* Fixed numeric columns: degree units touch the value; other units have a space. */
+#weather > div { gap:0; }
+#weather > div > span:first-child { margin-right:3px; }
+#weather > div > span:nth-child(2) { text-align:right; }
+#weather > div:last-child > #weatherTemperature { flex-basis:5ch; width:5ch; }
+#weather > div:first-child > span:last-child { margin-left:0.25em; }
