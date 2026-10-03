@@ -658,3 +658,8 @@ code { color:#b8eaf2; }
 #areaNote .inactive-notice { grid-column:1 / -1; align-self:end; margin:0; white-space:nowrap; }
 .projection-inactive #planeNote { position:static; visibility:hidden; }
 #areaNote > div strong { font-variant-numeric:tabular-nums lining-nums; font-feature-settings:"tnum" 1,"lnum" 1; text-align:right; white-space:nowrap; }
+
+/* Both operating states use identical flow geometry; only visibility changes. */
+#planeNote,.projection-inactive #planeNote { position:static; top:auto; left:auto; right:auto; height:17px; min-height:17px; max-height:17px; margin:8px 18px 12px; box-sizing:border-box; line-height:17px; }
+#metrics { overflow:hidden; }
+#areaNote { overflow:hidden; }
