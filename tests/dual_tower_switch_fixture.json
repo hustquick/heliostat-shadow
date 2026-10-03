@@ -1,0 +1,345 @@
+{
+  "plant": {
+    "id": "test3",
+    "name": "test",
+    "source": "test",
+    "note": "",
+    "layout_status": "test",
+    "reported_mirrors": 16,
+    "config": {
+      "tower_assignment_policy": "best_optical_at_time",
+      "tower_assignment_strategy": "field_gain",
+      "tower_switch_max_rounds": 128,
+      "reflective_area_m2": 16,
+      "receiver_quadrature_order": 32,
+      "towers": [
+        {
+          "id": "a",
+          "receiver": {
+            "centre": [
+              -45,
+              0,
+              20
+            ],
+            "radius": 4,
+            "height": 12
+          }
+        },
+        {
+          "id": "b",
+          "receiver": {
+            "centre": [
+              45,
+              0,
+              20
+            ],
+            "radius": 4,
+            "height": 12
+          }
+        }
+      ]
+    },
+    "weather": {
+      "start_utc": "2023-01-01T00:00:00Z",
+      "step_seconds": 3600,
+      "dni_w_m2": [],
+      "temperature_c": 12,
+      "source": ""
+    },
+    "mirrors": [
+      {
+        "mirror_id": "M0",
+        "centre": [
+          -20.049262973674384,
+          -13.750585687136438,
+          2.5
+        ],
+        "width": 4,
+        "height": 4,
+        "aim_point": [
+          0,
+          0,
+          20
+        ],
+        "roll_deg": 0,
+        "mount_type": "azimuth_elevation",
+        "tower_id": "auto"
+      },
+      {
+        "mirror_id": "M1",
+        "centre": [
+          3.795347643978907,
+          30.87616897828206,
+          2.5
+        ],
+        "width": 4,
+        "height": 4,
+        "aim_point": [
+          0,
+          0,
+          20
+        ],
+        "roll_deg": 0,
+        "mount_type": "azimuth_elevation",
+        "tower_id": "auto"
+      },
+      {
+        "mirror_id": "M2",
+        "centre": [
+          19.923119288153906,
+          11.805351393869818,
+          2.5
+        ],
+        "width": 4,
+        "height": 4,
+        "aim_point": [
+          0,
+          0,
+          20
+        ],
+        "roll_deg": 0,
+        "mount_type": "azimuth_elevation",
+        "tower_id": "auto"
+      },
+      {
+        "mirror_id": "M3",
+        "centre": [
+          4.74266647922228,
+          13.685679300547932,
+          2.5
+        ],
+        "width": 4,
+        "height": 4,
+        "aim_point": [
+          0,
+          0,
+          20
+        ],
+        "roll_deg": 0,
+        "mount_type": "azimuth_elevation",
+        "tower_id": "auto"
+      },
+      {
+        "mirror_id": "M4",
+        "centre": [
+          21.62223634023693,
+          25.723834696647156,
+          2.5
+        ],
+        "width": 4,
+        "height": 4,
+        "aim_point": [
+          0,
+          0,
+          20
+        ],
+        "roll_deg": 0,
+        "mount_type": "azimuth_elevation",
+        "tower_id": "auto"
+      },
+      {
+        "mirror_id": "M5",
+        "centre": [
+          -16.462553948053344,
+          -1.4190200777390998,
+          2.5
+        ],
+        "width": 4,
+        "height": 4,
+        "aim_point": [
+          0,
+          0,
+          20
+        ],
+        "roll_deg": 0,
+        "mount_type": "azimuth_elevation",
+        "tower_id": "auto"
+      },
+      {
+        "mirror_id": "M6",
+        "centre": [
+          34.88478025327923,
+          29.46269471449157,
+          2.5
+        ],
+        "width": 4,
+        "height": 4,
+        "aim_point": [
+          0,
+          0,
+          20
+        ],
+        "roll_deg": 0,
+        "mount_type": "azimuth_elevation",
+        "tower_id": "auto"
+      },
+      {
+        "mirror_id": "M7",
+        "centre": [
+          2.833705268058985,
+          -4.190053630794579,
+          2.5
+        ],
+        "width": 4,
+        "height": 4,
+        "aim_point": [
+          0,
+          0,
+          20
+        ],
+        "roll_deg": 0,
+        "mount_type": "azimuth_elevation",
+        "tower_id": "auto"
+      },
+      {
+        "mirror_id": "M8",
+        "centre": [
+          28.008572498933525,
+          -6.613629023326956,
+          2.5
+        ],
+        "width": 4,
+        "height": 4,
+        "aim_point": [
+          0,
+          0,
+          20
+        ],
+        "roll_deg": 0,
+        "mount_type": "azimuth_elevation",
+        "tower_id": "auto"
+      },
+      {
+        "mirror_id": "M9",
+        "centre": [
+          -2.6015484759604757,
+          13.576179370398574,
+          2.5
+        ],
+        "width": 4,
+        "height": 4,
+        "aim_point": [
+          0,
+          0,
+          20
+        ],
+        "roll_deg": 0,
+        "mount_type": "azimuth_elevation",
+        "tower_id": "auto"
+      },
+      {
+        "mirror_id": "M10",
+        "centre": [
+          13.072293803751556,
+          -11.52644301854413,
+          2.5
+        ],
+        "width": 4,
+        "height": 4,
+        "aim_point": [
+          0,
+          0,
+          20
+        ],
+        "roll_deg": 0,
+        "mount_type": "azimuth_elevation",
+        "tower_id": "auto"
+      },
+      {
+        "mirror_id": "M11",
+        "centre": [
+          -11.302166336230034,
+          23.743091347598813,
+          2.5
+        ],
+        "width": 4,
+        "height": 4,
+        "aim_point": [
+          0,
+          0,
+          20
+        ],
+        "roll_deg": 0,
+        "mount_type": "azimuth_elevation",
+        "tower_id": "auto"
+      },
+      {
+        "mirror_id": "M12",
+        "centre": [
+          -30.0699312019891,
+          38.95669489170639,
+          2.5
+        ],
+        "width": 4,
+        "height": 4,
+        "aim_point": [
+          0,
+          0,
+          20
+        ],
+        "roll_deg": 0,
+        "mount_type": "azimuth_elevation",
+        "tower_id": "auto"
+      },
+      {
+        "mirror_id": "M13",
+        "centre": [
+          -27.987359975177807,
+          -20.54601700109525,
+          2.5
+        ],
+        "width": 4,
+        "height": 4,
+        "aim_point": [
+          0,
+          0,
+          20
+        ],
+        "roll_deg": 0,
+        "mount_type": "azimuth_elevation",
+        "tower_id": "auto"
+      },
+      {
+        "mirror_id": "M14",
+        "centre": [
+          -4.8523818644216545,
+          -12.491431644396181,
+          2.5
+        ],
+        "width": 4,
+        "height": 4,
+        "aim_point": [
+          0,
+          0,
+          20
+        ],
+        "roll_deg": 0,
+        "mount_type": "azimuth_elevation",
+        "tower_id": "auto"
+      },
+      {
+        "mirror_id": "M15",
+        "centre": [
+          -23.840156972197565,
+          11.102254763588542,
+          2.5
+        ],
+        "width": 4,
+        "height": 4,
+        "aim_point": [
+          0,
+          0,
+          20
+        ],
+        "roll_deg": 0,
+        "mount_type": "azimuth_elevation",
+        "tower_id": "auto"
+      }
+    ]
+  },
+  "sun": [
+    0.20634190652424952,
+    0.6789975775063364,
+    0.7045461711999184
+  ]
+}

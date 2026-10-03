@@ -567,7 +567,7 @@
     "model_parameter_status": "mixed-published-and-estimated",
     "model_receiver_note": "未查到可确认的有效吸热面尺寸；施工报道的总装尺寸不等于吸热面尺寸。两塔各自的R7 m/H18 m保留估值。",
     "model_note": "塔距、塔高、镜数、单镜面积、镜心标高和重叠调度逻辑采用公开资料；逐镜坐标、镜面长宽比、接收器外形及镜场边界为参数化重建，不是竣工测量值。 未查到可确认的有效吸热面尺寸；施工报道的总装尺寸不等于吸热面尺寸。两塔各自的R7 m/H18 m保留估值。",
-    "model_layout_note": "两个相距 1 km 的圆形镜场在统一六角网格上部分重叠；重叠区逐镜比较两塔方案的余弦、联合阴影/遮挡、沿程透过率与接收器截获率，选择总光学效率更高的目标塔。",
+    "model_layout_note": "两个相距 1 km 的圆形镜场在统一六角网格上部分重叠；重叠区默认采用单镜效率优先的旧方案；可选择全场净收益串行切换，计入姿态改变对其他镜子的影响。新策略实测超过2秒，因此不默认开启。",
     "model_layout_type": "dual_tower_overlap",
     "model_field_radius_m": 780.0,
     "model_field_inner_radius_m": 55.0,

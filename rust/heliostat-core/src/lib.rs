@@ -288,7 +288,10 @@ fn mirror_for_receiver(
     Ok(result)
 }
 
-fn resolve_mobile_mirrors(plant: &MobilePlant, sun: Vec3) -> Result<Vec<HeliostatInput>, String> {
+fn resolve_independent_mirrors(
+    plant: &MobilePlant,
+    sun: Vec3,
+) -> Result<Vec<HeliostatInput>, String> {
     if plant
         .config
         .get("tower_assignment_policy")
@@ -355,6 +358,185 @@ fn resolve_mobile_mirrors(plant: &MobilePlant, sun: Vec3) -> Result<Vec<Heliosta
     for (index, mirror) in choices? {
         proxy[index] = mirror;
     }
+    Ok(proxy)
+}
+
+fn assignment_reports() -> &'static std::sync::Mutex<Vec<(String, serde_json::Value)>> {
+    static REPORTS: std::sync::OnceLock<std::sync::Mutex<Vec<(String, serde_json::Value)>>> =
+        std::sync::OnceLock::new();
+    REPORTS.get_or_init(|| std::sync::Mutex::new(Vec::new()))
+}
+fn assignment_key(plant: &MobilePlant, sun: Vec3) -> String {
+    serde_json::to_string(&(plant, sun)).unwrap_or_default()
+}
+fn assignment_report(plant: &MobilePlant, sun: Vec3) -> serde_json::Value {
+    assignment_reports()
+        .lock()
+        .ok()
+        .and_then(|r| {
+            r.iter()
+                .find(|(k, _)| k == &assignment_key(plant, sun))
+                .map(|(_, v)| v.clone())
+        })
+        .unwrap_or_else(|| serde_json::json!({"strategy":"independent"}))
+}
+fn resolve_mobile_mirrors(plant: &MobilePlant, sun: Vec3) -> Result<Vec<HeliostatInput>, String> {
+    use std::sync::{Mutex, OnceLock};
+    type Cache = Vec<(String, Vec<HeliostatInput>)>;
+    static CACHE: OnceLock<Mutex<Cache>> = OnceLock::new();
+    let key = serde_json::to_string(&(plant, sun)).map_err(|e| e.to_string())?;
+    if let Some((_, mirrors)) = CACHE
+        .get_or_init(|| Mutex::new(Vec::new()))
+        .lock()
+        .map_err(|e| e.to_string())?
+        .iter()
+        .find(|(k, _)| k == &key)
+    {
+        return Ok(mirrors.clone());
+    }
+    let mirrors = if plant
+        .config
+        .get("tower_assignment_strategy")
+        .and_then(serde_json::Value::as_str)
+        != Some("field_gain")
+    {
+        resolve_independent_mirrors(plant, sun)?
+    } else {
+        resolve_greedy_mirrors(plant, sun)?
+    };
+    let mut cache = CACHE
+        .get_or_init(|| Mutex::new(Vec::new()))
+        .lock()
+        .map_err(|e| e.to_string())?;
+    if cache.len() >= 3 {
+        cache.remove(0);
+    }
+    cache.push((key, mirrors.clone()));
+    Ok(mirrors)
+}
+
+fn resolve_greedy_mirrors(plant: &MobilePlant, sun: Vec3) -> Result<Vec<HeliostatInput>, String> {
+    if plant
+        .config
+        .get("tower_assignment_policy")
+        .and_then(serde_json::Value::as_str)
+        != Some("best_optical_at_time")
+        || !plant.mirrors.iter().any(|m| m.tower_id == "auto")
+    {
+        return Ok(plant.mirrors.clone());
+    }
+    let receivers = receivers_from_config(&plant.config)?;
+    // Improve the realized legacy assignment; never replace it with a weaker seed.
+    let mut proxy = resolve_independent_mirrors(plant, sun)?;
+    let mut field = PreparedField::new(proxy.clone(), sun).map_err(|e| e.to_string())?;
+    let flexible: Vec<usize> = plant
+        .mirrors
+        .iter()
+        .enumerate()
+        .filter_map(|(i, m)| (m.tower_id == "auto").then_some(i))
+        .collect();
+    let score = |field: &PreparedField, index: usize| -> Result<f64, String> {
+        let mirror = &field.mirrors[index];
+        let geometry = field
+            .efficiency(index, true, None)
+            .map_err(|e| e.to_string())?;
+        let receiver = *receivers.get(&mirror.tower_id).ok_or("receiver missing")?;
+        let intercept =
+            cylinder_interception(mirror, geometry.eta_cosine, receiver, &plant.config)?;
+        // Area matters when comparing changes across different mirrors.
+        let area = plant
+            .config
+            .get("reflective_area_m2")
+            .and_then(serde_json::Value::as_f64)
+            .unwrap_or(mirror.width * mirror.height);
+        Ok(area
+            * geometry.eta_cosine
+            * geometry.eta_joint
+            * atmospheric_transmittance(field.poses[index].receiver_distance)
+            * intercept)
+    };
+    let mut values: Vec<f64> = (0..proxy.len())
+        .map(|i| score(&field, i))
+        .collect::<Result<_, _>>()?;
+    let threshold = plant
+        .config
+        .get("tower_switch_gain_threshold_m2")
+        .and_then(serde_json::Value::as_f64)
+        .unwrap_or(1e-6);
+    let limit = plant
+        .config
+        .get("tower_switch_max_rounds")
+        .and_then(serde_json::Value::as_u64)
+        .unwrap_or(32) as usize;
+    let mut tower_ids: Vec<_> = receivers.keys().cloned().collect();
+    tower_ids.sort();
+    let initial_score: f64 = values.iter().sum();
+    let mut trace = Vec::new();
+    let mut converged = false;
+    for _ in 0..limit {
+        type Switch = (usize, HeliostatInput, Pose, Vec<(usize, f64)>, f64);
+        let mut best: Option<Switch> = None;
+        for &i in &flexible {
+            let original = field.mirrors[i].clone();
+            let original_pose = field.poses[i].clone();
+            // Enclosing spheres cover both old and new orientations. Include
+            // either incoming or outgoing ray cylinder, regardless of depth.
+            let affected: Vec<usize> = (0..proxy.len())
+                .filter(|&j| {
+                    if i == j {
+                        return true;
+                    }
+                    let delta = sub(original.centre, field.mirrors[j].centre);
+                    let radius = (original.width.hypot(original.height)
+                        + field.mirrors[j].width.hypot(field.mirrors[j].height))
+                        / 2.0
+                        + DEPTH_TOL;
+                    [sun, field.poses[j].reflected].iter().any(|&d| {
+                        let d = unit(d, "ray").expect("valid prepared ray");
+                        let v = sub(delta, scale(d, dot(delta, d)));
+                        dot(v, v) <= radius * radius
+                    })
+                })
+                .collect();
+            for id in &tower_ids {
+                if id == &original.tower_id {
+                    continue;
+                }
+                let candidate = mirror_for_receiver(&original, id, receivers[id])?;
+                let pose = PreparedField::pose_for(&candidate, sun).map_err(|e| e.to_string())?;
+                field.mirrors[i] = candidate.clone();
+                field.poses[i] = pose.clone();
+                let rows = affected
+                    .iter()
+                    .map(|&j| score(&field, j).map(|v| (j, v)))
+                    .collect::<Result<Vec<_>, _>>()?;
+                let gain: f64 = rows.iter().map(|&(j, v)| v - values[j]).sum();
+                field.mirrors[i] = original.clone();
+                field.poses[i] = original_pose.clone();
+                if gain > threshold && best.as_ref().is_none_or(|b| gain > b.4) {
+                    best = Some((i, candidate, pose, rows, gain));
+                }
+            }
+        }
+        let Some((i, candidate, pose, rows, gain)) = best else {
+            converged = true;
+            break;
+        };
+        trace.push(serde_json::json!({"mirror_id":field.mirrors[i].mirror_id,"from":field.mirrors[i].tower_id,"to":candidate.tower_id,"gain_equivalent_area_m2":gain}));
+        field.mirrors[i] = candidate;
+        field.poses[i] = pose;
+        for (j, v) in rows {
+            values[j] = v;
+        }
+    }
+    let report = serde_json::json!({"strategy":"field_gain","initial_score_m2":initial_score,"final_score_m2":values.iter().sum::<f64>(),"switches":trace,"converged":converged,"stop_reason":if converged {"gain_threshold"} else {"round_budget"},"max_rounds":limit,"threshold_m2":threshold});
+    let mut reports = assignment_reports().lock().map_err(|e| e.to_string())?;
+    if reports.len() >= 3 {
+        reports.remove(0);
+    }
+    reports.push((assignment_key(plant, sun), report));
+    proxy = field.mirrors;
+
     Ok(proxy)
 }
 
@@ -857,7 +1039,7 @@ impl MobileRuntime {
         let vertices: Vec<[Vec3; 4]> = field.poses.iter().map(|pose| pose.vertices).collect();
         Ok(serde_json::json!({
             "timestamp": time.to_rfc3339(), "local_time": local_time, "daylight": true,
-            "dni": dni, "temperature": temperature, "temperature_source": plant.weather.temperature_source, "elevation": elevation,
+            "tower_assignment": assignment_report(plant,sun), "dni": dni, "temperature": temperature, "temperature_source": plant.weather.temperature_source, "elevation": elevation,
             "sun": sun, "vertices": vertices,
             "tower_ids": field.mirrors.iter().map(|m| &m.tower_id).collect::<Vec<_>>(),
             "eta_joint": vec![serde_json::Value::Null; field.mirrors.len()],
@@ -1084,6 +1266,18 @@ impl MobileRuntime {
         path: &str,
         payload: &serde_json::Value,
     ) -> Result<serde_json::Value, String> {
+        if method == "GET"
+            && matches!(path, "frame" | "target" | "efficiencies")
+            && let Some(strategy) = payload
+                .get("tower_strategy")
+                .and_then(serde_json::Value::as_str)
+        {
+            if !matches!(strategy, "independent" | "field_gain") {
+                return Err("invalid tower strategy".into());
+            }
+            self.bundle.plants[self.active].config["tower_assignment_strategy"] =
+                serde_json::json!(strategy);
+        }
         match (method, path) {
             ("GET", "health") => Ok(
                 serde_json::json!({"status":"ok","mode":"offline","rust_core":true,"rust_core_version":env!("CARGO_PKG_VERSION")}),
@@ -1892,9 +2086,25 @@ mod python {
         field_efficiencies_json(payload).map_err(|error| PyValueError::new_err(error.to_string()))
     }
 
+    #[pyfunction]
+    fn resolve_towers_json(payload: &str) -> PyResult<String> {
+        let value: serde_json::Value =
+            serde_json::from_str(payload).map_err(|e| PyValueError::new_err(e.to_string()))?;
+        let plant: MobilePlant = serde_json::from_value(value["plant"].clone())
+            .map_err(|e| PyValueError::new_err(e.to_string()))?;
+        let sun: Vec3 = serde_json::from_value(value["sun"].clone())
+            .map_err(|e| PyValueError::new_err(e.to_string()))?;
+        let mirrors = resolve_mobile_mirrors(&plant, sun).map_err(PyValueError::new_err)?;
+        serde_json::to_string(
+            &serde_json::json!({"mirrors":mirrors,"report":assignment_report(&plant,sun)}),
+        )
+        .map_err(|e| PyValueError::new_err(e.to_string()))
+    }
+
     #[pymodule]
     fn _heliostat_rust(module: &Bound<'_, PyModule>) -> PyResult<()> {
         module.add_function(wrap_pyfunction!(compute_field_json, module)?)?;
+        module.add_function(wrap_pyfunction!(resolve_towers_json, module)?)?;
         module.add("CORE_VERSION", env!("CARGO_PKG_VERSION"))?;
         Ok(())
     }
@@ -1969,6 +2179,96 @@ mod android {
 mod tests {
     use super::*;
     use approx::assert_abs_diff_eq;
+
+    #[test]
+    fn serial_tower_switches_match_complete_field_energy_changes() {
+        let payload: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../tests/dual_tower_switch_fixture.json"
+        ))
+        .unwrap();
+        let plant: MobilePlant = serde_json::from_value(payload["plant"].clone()).unwrap();
+        let sun: Vec3 = serde_json::from_value(payload["sun"].clone()).unwrap();
+        let resolved = resolve_mobile_mirrors(&plant, sun).unwrap();
+        let report = assignment_report(&plant, sun);
+        let receivers = receivers_from_config(&plant.config).unwrap();
+        let energy = |mirrors: Vec<HeliostatInput>| {
+            let field = PreparedField::new(mirrors, sun).unwrap();
+            (0..plant.mirrors.len())
+                .map(|i| {
+                    let g = field.efficiency(i, true, None).unwrap();
+                    let m = &field.mirrors[i];
+                    16.0 * g.eta_cosine
+                        * g.eta_joint
+                        * atmospheric_transmittance(field.poses[i].receiver_distance)
+                        * cylinder_interception(
+                            m,
+                            g.eta_cosine,
+                            receivers[&m.tower_id],
+                            &plant.config,
+                        )
+                        .unwrap()
+                })
+                .sum::<f64>()
+        };
+        assert!(!report["switches"].as_array().unwrap().is_empty());
+        let final_energy = energy(resolved.clone());
+        assert!((final_energy - report["final_score_m2"].as_f64().unwrap()).abs() < 1e-8);
+        for i in 0..resolved.len() {
+            let mut trial = resolved.clone();
+            let other = if trial[i].tower_id == "a" { "b" } else { "a" };
+            trial[i] = mirror_for_receiver(&trial[i], other, receivers[other]).unwrap();
+            assert!(energy(trial) <= final_energy + 1e-6);
+        }
+        let mut previous = resolved;
+        for event in report["switches"].as_array().unwrap().iter().rev() {
+            let before = energy(previous.clone());
+            let i = previous
+                .iter()
+                .position(|m| m.mirror_id == event["mirror_id"].as_str().unwrap())
+                .unwrap();
+            let id = event["from"].as_str().unwrap();
+            previous[i] = mirror_for_receiver(&previous[i], id, receivers[id]).unwrap();
+            let gain = before - energy(previous.clone());
+            assert!(gain > 0.0);
+            assert!((gain - event["gain_equivalent_area_m2"].as_f64().unwrap()).abs() < 1e-8);
+        }
+        assert!((energy(previous) - report["initial_score_m2"].as_f64().unwrap()).abs() < 1e-8);
+        assert!(report["converged"].as_bool().unwrap());
+        let mut limited = plant.clone();
+        limited.config["tower_switch_max_rounds"] = serde_json::json!(0);
+        let unchanged = resolve_mobile_mirrors(&limited, sun).unwrap();
+        let limited_report = assignment_report(&limited, sun);
+        assert_eq!(limited_report["stop_reason"], "round_budget");
+        assert_eq!(limited_report["converged"], false);
+        assert!(
+            (energy(unchanged) - limited_report["initial_score_m2"].as_f64().unwrap()).abs() < 1e-8
+        );
+        let mut runtime = MobileRuntime {
+            bundle: MobileBundle {
+                schema_version: 1,
+                plants: vec![plant],
+            },
+            active: 0,
+        };
+        let _ = runtime.request(
+            "GET",
+            "frame",
+            &serde_json::json!({"time":"invalid","tower_strategy":"independent"}),
+        );
+        assert_eq!(
+            runtime.bundle.plants[0].config["tower_assignment_strategy"],
+            "independent"
+        );
+        let _ = runtime.request(
+            "GET",
+            "frame",
+            &serde_json::json!({"time":"invalid","tower_strategy":"field_gain"}),
+        );
+        assert_eq!(
+            runtime.bundle.plants[0].config["tower_assignment_strategy"],
+            "field_gain"
+        );
+    }
 
     #[test]
     fn mobile_bundle_is_read_without_network_or_python() {

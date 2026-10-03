@@ -1,0 +1,212 @@
+{
+  "elapsed_seconds": 138.05984012499994,
+  "old_elapsed_seconds": 2.832916290999492,
+  "mirrors": 26944,
+  "sun": [
+    -0.7026752586689714,
+    0.20076435961970612,
+    0.6825988227070009
+  ],
+  "baseline": "realized independent assignment",
+  "converged": false,
+  "final_score_m2": 560430.5691892925,
+  "initial_score_m2": 560197.8963489386,
+  "max_rounds": 32,
+  "stop_reason": "round_budget",
+  "strategy": "field_gain",
+  "switches": [
+    {
+      "from": "east",
+      "gain_equivalent_area_m2": 7.8064802994191425,
+      "mirror_id": "D13730",
+      "to": "west"
+    },
+    {
+      "from": "east",
+      "gain_equivalent_area_m2": 7.702240729390706,
+      "mirror_id": "D13940",
+      "to": "west"
+    },
+    {
+      "from": "east",
+      "gain_equivalent_area_m2": 7.602025209736674,
+      "mirror_id": "D14150",
+      "to": "west"
+    },
+    {
+      "from": "west",
+      "gain_equivalent_area_m2": 7.5526300232425125,
+      "mirror_id": "D13937",
+      "to": "east"
+    },
+    {
+      "from": "east",
+      "gain_equivalent_area_m2": 7.526504463553103,
+      "mirror_id": "D13524",
+      "to": "west"
+    },
+    {
+      "from": "west",
+      "gain_equivalent_area_m2": 7.519782462851813,
+      "mirror_id": "D14147",
+      "to": "east"
+    },
+    {
+      "from": "east",
+      "gain_equivalent_area_m2": 7.501236960545491,
+      "mirror_id": "D14362",
+      "to": "west"
+    },
+    {
+      "from": "west",
+      "gain_equivalent_area_m2": 7.4663813094039195,
+      "mirror_id": "D14359",
+      "to": "east"
+    },
+    {
+      "from": "east",
+      "gain_equivalent_area_m2": 7.448580060013676,
+      "mirror_id": "D15021",
+      "to": "west"
+    },
+    {
+      "from": "west",
+      "gain_equivalent_area_m2": 7.416873690136486,
+      "mirror_id": "D14573",
+      "to": "east"
+    },
+    {
+      "from": "west",
+      "gain_equivalent_area_m2": 7.408988028947093,
+      "mirror_id": "D13312",
+      "to": "east"
+    },
+    {
+      "from": "west",
+      "gain_equivalent_area_m2": 7.394818933711665,
+      "mirror_id": "D13521",
+      "to": "east"
+    },
+    {
+      "from": "west",
+      "gain_equivalent_area_m2": 7.383506617374334,
+      "mirror_id": "D13727",
+      "to": "east"
+    },
+    {
+      "from": "east",
+      "gain_equivalent_area_m2": 7.374454643557325,
+      "mirror_id": "D14576",
+      "to": "west"
+    },
+    {
+      "from": "west",
+      "gain_equivalent_area_m2": 7.3728387380912395,
+      "mirror_id": "D14792",
+      "to": "east"
+    },
+    {
+      "from": "east",
+      "gain_equivalent_area_m2": 7.367871843709835,
+      "mirror_id": "D13107",
+      "to": "west"
+    },
+    {
+      "from": "east",
+      "gain_equivalent_area_m2": 7.309506104678462,
+      "mirror_id": "D12898",
+      "to": "west"
+    },
+    {
+      "from": "east",
+      "gain_equivalent_area_m2": 7.3087654985537505,
+      "mirror_id": "D12474",
+      "to": "west"
+    },
+    {
+      "from": "east",
+      "gain_equivalent_area_m2": 7.302179756324719,
+      "mirror_id": "D15251",
+      "to": "west"
+    },
+    {
+      "from": "east",
+      "gain_equivalent_area_m2": 7.250637125072341,
+      "mirror_id": "D13315",
+      "to": "west"
+    },
+    {
+      "from": "east",
+      "gain_equivalent_area_m2": 7.238839797018304,
+      "mirror_id": "D14795",
+      "to": "west"
+    },
+    {
+      "from": "east",
+      "gain_equivalent_area_m2": 7.1424588759180025,
+      "mirror_id": "D15482",
+      "to": "west"
+    },
+    {
+      "from": "east",
+      "gain_equivalent_area_m2": 7.137350150900577,
+      "mirror_id": "D12688",
+      "to": "west"
+    },
+    {
+      "from": "east",
+      "gain_equivalent_area_m2": 7.017529709806077,
+      "mirror_id": "D13732",
+      "to": "west"
+    },
+    {
+      "from": "east",
+      "gain_equivalent_area_m2": 6.976697254571178,
+      "mirror_id": "D15712",
+      "to": "west"
+    },
+    {
+      "from": "west",
+      "gain_equivalent_area_m2": 6.937097008667973,
+      "mirror_id": "D12685",
+      "to": "east"
+    },
+    {
+      "from": "east",
+      "gain_equivalent_area_m2": 6.923891137138867,
+      "mirror_id": "D12258",
+      "to": "west"
+    },
+    {
+      "from": "east",
+      "gain_equivalent_area_m2": 6.905826214703282,
+      "mirror_id": "D13942",
+      "to": "west"
+    },
+    {
+      "from": "west",
+      "gain_equivalent_area_m2": 6.900816370719745,
+      "mirror_id": "D12895",
+      "to": "east"
+    },
+    {
+      "from": "west",
+      "gain_equivalent_area_m2": 6.866504938450131,
+      "mirror_id": "D13104",
+      "to": "east"
+    },
+    {
+      "from": "east",
+      "gain_equivalent_area_m2": 6.807053855198941,
+      "mirror_id": "D15941",
+      "to": "west"
+    },
+    {
+      "from": "east",
+      "gain_equivalent_area_m2": 6.802472542694634,
+      "mirror_id": "D14152",
+      "to": "west"
+    }
+  ],
+  "threshold_m2": 1e-06
+}

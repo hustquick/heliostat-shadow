@@ -49,3 +49,11 @@ def field_efficiencies(mirrors, sun, *, target_indices=None, target_overrides=No
             mirror.mirror_id for mirror in mirrors]:
         raise RuntimeError("Rust core returned mirrors in an unexpected order")
     return result
+
+
+def resolve_towers(mirrors, sun, config):
+    """Shared serial full-field-gain assignment used on all four platforms."""
+    if not available() or not hasattr(_heliostat_rust, "resolve_towers_json"):
+        raise RuntimeError("双塔全场收益策略需要更新后的 Rust 内核，请重新构建安装包")
+    plant = dict(id="assignment",name="assignment",layout_status="fixed",reported_mirrors=len(mirrors),source="model",note="",config=config,metadata={},weather=dict(start_utc="2023-01-01T00:00:00Z",step_seconds=3600,dni_w_m2=[],temperature_c=12.,source=""),mirrors=[_mirror_payload(m) for m in mirrors])
+    return json.loads(_heliostat_rust.resolve_towers_json(json.dumps(dict(plant=plant,sun=list(map(float,sun))))))

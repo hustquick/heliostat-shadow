@@ -37,6 +37,14 @@ class ViewerHandler(SimpleHTTPRequestHandler):
             return super().do_GET()
         try:
             query = parse_qs(url.query)
+            if url.path in ('/api/frame','/api/target','/api/efficiencies'):
+                strategy=query.get('tower_strategy',['independent'])[0]
+                if strategy not in ('independent','field_gain'): raise ValueError('无效选塔策略')
+                model = self.model.active if hasattr(self.model,'active') else self.model
+                if model.config.get('tower_assignment_strategy') != strategy:
+                    model.config['tower_assignment_strategy']=strategy
+                    model.cache.clear(); model.optical_efficiency_cache.clear()
+
             if url.path == '/api/health':
                 data = {'status': 'ok', 'rust_core': rust_available(),
                         'rust_core_version': rust_version()}

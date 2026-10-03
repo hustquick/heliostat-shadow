@@ -383,6 +383,11 @@ function drawFrame() {
     overview();
     cameraFramed = true;
   }
+  $("towerStrategyControl").hidden = (meta.tower_count || 1) < 2;
+  const assignment = frame.tower_assignment;
+  $("towerAssignmentNote").textContent = !frame.daylight ? "太阳在地平线以下，不执行选塔。" : assignment?.strategy === "field_gain"
+    ? `全场收益优先 · 已串行切换 ${assignment.switches.length} 面镜 · ${assignment.converged ? "已达到单镜切换收益阈值" : "已达本次轮数预算，尚未确认收敛"}`
+    : ((meta.tower_count || 1) > 1 ? "单镜效率优先：按共同初始姿态独立选塔，未保证全场收益增加。" : "");
   $("weatherDni").textContent = frame.dni.toFixed(1);
   $("weatherElevation").textContent = frame.elevation.toFixed(2);
   $("weatherTemperature").textContent = Number.isFinite(frame.temperature) ? frame.temperature.toFixed(1) : "暂无数据";
@@ -661,6 +666,7 @@ async function nativeRequest(method, path, payload) {
   return null;
 }
 async function api(path, query = {}) {
+  if (["frame","target","efficiencies"].includes(path)) query = {...query, tower_strategy: $("towerStrategy").value};
   const local = await nativeRequest("GET", path, query);
   if (local !== null) return local;
   const r = await fetch("/api/" + path + "?" + new URLSearchParams(query));
@@ -723,6 +729,7 @@ function controlsBusy(value) {
     "viewTop",
     "efficiencyColor",
     "towerColor",
+    "towerStrategy",
   ])
     $(id).disabled = value;
   document.querySelector("#selectMirror button").disabled = value;
@@ -1251,3 +1258,5 @@ $("operationForm").onsubmit = async event => {
   } catch (error) { status(error.message, true); }
   finally { controlsBusy(false); }
 };
+
+$("towerStrategy").onchange = () => { efficiencyData=null; loadTime(); };

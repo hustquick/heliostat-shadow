@@ -92,6 +92,7 @@ def test_catalog_selection_import_and_rearrangement(tmp_path):
     model = workspace.active
     flexible = [i for i, mirror in enumerate(model.mirrors) if mirror.tower_id == 'auto']
     assert flexible
+    model.config['tower_assignment_strategy'] = 'independent'
     morning = model._mirrors_for_sun(np.array([-.7, .2, .68]))
     for i in flexible:
         scores = model._last_tower_choice_scores[model.mirrors[i].mirror_id]
