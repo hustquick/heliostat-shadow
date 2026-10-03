@@ -807,3 +807,12 @@ main > details { border:1px solid var(--line); background:var(--panel); overflow
 /* Mobile empty-state lettering resembles a quiet draft-paper watermark. */
 #projection .empty-projection-label { dominant-baseline:central; letter-spacing:1px; }
 @media(max-width:620px) { #projection .empty-projection-label { writing-mode:vertical-rl; text-orientation:upright; letter-spacing:3px; font-size:9px; } }
+
+.projection-stage { position:relative; --projection-height:340px; }
+.projection-stage > #projection { height:var(--projection-height); }
+.projection-inactive .projection-stage::before { content:""; display:block; height:var(--projection-height); }
+.projection-inactive .projection-stage > #projection { position:absolute; inset:0; width:100%; height:100%; }
+.projection-inactive .projection-stage > :is(#planeNote,#metrics,#areaNote) { visibility:hidden; }
+@media(max-width:620px) { .projection-stage { --projection-height:320px; } }
+.projection-stage > #metrics { padding-left:var(--card-inset); padding-right:var(--card-inset); box-sizing:border-box; }
+.projection-stage > :is(#planeNote,#areaNote) { margin-left:var(--card-inset); margin-right:var(--card-inset); box-sizing:border-box; width:auto; }

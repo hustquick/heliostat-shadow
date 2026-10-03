@@ -456,7 +456,7 @@ function draw2D() {
     fitProjectionPlaceholder();
     $("planeNote").textContent="";
     $("areaNote").replaceChildren();
-    const notice=document.createElement("p"); notice.className="inactive-notice"; notice.textContent="镜面朝下平躺 · 聚光输出 0"; $("areaNote").append(notice);
+
     return;
   }
   if (poseOverrides.size) { $("planeNote").textContent="图案展示模式：二维投影与效率计算暂不适用；恢复跟踪后显示。"; $("areaNote").textContent=""; return; }
