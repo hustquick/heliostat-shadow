@@ -858,3 +858,6 @@ main > details.spatial > .scene-description { position:absolute; left:var(--card
 #weather > div > span:first-child { flex:0 0 auto; }
 #weather > div > span:nth-child(2) { flex:0 0 6ch; width:6ch; text-align:right; font-variant-numeric:tabular-nums; }
 #weather > div > span:last-child { flex:0 0 auto; }
+
+.direction-key { display:inline-flex; align-items:center; gap:5px; white-space:nowrap; }
+.direction-key > i { display:inline-block; width:9px; height:9px; flex:none; border-radius:2px; background:var(--key-color); }
