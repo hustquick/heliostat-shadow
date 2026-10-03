@@ -8,8 +8,8 @@ android {
         applicationId = "com.hustquick.heliostatviewer"
         minSdk = 26
         targetSdk = 35
-        versionCode = 20001
-        versionName = "1.0.0"
+        versionCode = 20002
+        versionName = "1.0.1"
     }
     buildTypes {
         release {

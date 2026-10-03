@@ -26,7 +26,7 @@
 
 ## 多平台应用
 
-当前版本为 **v1.0.0**。四个平台共享 Three.js 交互界面和 Rust 几何内核，但交付方式不同：
+当前版本为 **v1.0.1**。四个平台共享 Three.js 交互界面和 Rust 几何内核，但交付方式不同：
 
 | 平台 | 应用形式 | 计算与数据模式 | 当前交付物 |
 |---|---|---|---|
@@ -370,15 +370,15 @@ heliostat-shadow/
 ```bash
 source "$HOME/venv/bin/activate"
 python -m pip install -r requirements-build.txt
-./scripts/build_macos_app.sh 1.0.0
+./scripts/build_macos_app.sh 1.0.1
 ```
 
 输出位于 `dist/macos/`：
 
 ```text
 塔式镜场设计与优化.app
-Heliostat-Viewer-macOS-arm64-v1.0.0.dmg
-Heliostat-Viewer-macOS-arm64-v1.0.0.dmg.sha256
+Heliostat-Viewer-macOS-arm64-v1.0.1.dmg
+Heliostat-Viewer-macOS-arm64-v1.0.1.dmg.sha256
 ```
 
 ## 主要参考
@@ -406,7 +406,7 @@ Android 使用系统文件保存器，iOS 使用文件导出器，macOS 使用�
 这是展示模式，原来的光学效率计算不包含这些姿态修改，二维投影暂时隐藏；点击“恢复跟踪”退出。
 
 
-## v1.0.0 更新
+## v1.0.1 更新
 
 统一四个平台的名称、图标与镜场设计工具：全场坐标导出、按编号/行编辑镜面朝向、
 多行文字和图片图案。图案镜面在所有着色模式中保持灰色，其他镜面可显示效率或目标塔。
