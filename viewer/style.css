@@ -747,3 +747,17 @@ main > details > .metrics { padding-left:14px; padding-right:14px; }
 .candidates th:last-child,.candidates td:last-child { padding-right:14px; }
 @media(max-width:620px) { main > details > .cardcontrols { margin-left:12px; margin-right:12px; } main > details > .metrics { padding-left:12px; padding-right:12px; } }
 @media(max-width:360px) { .spatial > .cardcontrols { gap:3px; margin-left:8px; margin-right:8px; } .spatial > .cardcontrols > button { font-size:9px; padding:4px; } .cardcontrols .orientation-widget { grid-template-columns:30px 30px; } .cardcontrols .orientation-widget button { width:30px; } .cardcontrols .orientation-widget svg { width:28px; } }
+
+/* Paragraphs in management and model notes override the mobile shorthand margin. */
+main > details.mobile-manage > p { margin:12px 16px 16px; line-height:1.6; }
+main > details.candidates > .tablewrap { margin:0 14px 16px; border:1px solid var(--border); border-radius:8px; }
+
+/* All seven cards share these content insets on every client. */
+main > details { --card-inset:16px; --card-bottom:16px; }
+main > details:is(.panel,.poseeditor,.mobile-manage) > :is(p,.hint,.posehint,.cardcontrols,.poseheader,.posedesign,.tablewrap,#mobileManageActions,#operationForm,#areaNote) {
+ margin-left:var(--card-inset); margin-right:var(--card-inset); box-sizing:border-box; width:auto;
+}
+main > details:is(.panel,.poseeditor,.mobile-manage) > :is(.metrics,.tabs) { padding-left:var(--card-inset); padding-right:var(--card-inset); box-sizing:border-box; }
+main > details:is(.panel,.poseeditor,.mobile-manage) > :last-child { margin-bottom:var(--card-bottom); }
+main > details:is(.panel,.poseeditor,.mobile-manage) > .posedesign .posecard, main > details:is(.panel,.poseeditor,.mobile-manage) > #operationForm { padding:var(--card-inset); }
+main > details:is(.panel,.poseeditor,.mobile-manage) > .poseheader { padding-left:0; padding-right:0; }
