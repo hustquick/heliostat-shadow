@@ -420,6 +420,12 @@ function insideParts(p, parts) {
       insideRing(p, poly.outer) && !poly.holes.some((h) => insideRing(p, h)),
   );
 }
+const sceneDescription = document.querySelector(".scene-description");
+new ResizeObserver(() => {
+  const height = sceneDescription.getBoundingClientRect().height;
+  if (height > 0) sceneDescription.closest("details").style.setProperty("--scene-notes-space", `${height + 32}px`);
+}).observe(sceneDescription);
+
 function alignPlantSelectorWidth() {
   const card = document.querySelector("main > .spatial");
   if (card) $("plant").parentElement.style.maxWidth = `${card.getBoundingClientRect().width}px`;

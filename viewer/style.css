@@ -850,3 +850,5 @@ main > details { border:1px solid var(--line); background:var(--panel); overflow
 main > details.spatial > .scene-description { margin-top:auto; }
 .scene-description > p { margin:0; }
 .scene-description > p + p { margin-top:8px; }
+.spatial[open] { display:block; position:relative; padding-bottom:var(--scene-notes-space,160px); }
+main > details.spatial > .scene-description { position:absolute; left:var(--card-inset); right:var(--card-inset); bottom:var(--card-bottom); margin:0; border-top:1px solid var(--line); }
