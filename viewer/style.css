@@ -657,3 +657,4 @@ code { color:#b8eaf2; }
 .projection-inactive #areaNote { visibility:visible; }
 #areaNote .inactive-notice { grid-column:1 / -1; align-self:end; margin:0; white-space:nowrap; }
 .projection-inactive #planeNote { position:static; visibility:hidden; }
+#areaNote > div strong { font-variant-numeric:tabular-nums lining-nums; font-feature-settings:"tnum" 1,"lnum" 1; text-align:right; white-space:nowrap; }
