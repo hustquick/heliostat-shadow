@@ -844,6 +844,16 @@ function showEfficiencyScale() {
     ? "0.000%" : current ? `${(fieldEfficiencyData.mean * 100).toFixed(3)}%` : "计算中…";
   const visible = concentrating && efficiencyEnabled && efficiencyData;
   $("efficiencyScale").hidden = !visible;
+  const meanLabel = $("fieldEfficiency");
+  meanLabel.style.color = "#ffffff";
+  if (visible && current) {
+    const span = Math.max(1e-12, efficiencyData.maximum - efficiencyData.minimum);
+    const scaled = THREE.MathUtils.clamp((fieldEfficiencyData.mean - efficiencyData.minimum) / span, 0, 1);
+    const meanColor = new THREE.Color();
+    if (scaled <= 0.5) meanColor.lerpColors(efficiencyLowColor, efficiencyMidColor, scaled * 2);
+    else meanColor.lerpColors(efficiencyMidColor, efficiencyHighColor, (scaled - 0.5) * 2);
+    meanLabel.style.color = `#${meanColor.getHexString()}`;
+  }
   if (!visible) return;
   $("efficiencyMin").textContent = `${(efficiencyData.minimum * 100).toFixed(1)}%`;
   $("efficiencyMax").textContent = `${(efficiencyData.maximum * 100).toFixed(1)}%`;
