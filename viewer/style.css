@@ -761,3 +761,6 @@ main > details:is(.panel,.poseeditor,.mobile-manage) > :is(.metrics,.tabs) { pad
 main > details:is(.panel,.poseeditor,.mobile-manage) > :last-child { margin-bottom:var(--card-bottom); }
 main > details:is(.panel,.poseeditor,.mobile-manage) > .posedesign .posecard, main > details:is(.panel,.poseeditor,.mobile-manage) > #operationForm { padding:var(--card-inset); }
 main > details:is(.panel,.poseeditor,.mobile-manage) > .poseheader { padding-left:0; padding-right:0; }
+
+/* Empty source cards retain their heading without empty tables or status text. */
+main > details.sources-empty > :not(summary) { display:none; }

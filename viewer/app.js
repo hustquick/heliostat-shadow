@@ -427,6 +427,8 @@ function draw2D() {
   svg.replaceChildren();
   $("metrics").replaceChildren();
   $("candidates").replaceChildren();
+  const sourcesCard = $("candidates").closest("details");
+  sourcesCard.classList.add("sources-empty");
   if (!concentrating) {
     $("planeNote").textContent="";
     $("counts").textContent="零位"; $("areaNote").replaceChildren();
@@ -599,12 +601,7 @@ function draw2D() {
     }
   }
   $("counts").textContent = `${occluders} 实际重叠光路`;
-  if (candidates === 0) {
-    const tr = document.createElement("tr");
-    tr.innerHTML =
-      '<td colspan="4">当前模式没有与目标存在面积交集的镜面；目标未受该类损失。</td>';
-    $("candidates").append(tr);
-  }
+  sourcesCard.classList.toggle("sources-empty", candidates === 0);
 }
 function setHover(id) {
   if (hovered === id) return;
