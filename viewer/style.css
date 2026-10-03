@@ -816,3 +816,4 @@ main > details { border:1px solid var(--line); background:var(--panel); overflow
 @media(max-width:620px) { .projection-stage { --projection-height:320px; } }
 .projection-stage > #metrics { padding-left:var(--card-inset); padding-right:var(--card-inset); box-sizing:border-box; }
 .projection-stage > :is(#planeNote,#areaNote) { margin-left:var(--card-inset); margin-right:var(--card-inset); box-sizing:border-box; width:auto; }
+.projection-inactive .projection-stage > #projection { min-height:0; max-height:none; }
