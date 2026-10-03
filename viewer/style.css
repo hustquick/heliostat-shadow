@@ -884,3 +884,12 @@ main > details.spatial > .scene-description { position:absolute; left:var(--card
  justify-content:center; align-items:center; padding:0; margin:0;
  pointer-events:none;
 }
+
+.field-efficiency {
+ display:flex; justify-content:center; align-items:baseline; gap:10px;
+ margin:0 var(--card-inset) 12px; color:var(--muted); font-size:12px;
+}
+.field-efficiency strong {
+ color:var(--text); min-width:8ch; text-align:right;
+ font-size:18px; font-variant-numeric:tabular-nums;
+}

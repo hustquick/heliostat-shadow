@@ -25,6 +25,7 @@ let meta,
   efficiencyEnabled = false,
   towerColorEnabled = false,
   efficiencyData = null,
+  fieldEfficiencyData = null,
   viewPreference = "overview",
   cameraFramed = false,
   mirrorIndex = new Map();
@@ -813,6 +814,7 @@ async function loadTime() {
     if (gen !== generation) return;
     frame = nextFrame;
     updateOperationState();
+    showEfficiencyScale();
     if (!frame.daylight && efficiencyEnabled) {
       efficiencyData = null;
       showEfficiencyScale();
@@ -823,7 +825,7 @@ async function loadTime() {
     drawDetails();
     draw2D();
     applyViewPreference();
-    if (frame.daylight && concentrating && efficiencyEnabled) await loadEfficiencies(gen);
+    if (frame.daylight && concentrating) await loadEfficiencies(gen);
     else status(
       !concentrating ? `停止聚光 · ${frame.local_time} · 全场镜面朝下平躺，聚光输出为 0` : frame.daylight
         ? `已更新 · ${frame.local_time} · 点击“效率着色”显示逐镜总光学效率`
@@ -837,6 +839,9 @@ async function loadTime() {
   }
 }
 function showEfficiencyScale() {
+  const current = fieldEfficiencyData?.timestamp === frame?.timestamp;
+  $("fieldEfficiency").textContent = !concentrating || !frame?.daylight
+    ? "0.000%" : current ? `${(fieldEfficiencyData.mean * 100).toFixed(3)}%` : "计算中…";
   const visible = concentrating && efficiencyEnabled && efficiencyData;
   $("efficiencyScale").hidden = !visible;
   if (!visible) return;
@@ -850,6 +855,7 @@ async function loadEfficiencies(gen = generation) {
   const data = await api("efficiencies", {time: currentTime});
   if (gen !== generation || data.timestamp !== frame.timestamp) return;
   efficiencyData = data;
+  fieldEfficiencyData = data;
   showEfficiencyScale();
   drawDetails();
   status(
@@ -1326,7 +1332,7 @@ $("operationForm").onsubmit = async event => {
     operationParameters = validateOperationParameters(Object.fromEntries(Object.keys(defaultOperationParameters).map(key=>[key, Number($(key).value)])));
     try { localStorage.setItem(operationStorageKey(), JSON.stringify(operationParameters)); } catch { status("设备未允许保存参数；本次运行仍会应用", true); }
     if (frame) { updateOperationState(); drawFrame(); drawDetails(); draw2D();
-      if (concentrating && efficiencyEnabled) await loadEfficiencies(); }
+      if (concentrating && frame.daylight) await loadEfficiencies(); }
     status(concentrating ? "启停参数已应用 · 聚光运行" : "启停参数已应用 · 停止聚光，镜面全部回归朝下零位");
   } catch (error) { status(error.message, true); }
   finally { controlsBusy(false); }
