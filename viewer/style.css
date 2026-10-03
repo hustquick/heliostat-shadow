@@ -663,3 +663,9 @@ code { color:#b8eaf2; }
 #planeNote,.projection-inactive #planeNote { position:static; top:auto; left:auto; right:auto; height:17px; min-height:17px; max-height:17px; margin:8px 18px 12px; box-sizing:border-box; line-height:17px; }
 #metrics { overflow:hidden; }
 #areaNote { overflow:hidden; }
+
+/* Reserve complete labels and percentages; the gradient takes remaining width. */
+.efficiency-scale { flex-wrap:nowrap; }
+.efficiency-scale strong,.efficiency-scale span { flex:none; white-space:nowrap; }
+.efficiency-scale i { flex:1 1 0; min-width:0; }
+@media(max-width:600px) { .efficiency-scale { gap:6px; font-size:10px; } .efficiency-scale strong { margin-left:0; } }
