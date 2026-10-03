@@ -352,6 +352,15 @@ class ViewerModel:
         efficiencies = dict(eta_shadow=1-shadow.area/target.area, eta_blocking=1-block.area/target.area,
                             eta_joint=geometries['visible'].area/target.area,
                             eta_cosine=float(field.normals[i] @ field.sun))
+        c = self.config
+        mirror = field.mirrors[i]
+        distance = np.linalg.norm(np.asarray(mirror.aim_point) - field.centres[i])
+        efficiencies['eta_atmosphere'] = float(atmospheric_transmittance(distance, model=c.get('atmospheric_model', 'clear_air_40km')))
+        sigma = effective_angular_sigma(efficiencies['eta_cosine'], sun_mrad=c.get('sunshape_mrad',2.51), slope_mrad=c.get('slope_error_mrad',2.6), tracking_mrad=c.get('tracking_error_mrad',2.1))
+        efficiencies['eta_intercept'] = float(cylinder_interception(np.asarray([mirror.centre]), np.asarray([mirror.aim_point]), np.asarray([sigma]), self.tower_by_id[mirror.tower_id].receiver, order=int(c.get('receiver_quadrature_order',64)))[0])
+        efficiencies['mirror_reflectivity'] = float(c.get('mirror_reflectivity',1.))
+        efficiencies['mirror_cleanliness'] = float(c.get('mirror_cleanliness',1.))
+        efficiencies['eta_optical'] = float(np.prod([efficiencies[k] for k in ('eta_cosine','eta_joint','eta_atmosphere','eta_intercept','mirror_reflectivity','mirror_cleanliness')]))
         return dict(timestamp=frame['timestamp'], mirror_id=mirror_id, daylight=True,
                     tower_id=field.mirrors[i].tower_id,
                     centre=field.centres[i].tolist(), normal=field.normals[i].tolist(),

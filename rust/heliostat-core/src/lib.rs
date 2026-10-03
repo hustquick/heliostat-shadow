@@ -968,6 +968,25 @@ impl MobileRuntime {
         let area = target_polygon.unsigned_area();
         let shadow_area = multipolygon_area(&shadow.union_polygon);
         let block_area = multipolygon_area(&blocking.union_polygon);
+        let cosine = dot(pose.normal, field.sun).clamp(0.0, 1.0);
+        let joint = (multipolygon_area(&visible) / area).clamp(0.0, 1.0);
+        let receivers = receivers_from_config(&plant.config)?;
+        let receiver = *receivers
+            .get(&mirror.tower_id)
+            .ok_or("target receiver missing")?;
+        let atmosphere = atmospheric_transmittance(pose.receiver_distance);
+        let intercept = cylinder_interception(mirror, cosine, receiver, &plant.config)?;
+        let reflectivity = plant
+            .config
+            .get("mirror_reflectivity")
+            .and_then(serde_json::Value::as_f64)
+            .unwrap_or(1.0);
+        let cleanliness = plant
+            .config
+            .get("mirror_cleanliness")
+            .and_then(serde_json::Value::as_f64)
+            .unwrap_or(1.0);
+
         Ok(serde_json::json!({
             "timestamp":frame["timestamp"], "mirror_id":mirror_id, "daylight":true,
             "tower_id":mirror.tower_id, "centre":mirror.centre, "normal":pose.normal,
@@ -980,7 +999,9 @@ impl MobileRuntime {
                 "eta_shadow":(1.0-shadow_area/area).clamp(0.0,1.0),
                 "eta_blocking":(1.0-block_area/area).clamp(0.0,1.0),
                 "eta_joint":(multipolygon_area(&visible)/area).clamp(0.0,1.0),
-                "eta_cosine":dot(pose.normal,field.sun).clamp(0.0,1.0)
+                "eta_cosine":cosine, "eta_atmosphere":atmosphere, "eta_intercept":intercept,
+                "mirror_reflectivity":reflectivity, "mirror_cleanliness":cleanliness,
+                "eta_optical":cosine * joint * atmosphere * intercept * reflectivity * cleanliness
             },
             "envelope_area_m2":area,
             "reflective_area_m2":plant.config.get("reflective_area_m2").and_then(serde_json::Value::as_f64).unwrap_or(area),

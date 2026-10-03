@@ -519,24 +519,20 @@ function draw2D() {
     ? `沿 ${mode === "shadow" ? "s" : "rᵢ"} 投影到光线法向平面；面积含余弦投影因子。`
     : "两类损失在同一实际镜面平面上求并集；u、v 为局部正交坐标。";
   const ef = target.efficiencies;
-  const full = efficiencyEnabled && efficiencyData;
-  const index = mirrorIndex.get(selected), f = full ? efficiencyData.factors : null;
+  const f = ef;
   const card = (label, value, className = "") => {
     const el = document.createElement("div");
     el.className = "metric " + className;
     const name = document.createElement("span"); name.textContent = label;
     const number = document.createElement("strong");
-    number.textContent = Number.isFinite(value) ? `${(value * 100).toFixed(2)}%` : "未计算";
+    number.textContent = Number.isFinite(value) ? `${(value * 100).toFixed(2)}%` : "—";
     el.append(name, number); return el;
   };
-  const total = card("总光学效率", full ? efficiencyData.values[index] : undefined, "metric-total");
-  if (!full) {
-    const note = document.createElement("small"); note.textContent = "开启效率着色后计算"; total.append(note);
-  }
+  const total = card("总光学效率", ef.eta_optical, "metric-total");
   $("metrics").append(total);
-  if (full) {
+  {
     const fixed = document.createElement("div"); fixed.className = "metric-fixed";
-    fixed.append(card("镜面反射率", f.mirror_reflectivity[index]), card("镜面清洁度", f.mirror_cleanliness[index]));
+    fixed.append(card("镜面反射率", f.mirror_reflectivity), card("镜面清洁度", f.mirror_cleanliness));
     $("metrics").append(fixed);
   }
   const joint = document.createElement("section"); joint.className = "metric-joint";
@@ -546,9 +542,9 @@ function draw2D() {
   children.append(card("阴影效率", ef.eta_shadow), card("遮挡效率", ef.eta_blocking));
   const note = document.createElement("small"); note.textContent = "两类损失按并集计算，重叠部分仅计一次";
   joint.append(children, note); $("metrics").append(joint);
-  if (full) {
+  {
     const transport = document.createElement("div"); transport.className = "metric-transport";
-    transport.append(card("余弦效率", f.eta_cosine[index]), card("沿程透过率", f.eta_atmosphere[index]), card("接收器截获率", f.eta_intercept[index]));
+    transport.append(card("余弦效率", f.eta_cosine), card("沿程透过率", f.eta_atmosphere), card("接收器截获率", f.eta_intercept));
     $("metrics").append(transport);
   }
   const area = view.areas.target,

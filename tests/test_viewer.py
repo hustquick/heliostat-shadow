@@ -46,7 +46,11 @@ def test_views_match_saved_results_and_cosine_area(model,timestamp,ids):
     _, frame = model.frame(timestamp)
     for id in ids:
         target = model.target(timestamp,id)
-        e = target['efficiencies']; physical = target['views']['mirror']['areas']
+        e = target['efficiencies']
+        factors = ('eta_cosine','eta_joint','eta_atmosphere','eta_intercept','mirror_reflectivity','mirror_cleanliness')
+        assert all(0 <= e[key] <= 1 for key in factors)
+        assert e['eta_optical'] == pytest.approx(np.prod([e[key] for key in factors]))
+        physical = target['views']['mirror']['areas']
         for name in ('eta_shadow','eta_blocking','eta_joint'):
             assert e[name] == pytest.approx(saved.loc[id,name],abs=1e-8)
         assert frame['eta_joint'][model.index[id]] == pytest.approx(e['eta_joint'])
