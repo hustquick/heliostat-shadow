@@ -422,6 +422,7 @@ function insideParts(p, parts) {
 }
 function draw2D() {
   const svg = $("projection");
+  if (!target && concentrating && !poseOverrides.size) return;
   svg.replaceChildren();
   $("metrics").replaceChildren();
   $("candidates").replaceChildren();
@@ -549,8 +550,14 @@ function draw2D() {
   }
   const area = view.areas.target,
     lost = mode === "joint" ? area - view.areas.visible : view.areas[mode];
-  $("areaNote").textContent =
-    `${selected} · 轮廓 ${area.toFixed(3)} m² · 当前模式损失 ${lost.toFixed(3)} m² · 有效 ${(area - lost).toFixed(3)} m²。有效反射面积 ${target.reflective_area_m2} m²；阴影轮廓采用外接矩形。`;
+  const areaNote = $("areaNote");
+  areaNote.replaceChildren();
+  for (const [label,value] of [["镜号",selected],["轮廓面积",area.toFixed(3)+" m²"],["损失面积",lost.toFixed(3)+" m²"],["有效面积",(area-lost).toFixed(3)+" m²"],["反射面积",Number(target.reflective_area_m2).toFixed(3)+" m²"]]) {
+    const item=document.createElement("div");
+    const name=document.createElement("span"); name.textContent=label;
+    const number=document.createElement("strong"); number.textContent=value;
+    item.append(name,number); areaNote.append(item);
+  }
   const modes = mode === "joint" ? ["shadow", "blocking"] : [mode];
   let candidates = 0,
     occluders = 0;
@@ -684,6 +691,7 @@ function status(text, error = false) {
   $("statusTime").textContent = "";
   $("status").classList.toggle("error", error);
   $("status").title = error ? text : "";
+  $("status").hidden = !error && !webglUnavailable;
 
 }
 function formatRange(values, digits = 3) {
@@ -734,9 +742,7 @@ async function loadTime() {
     ? "更新效率中"
     : "计算镜面姿态与目标镜投影…");
   if (!retainEfficiencyColors) efficiencyData = null;
-  target = null;
-  disposeGroup(details);
-  draw2D();
+  // Keep the last complete projection and metrics until the next target is ready.
   try {
     currentTime = $("time").value;
     const nextFrame = await api("frame", { time: currentTime });

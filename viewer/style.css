@@ -622,3 +622,15 @@ code { color:#b8eaf2; }
 #weather > div > span:first-child { flex:none; }
 #weather > div > span:nth-child(2) { text-align:left; }
 @media(max-width:600px) { #weather { font-size:10px; gap:5px; } #weather > div { gap:2px; } .panelhead { flex-wrap:wrap; } .paneltools { flex-wrap:wrap; } }
+
+#status[hidden] { display:none; }
+#projection { flex:none; height:340px; min-height:340px; max-height:340px; }
+#areaNote { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px 16px; min-height:108px; }
+#areaNote > div { display:flex; justify-content:space-between; gap:6px; white-space:nowrap; }
+#areaNote strong { font-weight:400; font-variant-numeric:tabular-nums; }
+.metric strong { font-variant-numeric:tabular-nums; white-space:nowrap; }
+#planeNote { min-height:3em; }
+@media(max-width:600px) { #projection { height:320px; min-height:320px; max-height:320px; } #areaNote { font-size:10px; gap:8px; } }
+/* Equal reserved metric rows also hold the layout through nighttime and zero position. */
+#metrics { grid-template-rows:100px 64px 170px 64px; gap:8px; height:422px; box-sizing:content-box; }
+#metrics > * { min-height:0; box-sizing:border-box; }
