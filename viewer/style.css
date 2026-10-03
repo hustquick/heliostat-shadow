@@ -708,3 +708,6 @@ main > details > p,main > details > #mobileManageActions { margin:12px 16px; }
 .cardcontrols label { display:flex; align-items:center; gap:6px; }
 .cardcontrols #operationState { font-size:12px; }
 main > details > summary { flex-wrap:nowrap; }
+
+main > details > summary.panelhead { padding:10px 14px 10px 38px; gap:10px; min-height:48px; }
+main > details > summary.panelhead h2 { letter-spacing:0; }

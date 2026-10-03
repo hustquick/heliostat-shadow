@@ -78,10 +78,13 @@ class ViewerModel:
         self.lock = threading.RLock()
 
     def metadata(self):
-        requested = pd.Timestamp(
-            f"{self.config.get('year', 2023)}-03-21 12:00",
+        local_noon = pd.Timestamp(
+            f"{self.config.get('year', 2023)}-03-20 12:00",
             tz=self.config['timezone'],
-        ).tz_convert('UTC')
+        )
+        offset_hours = local_noon.utcoffset().total_seconds() / 3600
+        clock_noon = local_noon + pd.Timedelta(hours=offset_hours - float(self.config['longitude']) / 15)
+        requested = clock_noon.round('h').tz_convert('UTC')
         nearest = self.weather.index[self.weather.index.get_indexer([requested], method='nearest')[0]]
         widths = np.asarray([mirror.width for mirror in self.mirrors], dtype=float)
         heights = np.asarray([mirror.height for mirror in self.mirrors], dtype=float)
