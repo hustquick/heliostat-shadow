@@ -852,3 +852,9 @@ main > details.spatial > .scene-description { margin-top:auto; }
 .scene-description > p + p { margin-top:8px; }
 .spatial[open] { display:block; position:relative; padding-bottom:var(--scene-notes-space,160px); }
 main > details.spatial > .scene-description { position:absolute; left:var(--card-inset); right:var(--card-inset); bottom:var(--card-bottom); margin:0; border-top:1px solid var(--line); }
+/* Environmental labels and units never move when signs or digits change. */
+#weather { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); justify-content:normal; }
+#weather > div { display:flex; justify-content:flex-start; min-width:0; }
+#weather > div > span:first-child { flex:0 0 auto; }
+#weather > div > span:nth-child(2) { flex:0 0 6ch; width:6ch; text-align:right; font-variant-numeric:tabular-nums; }
+#weather > div > span:last-child { flex:0 0 auto; }
