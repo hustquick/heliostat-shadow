@@ -734,3 +734,6 @@ main > details > summary.panelhead h2 { letter-spacing:0; }
 .poseheader { margin:0; }
 .poseheader small { display:block; color:var(--muted); font-size:11px; margin-top:3px; }
 @media(max-width:620px) { .posedesign,#operationForm { margin:0 12px 12px; } }
+.cardcontrols .orientation-widget { grid-template-columns:58px 58px; }
+.cardcontrols .orientation-widget button { width:58px; box-sizing:border-box; }
+@media(max-width:620px) { .cardcontrols .orientation-widget { grid-template-columns:38px 38px; } .cardcontrols .orientation-widget button { width:38px; } }

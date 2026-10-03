@@ -967,7 +967,16 @@ $("viewTop").onclick = () => {
   if (viewPreference === "focus") animateCamera(focusTopView);
   else animateCamera(topView);
 };
-$("neighbors").onchange = colorMirrors;
+$("neighbors").checked = false;
+$("neighbors").onchange = () => {
+  $("neighbors").classList.toggle("active", $("neighbors").checked);
+  $("neighbors").setAttribute("aria-pressed", String($("neighbors").checked));
+  colorMirrors();
+};
+$("neighbors").onclick = () => {
+  $("neighbors").checked = !$("neighbors").checked;
+  $("neighbors").dispatchEvent(new Event("change"));
+};
 for (const button of document.querySelectorAll("[data-mode]"))
   button.onclick = () => {
     mode = button.dataset.mode;
