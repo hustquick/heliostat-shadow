@@ -830,3 +830,16 @@ main > details { border:1px solid var(--line); background:var(--panel); overflow
 #operationForm .posefields label { margin-bottom:0; }
 #mobileParameters > .receiver-notes { display:block; margin:12px var(--card-inset) var(--card-bottom); color:var(--muted); line-height:1.7; font-size:12px; }
 .receiver-notes > #sourceNote { margin-top:8px; }
+/* Desktop time, playback, target and view controls form one compact row. */
+@media(min-width:761px) {
+ .toolbar { display:grid; grid-template-columns:minmax(100px,1fr) minmax(110px,1fr) 32px 92px 32px 1px minmax(130px,1.2fr) minmax(100px,.9fr); gap:8px; align-items:end; }
+ .toolbar > label { min-width:0; }
+ .toolbar > label > :is(input,select) { width:100%; min-width:0; height:40px; }
+ .toolbar > label > span { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+ .toolbar > button { min-width:0; padding:8px 4px; height:40px; }
+ .toolbar .divider { margin:0; width:1px; }
+ #selectMirror { display:grid; grid-template-columns:minmax(0,1fr) auto; min-width:0; gap:6px; }
+ #selectMirror label,#selectMirror input { min-width:0; width:100%; }
+ #selectMirror button { padding:8px; }
+ #viewMode { width:100%; min-width:0; padding:8px; }
+}
