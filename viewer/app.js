@@ -678,15 +678,12 @@ async function apiPost(path, body) {
   return data;
 }
 function status(text, error = false) {
-  const parts = text.split(" · ");
-  const heading = parts.shift();
-  const details = parts.filter(part => !/^\d{4}-\d{2}-\d{2}T/.test(part));
-  $("statusHeading").textContent = heading;
-  $("statusDetail").textContent = details.join(" · ") + (webglUnavailable
-    ? " · 此设备未启用 WebGL，三维视图不可用。" : "");
-  $("statusTime").textContent = frame?.local_time ? frame.local_time.slice(0,16).replace("T", " ") : "";
+  // Routine progress and success messages duplicate the scene and interrupt playback.
+  $("statusHeading").textContent = error ? text : "";
+  $("statusDetail").textContent = webglUnavailable ? "三维视图不可用：设备未启用 WebGL" : "";
+  $("statusTime").textContent = "";
   $("status").classList.toggle("error", error);
-  $("status").title = text;
+  $("status").title = error ? text : "";
 
 }
 function formatRange(values, digits = 3) {

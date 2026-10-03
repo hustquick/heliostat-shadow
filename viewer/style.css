@@ -612,3 +612,13 @@ code { color:#b8eaf2; }
 #statusDetail { grid-column:1; grid-row:2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 #statusTime { grid-column:1; grid-row:3; overflow:hidden; }
 @media(max-width:600px) { #status { grid-template-columns:minmax(0,1fr); } .panelhead h2,.panelhead button { white-space:nowrap; } }
+
+/* Weather stays on one line; status warnings have a reserved, unobtrusive slot. */
+#status { display:block; height:1.5em; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+#statusHeading,#statusDetail { display:inline; }
+#statusTime { display:none; }
+#weather { display:flex; justify-content:space-between; align-items:center; gap:8px; height:1.5em; white-space:nowrap; }
+#weather > div { display:flex; gap:3px; min-width:0; align-items:baseline; }
+#weather > div > span:first-child { flex:none; }
+#weather > div > span:nth-child(2) { text-align:left; }
+@media(max-width:600px) { #weather { font-size:10px; gap:5px; } #weather > div { gap:2px; } .panelhead { flex-wrap:wrap; } .paneltools { flex-wrap:wrap; } }
