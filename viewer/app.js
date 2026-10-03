@@ -420,6 +420,13 @@ function insideParts(p, parts) {
       insideRing(p, poly.outer) && !poly.holes.some((h) => insideRing(p, h)),
   );
 }
+function alignPlantSelectorWidth() {
+  const card = document.querySelector("main > .spatial");
+  if (card) $("plant").parentElement.style.maxWidth = `${card.getBoundingClientRect().width}px`;
+}
+new ResizeObserver(alignPlantSelectorWidth).observe(document.querySelector("main > .spatial"));
+alignPlantSelectorWidth();
+
 function fitProjectionPlaceholder() {
   const svg = $("projection"), label = svg.querySelector(".empty-projection-label");
   if (!label) return;
