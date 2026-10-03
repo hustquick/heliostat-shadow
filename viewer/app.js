@@ -423,6 +423,7 @@ function insideParts(p, parts) {
 function draw2D() {
   const svg = $("projection");
   if (!target && concentrating && !poseOverrides.size) return;
+  svg.closest(".panel").classList.toggle("projection-inactive", !concentrating || !!poseOverrides.size || !target?.daylight);
   svg.replaceChildren();
   $("metrics").replaceChildren();
   $("candidates").replaceChildren();
@@ -552,7 +553,8 @@ function draw2D() {
     lost = mode === "joint" ? area - view.areas.visible : view.areas[mode];
   const areaNote = $("areaNote");
   areaNote.replaceChildren();
-  for (const [label,value] of [["镜号",selected],["轮廓面积",area.toFixed(3)+" m²"],["损失面积",lost.toFixed(3)+" m²"],["有效面积",(area-lost).toFixed(3)+" m²"],["反射面积",Number(target.reflective_area_m2).toFixed(3)+" m²"]]) {
+  const heading=document.createElement("h3"); heading.textContent="镜面 "+selected; areaNote.append(heading);
+  for (const [label,value] of [["轮廓面积",area.toFixed(3)+" m²"],["损失面积",lost.toFixed(3)+" m²"],["有效面积",(area-lost).toFixed(3)+" m²"],["反射面积",Number(target.reflective_area_m2).toFixed(3)+" m²"]]) {
     const item=document.createElement("div");
     const name=document.createElement("span"); name.textContent=label;
     const number=document.createElement("strong"); number.textContent=value;
