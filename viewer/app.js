@@ -4,6 +4,7 @@ import { OrbitControls } from "./vendor/OrbitControls.js";
 const $ = (id) => document.getElementById(id),
   colors = {
     target: "#ffcc47",
+    body: "#69b6aa",
     candidate: "#6c8d9b",
     shadow: "#3199ed",
     blocking: "#f68b4b",
@@ -347,7 +348,7 @@ function colorMirrors() {
       const towerIndex = meta.towers.findIndex((tower) => tower.id === frame.tower_ids[i]);
       color.set(towerColors[Math.max(0, towerIndex) % towerColors.length]);
     } else {
-      color.set("#69b6aa");
+      color.set(colors.body);
       if (sets.candidates.has(id)) color.set(colors.candidate);
       if (sets.shadow.has(id)) color.set(colors.shadow);
       if (sets.blocking.has(id)) color.set(colors.blocking);
@@ -536,17 +537,17 @@ function draw2D() {
     svg.append(el);
     return el;
   };
-  add(p.target, "#263f49");
+  add(p.target, colors.body);
   if (mode === "joint") {
-    add(p.visible, colors.visible);
+    add(p.visible, colors.body);
     add(p.shadow_only, colors.shadow);
     add(p.blocking_only, colors.blocking);
     add(p.overlap, colors.overlap);
   } else {
-    add(p.target, colors.visible);
+    add(p.target, colors.body);
     add(p[mode], colors[mode]);
   }
-  add(p.target, "none", 1, colors.target);
+  add(p.target, "none", 1, colors.body);
   // Axis ticks make the coordinates inspectable without distorting aspect ratio.
   const text = (x, y, t) => {
     const el = svgElement("text", {
