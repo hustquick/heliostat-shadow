@@ -161,7 +161,11 @@ def test_catalog_coordinates_have_provenance_and_valid_ranges():
 
 
 def test_viewer_html_exposes_workspace_controls():
-    assert (ROOT/'VERSION').read_text().strip() == '1.0.2'
+    from desktop.updates import version_tuple
+    version = (ROOT/'VERSION').read_text().strip()
+    version_tuple(version)
+    assert json.loads((ROOT/'viewer/version.json').read_text()) == {
+        'version': version, 'build': int((ROOT/'BUILD_NUMBER').read_text())}
     html = (ROOT/'viewer/index.html').read_text()
     for element_id in ('plant', 'importPlant', 'rearrange', 'efficiencyColor', 'towerColor',
                        'efficiencyScale', 'viewIso', 'viewTop', 'importDialog', 'designMethod', 'currentLayout'):
