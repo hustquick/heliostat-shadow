@@ -24,8 +24,10 @@ import Foundation
               let summary = try? JSONSerialization.jsonObject(with: resultData) as? [String: Any],
               summary["error"] == nil else { return result }
         initialized = true
+        // JSON may contain null; store its bytes rather than a property-list dictionary.
+        // Accept old dictionary saves as well as the new JSON Data representation.
         if let saved = UserDefaults.standard.object(forKey: stateKey),
-           let data = try? JSONSerialization.data(withJSONObject: saved),
+           let data = (saved as? Data) ?? (try? JSONSerialization.data(withJSONObject: saved)),
            let object = try? JSONSerialization.jsonObject(with: data) {
             _ = request(method: "POST", path: "state/import", payload: object)
         }
@@ -44,10 +46,14 @@ import Foundation
             return String(cString: output)
         }
         if method == "POST", ["plants/select", "plants/import", "layout/rearrange"].contains(path),
+           let resultData = result?.data(using: .utf8),
+           let response = try? JSONSerialization.jsonObject(with: resultData) as? [String: Any],
+           response["error"] == nil,
            let state = rawRequest(method: "GET", path: "state/export", payload: [:]),
            let stateData = state.data(using: .utf8),
-           let object = try? JSONSerialization.jsonObject(with: stateData) {
-            UserDefaults.standard.set(object, forKey: stateKey)
+           let object = try? JSONSerialization.jsonObject(with: stateData) as? [String: Any],
+           object["error"] == nil {
+            UserDefaults.standard.set(stateData, forKey: stateKey)
         }
         return result
     }
