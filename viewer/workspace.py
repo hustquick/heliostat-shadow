@@ -60,7 +60,7 @@ class ViewerWorkspace:
         config = self.root/'data/gemasolar_config.json'
         weather = self.root/'data/processed/gemasolar_dni_2023.csv'
         plants = {
-            'gemasolar': dict(name='Gemasolar 重建参考', config=config,
+            'gemasolar': dict(name='Gemasolar（西班牙）', config=config,
                 layout=self.root/'data/processed/gemasolar_layout.csv', weather=weather,
                 builtin=True, clear_sky=False),
         }

@@ -68,7 +68,7 @@ class ViewerModel:
         else:
             self.efficiency_indices = np.array([], dtype=int)
         self.clear_sky = bool(clear_sky)
-        self.source = source or 'Gemasolar 公开研究重建布局 · PVGIS-SARAH3 2023 历史卫星 DNI'
+        self.source = source or 'Gemasolar 公开地图提取的 2,650 面定日镜参考布局 · PVGIS-SARAH3 2023 历史卫星 DNI'
         self.note = note or '平坦地形、140 m 名义瞄准高度；非业主竣工测量。界面显示平面矩形几何，不显示接收器通量。'
         if environment_model is not None:
             self.clear_sky = environment_model.clear_sky
