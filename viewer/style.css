@@ -899,3 +899,11 @@ main > details.spatial > .scene-description { position:absolute; left:var(--card
  .scene-help-desktop { display:none; }
  .scene-help-touch { display:inline; }
 }
+
+/* Compact label/value groups with a distinct gap between the two columns. */
+#areaNote {
+ grid-template-columns:repeat(2,max-content); justify-content:space-between;
+ column-gap:24px;
+}
+#areaNote > div { grid-template-columns:4em 8ch 1.4em; column-gap:5px; }
+@media(max-width:600px) { #areaNote { column-gap:16px; } }
