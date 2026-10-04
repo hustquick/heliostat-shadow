@@ -109,3 +109,36 @@ def test_verified_download_and_corruption_never_becomes_installable(identity, mo
 def test_numeric_version_comparison():
     assert version_tuple('1.10.0') > version_tuple('1.9.9')
     with pytest.raises(ValueError): version_tuple('1.0.3-beta')
+
+
+def test_publication_rejects_existing_version_and_nonincreasing_build(identity, monkeypatch):
+    from scripts import publish_release
+    root, key, _ = identity
+    (root / 'VERSION').write_text('1.0.4')
+    (root / 'BUILD_NUMBER').write_text('20004')
+    monkeypatch.setattr(publish_release, 'ROOT', root)
+    monkeypatch.setattr('sys.argv', ['publish', str(root / 'assets')])
+    release = {'tag_name':'v1.0.4','draft':False,'prerelease':False,'assets':[]}
+    monkeypatch.setattr(publish_release, 'gh', lambda *args: json.dumps([release]))
+    with pytest.raises(ValueError, match='禁止覆盖'): publish_release.main()
+    release.update(tag_name='v1.0.3', assets=[{'name':'updates.json'}])
+    monkeypatch.setattr(publish_release, 'gh', lambda *args: json.dumps([release]) if args[0]=='api' else json.dumps(signed(key,version='1.0.3',build=20004,platforms={})))
+    with pytest.raises(ValueError, match='构建号'): publish_release.main()
+
+
+def test_update_routes_reject_cross_origin_install_requests(identity):
+    from functools import partial
+    import threading
+    import requests
+    from scripts.serve_viewer import LocalViewerServer, ViewerHandler
+    server = LocalViewerServer(('127.0.0.1',0), partial(ViewerHandler,model=None))
+    server.updater = UpdateManager(identity[0])
+    thread = threading.Thread(target=server.serve_forever, daemon=True); thread.start()
+    url = f'http://127.0.0.1:{server.server_port}/api/update/'
+    try:
+        assert requests.get(url+'status').json()['current'] == '1.0.3'
+        response = requests.post(url+'install',json={},headers={'Origin':'https://evil.example'})
+        assert response.status_code == 400
+        assert '来源' in response.json()['error']
+    finally:
+        server.shutdown();server.server_close();thread.join()

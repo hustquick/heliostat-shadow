@@ -57,6 +57,13 @@ def main():
     published = [r for r in releases if not r['draft'] and not r['prerelease']]
     if published and version_tuple(version) <= max(version_tuple(r['tag_name'].lstrip('v')) for r in published):
         raise ValueError('新版本号必须高于已发布版本')
+    if published:
+        latest = max(published, key=lambda r: version_tuple(r['tag_name'].lstrip('v')))
+        if any(a['name'] == 'updates.json' for a in latest['assets']):
+            previous = verify_manifest(json.loads(gh('release', 'download', latest['tag_name'], '-p', 'updates.json', '-O', '-')),
+                                       (ROOT / 'viewer/update-public.pem').read_bytes())
+            if int((ROOT / 'BUILD_NUMBER').read_text()) <= previous['build']:
+                raise ValueError('新构建号必须高于已发布构建号')
     envelope = make_manifest(assets, os.environ['UPDATE_SIGNING_KEY'].encode())
     manifest = assets / 'updates.json'
     manifest.write_text(json.dumps(envelope) + '\n')
