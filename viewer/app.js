@@ -1302,7 +1302,29 @@ $("poseApply").onclick = () => {
   indices.forEach(i=>poseOverrides.set(meta.mirror_ids[i],normal));
   drawDetails();draw2D();status(`图案展示模式 · 已调整 ${indices.length} 面镜子 · 效率仍对应跟踪姿态`);
 };
-$("poseReset").onclick = () => { poseOverrides.clear();drawDetails();draw2D();status("已恢复太阳跟踪姿态"); };
+function showSceneTopView() {
+  const card = document.querySelector("main > .spatial");
+  card.open = true;
+  viewPreference = "overview";
+  $("viewMode").value = "overview";
+  $("neighbors").checked = false;
+  $("neighbors").dispatchEvent(new Event("change"));
+  requestAnimationFrame(() => {
+    sizeSceneArea();
+    requestAnimationFrame(() => {
+      resize();
+      cameraTransition = null;
+      topView();
+      const heading = card.querySelector("summary");
+      heading.classList.add("navigation-focus");
+      heading.addEventListener("blur", () => heading.classList.remove("navigation-focus"), {once:true});
+      heading.addEventListener("keydown", () => heading.classList.remove("navigation-focus"), {once:true});
+      heading.focus({preventScroll:true});
+      card.scrollIntoView({block:"start", behavior:"smooth"});
+    });
+  });
+}
+$("poseReset").onclick = () => { poseOverrides.clear();drawDetails();draw2D();status("已恢复太阳跟踪姿态");showSceneTopView(); };
 $("poseImage").onchange = async event => {
   if (!frame?.daylight || !event.target.files[0]) return;
   const bitmap=await createImageBitmap(event.target.files[0]);
@@ -1326,6 +1348,7 @@ $("poseTextApply").onclick = () => {
   if (!text.trim()) {
     poseOverrides.clear();
     drawDetails(); draw2D();
+    showSceneTopView();
     return status("已清空文字图案，恢复当前启停状态对应的姿态");
   }
   if (!frame?.daylight) return status("请选择白天时刻",true);
@@ -1345,18 +1368,7 @@ $("poseTextApply").onclick = () => {
   ctx.font=`bold ${size}px sans-serif`;ctx.fillStyle="black";ctx.textAlign="center";ctx.textBaseline="middle";
   lines.forEach((line,i)=>ctx.fillText(line,canvas.width/2,canvas.height/2+(i-(lines.length-1)/2)*size*1.2));
   applyPatternCanvas(canvas);
-  const card = document.querySelector("main > .spatial");
-  card.open = true;
-  requestAnimationFrame(() => {
-    sizeSceneArea();
-    resize();
-    const heading = card.querySelector("summary");
-    heading.classList.add("navigation-focus");
-    heading.addEventListener("blur", () => heading.classList.remove("navigation-focus"), {once:true});
-    heading.addEventListener("keydown", () => heading.classList.remove("navigation-focus"), {once:true});
-    heading.focus({preventScroll:true});
-    card.scrollIntoView({block:"start", behavior:"smooth"});
-  });
+  showSceneTopView();
 };
 $("exportCoordinates").onclick = async () => {
   if (!meta || !frame) return;
