@@ -219,3 +219,14 @@ def test_rearranged_reference_keeps_historical_weather_after_reload(tmp_path):
     assert restored.active.weather.index.equals(weather.index)
     assert np.allclose(restored.active.weather.dni_w_m2, weather.dni_w_m2)
     assert np.allclose(restored.active.weather.temperature_c, weather.temperature_c)
+
+
+def test_legacy_rearrangement_resolves_source_environment(tmp_path):
+    workspace = ViewerWorkspace(ROOT, tmp_path)
+    workspace.rearrange(dict(scheme='campo', separation_m=1, dr2=.9, dr3=1.8))
+    path = tmp_path/workspace.active_id/'config.json'
+    config = json.loads(path.read_text())
+    config.pop('source_plant_id')
+    path.write_text(json.dumps(config))
+    restored = ViewerWorkspace(ROOT, tmp_path)
+    assert restored.active.weather is restored._model_for('gemasolar').weather

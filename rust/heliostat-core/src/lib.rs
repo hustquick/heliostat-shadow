@@ -838,9 +838,10 @@ impl MobileRuntime {
         plant.config["design_method"] = serde_json::json!(scheme);
         plant.weather = MobileWeather::default();
         if plant.config.get("source_plant_id").is_none() {
-            plant.config["source_plant_id"] = serde_json::json!(self.bundle.plants[self.active].id);
+            plant.config["source_plant_id"] =
+                serde_json::json!(self.environment(&self.bundle.plants[self.active]).id);
             plant.config["source_plant_name"] =
-                serde_json::json!(self.bundle.plants[self.active].name);
+                serde_json::json!(self.environment(&self.bundle.plants[self.active]).name);
         }
         if let Some(meta) = plant.metadata.as_object_mut() {
             meta.insert(
@@ -886,14 +887,31 @@ impl MobileRuntime {
     }
 
     fn environment<'a>(&'a self, plant: &'a MobilePlant) -> &'a MobilePlant {
-        // New designs point directly to the original source, including when reordering a design.
         let source_id = plant
             .config
             .get("source_plant_id")
             .and_then(serde_json::Value::as_str);
-        source_id
-            .and_then(|id| self.bundle.plants.iter().find(|p| p.id == id))
-            .unwrap_or(plant)
+        if let Some(source) =
+            source_id.and_then(|id| self.bundle.plants.iter().find(|p| p.id == id))
+        {
+            return source;
+        }
+        // Older saved rearrangements identify their source through the generated name.
+        if ["Campo重排", "非圆曲线重排", "自由排布重排"]
+            .iter()
+            .any(|suffix| plant.name.ends_with(suffix))
+        {
+            if let Some(source) = self
+                .bundle
+                .plants
+                .iter()
+                .filter(|p| p.builtin && plant.name.starts_with(&format!("{} · ", p.name)))
+                .max_by_key(|p| p.name.len())
+            {
+                return source;
+            }
+        }
+        plant
     }
 
     pub fn metadata(&self) -> Result<serde_json::Value, String> {
