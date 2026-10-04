@@ -82,16 +82,29 @@ class ViewerWorkspace:
                 data = json.loads(metadata.read_text(encoding='utf-8'))
                 folder = metadata.parent
                 plants[data['id']] = dict(name=data['name'], config=folder/'config.json',
-                    layout=folder/'layout.csv', weather=None, builtin=False, clear_sky=True)
+                    layout=folder/'layout.csv', weather=folder/'weather.csv' if (folder/'weather.csv').exists() else None,
+                    builtin=False, clear_sky=bool(data.get('clear_sky', True)))
             except (OSError, KeyError, ValueError, json.JSONDecodeError):
                 continue
+        # Generated layouts reference the original environment rather than duplicating it.
+        for plant in plants.values():
+            if plant['builtin']:
+                continue
+            config = json.loads(plant['config'].read_text())
+            source = plants.get(config.get('source_plant_id'))
+            if source is not None:
+                plant['weather'] = source['weather']
+                plant['clear_sky'] = source['clear_sky']
         return plants
 
     @property
     def active(self):
+        return self._model_for(self.active_id)
+
+    def _model_for(self, plant_id):
         with self.lock:
-            if self.active_id not in self._models:
-                p = self._plants[self.active_id]
+            if plant_id not in self._models:
+                p = self._plants[plant_id]
                 if p.get('catalog'):
                     self._materialize_catalog(p)
                 catalog_note = None
@@ -99,13 +112,16 @@ class ViewerWorkspace:
                     catalog_note = p['catalog'].get(
                         'model_note',
                         '镜位是参数化重建；接收器公开尺寸缺失时使用逐电厂建模值。')
-                self._models[self.active_id] = ViewerModel(
+                config = json.loads(p['config'].read_text())
+                source_id = config.get('source_plant_id')
+                environment = self._model_for(source_id) if source_id in self._plants and source_id != plant_id else None
+                self._models[plant_id] = ViewerModel(
                     self.root, config_path=p['config'], layout_path=p['layout'],
-                    weather_path=p['weather'], clear_sky=p['clear_sky'],
+                    weather_path=p['weather'], clear_sky=p['clear_sky'], environment_model=environment,
                     source=(p['name'] + (' · pvlib 晴空辐照度' if p['clear_sky'] else ' · PVGIS-SARAH3 2023 DNI')),
                     note=(f'参数化重建场用于方法比较；镜位不是电厂竣工坐标。{catalog_note}' if p.get('catalog') else
                           '用户导入/重排布局；坐标与参数由用户负责核验。' if not p['builtin'] else None))
-            return self._models[self.active_id]
+            return self._models[plant_id]
 
     def metadata(self):
         data = self.active.metadata()
@@ -118,7 +134,8 @@ class ViewerWorkspace:
                                    '用户导入或重排坐标'),
                     reported_mirrors=catalog.get('reported_heliostats') if catalog else len(data['mirror_ids']),
                     plants=[dict(id=k, name=v['name'], builtin=v['builtin'],
-                                 catalog=bool(v.get('catalog')))
+                                 catalog=bool(v.get('catalog')),
+                                 design_method=None if v['builtin'] else json.loads(v['config'].read_text()).get('design_method'))
                             for k, v in self._plants.items()])
         return data
 
@@ -284,6 +301,7 @@ class ViewerWorkspace:
             coordinate_source_url=None,
             coordinate_note='经纬度由用户导入镜场时填写，应用未核验该场址。',
         )
+        base['design_method'] = payload.get('design_method', 'imported')
         base['year'] = int(payload.get('year', 2023))
         try: pd.Timestamp(f"{base['year']}-01-01", tz=base['timezone'])
         except Exception as exc: raise ValueError('时区名称无效') from exc
@@ -315,9 +333,18 @@ class ViewerWorkspace:
         plant_id = self._unique_id(_safe_id(name))
         folder = self.user_root/plant_id
         folder.mkdir(parents=True)
+        if payload.get('_bind_source_environment'):
+            source_config = self.active.config
+            base.update(source_plant_id=source_config.get('source_plant_id', self.active_id),
+                        source_plant_name=source_config.get('source_plant_name', self._plants[self.active_id]['name']))
+            for key in ('coordinate_datum', 'coordinate_accuracy', 'coordinate_source_name',
+                        'coordinate_source_url', 'coordinate_note'):
+                if key in source_config:
+                    base[key] = source_config[key]
         out.to_csv(folder/'layout.csv', index=False)
         (folder/'config.json').write_text(json.dumps(base, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
-        (folder/'plant.json').write_text(json.dumps({'id': plant_id, 'name': name}, ensure_ascii=False, indent=2)+'\n',
+        (folder/'plant.json').write_text(json.dumps({'id': plant_id, 'name': name,
+            'clear_sky': self.active.clear_sky if payload.get('_bind_source_environment') else True}, ensure_ascii=False, indent=2)+'\n',
                                           encoding='utf-8')
         self._plants = self._discover()
         return self.select(plant_id)
@@ -375,7 +402,7 @@ class ViewerWorkspace:
             tower_id=m.tower_id) for m in mirrors]).to_csv(index=False)
         imported = dict(payload, name=name, csv=csv, **{k: c[k] for k in
             ('latitude','longitude','altitude_m','optical_height_m','receiver_radius_m','receiver_height_m','timezone','year')})
-        imported.update(mirror_width_m=width, mirror_height_m=height,
+        imported.update(_bind_source_environment=True, design_method=scheme, mirror_width_m=width, mirror_height_m=height,
                         reflective_area_m2=min(float(c.get('reflective_area_m2', width*height)), width*height))
         return self.import_csv(imported)
 

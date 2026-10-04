@@ -32,13 +32,14 @@ pub struct MobilePlant {
     pub config: serde_json::Value,
     #[serde(default)]
     pub metadata: serde_json::Value,
+    #[serde(default)]
     pub weather: MobileWeather,
     pub mirrors: Vec<HeliostatInput>,
     #[serde(default = "default_builtin")]
     pub builtin: bool,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct MobileWeather {
     pub start_utc: String,
     pub step_seconds: i64,
@@ -710,6 +711,7 @@ impl MobileRuntime {
         }
         object.insert("timezone".into(), serde_json::json!(timezone));
         object.insert("expected_mirrors".into(), serde_json::json!(mirrors.len()));
+        object.insert("design_method".into(), serde_json::json!("imported"));
         object.insert("towers".into(), serde_json::json!([{"id":"tower-1","base":[0.0,0.0,0.0],"receiver":{"centre":[0.0,0.0,tower_height],"radius":receiver_radius,"height":receiver_height}}]));
         object.insert("tower_assignment_policy".into(), serde_json::json!("fixed"));
         let mut metadata = active.metadata.clone();
@@ -735,7 +737,7 @@ impl MobileRuntime {
             note: "坐标与参数由用户负责核验。".into(),
             config,
             metadata,
-            weather: active.weather.clone(),
+            weather: self.environment(active).weather.clone(),
             mirrors,
             builtin: false,
         });
@@ -833,6 +835,13 @@ impl MobileRuntime {
         plant.reported_mirrors = Some(count);
         plant.mirrors = mirrors;
         plant.builtin = false;
+        plant.config["design_method"] = serde_json::json!(scheme);
+        plant.weather = MobileWeather::default();
+        if plant.config.get("source_plant_id").is_none() {
+            plant.config["source_plant_id"] = serde_json::json!(self.bundle.plants[self.active].id);
+            plant.config["source_plant_name"] =
+                serde_json::json!(self.bundle.plants[self.active].name);
+        }
         if let Some(meta) = plant.metadata.as_object_mut() {
             meta.insert(
                 "default_mirror".into(),
@@ -876,22 +885,43 @@ impl MobileRuntime {
         self.metadata()
     }
 
+    fn environment<'a>(&'a self, plant: &'a MobilePlant) -> &'a MobilePlant {
+        // New designs point directly to the original source, including when reordering a design.
+        let source_id = plant
+            .config
+            .get("source_plant_id")
+            .and_then(serde_json::Value::as_str);
+        source_id
+            .and_then(|id| self.bundle.plants.iter().find(|p| p.id == id))
+            .unwrap_or(plant)
+    }
+
     pub fn metadata(&self) -> Result<serde_json::Value, String> {
         use chrono::{DateTime, Duration, Utc};
         let plant = &self.bundle.plants[self.active];
+        let environment = self.environment(plant);
+        let weather = &environment.weather;
         let mut value = plant.metadata.clone();
         if !value.is_object() {
             value = serde_json::json!({});
         }
         let object = value.as_object_mut().expect("object assigned above");
-        let start = plant
-            .weather
+        for key in ["timezone", "site_location", "default_time"] {
+            if let Some(shared) = environment.metadata.get(key) {
+                object.insert(key.into(), shared.clone());
+            }
+        }
+        object.insert(
+            "environment_plant_id".into(),
+            serde_json::json!(environment.id),
+        );
+        let start = weather
             .start_utc
             .parse::<DateTime<Utc>>()
             .map_err(|_| "invalid bundled weather start")?;
-        let timestamps: Vec<String> = (0..plant.weather.dni_w_m2.len())
+        let timestamps: Vec<String> = (0..weather.dni_w_m2.len())
             .map(|hour| {
-                (start + Duration::seconds(plant.weather.step_seconds * hour as i64)).to_rfc3339()
+                (start + Duration::seconds(weather.step_seconds * hour as i64)).to_rfc3339()
             })
             .collect();
         object.insert(
@@ -935,7 +965,7 @@ impl MobileRuntime {
         object.insert(
             "plants".into(),
             serde_json::json!(self.bundle.plants.iter().map(|item| serde_json::json!({
-            "id": item.id, "name": item.name, "builtin": item.builtin, "catalog": item.builtin && item.id != "gemasolar"
+            "id": item.id, "name": item.name, "builtin": item.builtin, "catalog": item.builtin && item.id != "gemasolar", "design_method": item.config.get("design_method")
         })).collect::<Vec<_>>()),
         );
         Ok(value)
@@ -945,50 +975,45 @@ impl MobileRuntime {
         use chrono::{DateTime, Utc};
         use solar_positioning::{Location, RefractionCorrection, SolarPositions, delta_t};
         let plant = &self.bundle.plants[self.active];
+        let environment = self.environment(plant);
+        let weather = &environment.weather;
         let time = timestamp
             .parse::<DateTime<Utc>>()
             .map_err(|_| "time must be an ISO-8601 UTC timestamp")?;
-        let start = plant
-            .weather
+        let start = weather
             .start_utc
             .parse::<DateTime<Utc>>()
             .map_err(|_| "invalid bundled weather start")?;
         let elapsed = time.signed_duration_since(start).num_seconds();
-        if elapsed < 0
-            || plant.weather.step_seconds <= 0
-            || elapsed % plant.weather.step_seconds != 0
-        {
+        if elapsed < 0 || weather.step_seconds <= 0 || elapsed % weather.step_seconds != 0 {
             return Err("time is outside the bundled hourly dataset".into());
         }
-        let index = usize::try_from(elapsed / plant.weather.step_seconds)
-            .map_err(|_| "invalid weather index")?;
-        let dni = *plant
-            .weather
+        let index =
+            usize::try_from(elapsed / weather.step_seconds).map_err(|_| "invalid weather index")?;
+        let dni = *weather
             .dni_w_m2
             .get(index)
             .ok_or("time is outside the bundled hourly dataset")?;
-        let latitude = plant
+        let latitude = environment
             .config
             .get("latitude")
             .and_then(serde_json::Value::as_f64)
             .ok_or("plant latitude missing")?;
-        let longitude = plant
+        let longitude = environment
             .config
             .get("longitude")
             .and_then(serde_json::Value::as_f64)
             .ok_or("plant longitude missing")?;
-        let altitude = plant
+        let altitude = environment
             .config
             .get("altitude_m")
             .and_then(serde_json::Value::as_f64)
             .unwrap_or(0.0);
-        let temperature = plant.weather.temperature_series_c.get(index).copied();
+        let temperature = weather.temperature_series_c.get(index).copied();
         let pressure_hpa = 1013.25 * (1.0 - 2.25577e-5 * altitude).max(0.01).powf(5.25588);
-        let refraction = RefractionCorrection::new(
-            pressure_hpa,
-            temperature.unwrap_or(plant.weather.temperature_c),
-        )
-        .map_err(|e| e.to_string())?;
+        let refraction =
+            RefractionCorrection::new(pressure_hpa, temperature.unwrap_or(weather.temperature_c))
+                .map_err(|e| e.to_string())?;
         let dt = delta_t::estimate_from_date_like(time.date_naive()).map_err(|e| e.to_string())?;
         let position = SolarPositions::new()
             .at(
@@ -1021,7 +1046,7 @@ impl MobileRuntime {
         if elevation <= 0.0 {
             return Ok(serde_json::json!({
                 "timestamp": time.to_rfc3339(), "local_time": local_time, "daylight": false,
-                "dni": 0.0, "temperature": temperature, "temperature_source": plant.weather.temperature_source, "elevation": elevation,
+                "dni": 0.0, "temperature": temperature, "temperature_source": weather.temperature_source, "elevation": elevation,
                 "sun": sun, "centres": plant.mirrors.iter().map(|m| m.centre).collect::<Vec<_>>(),
                 "vertices": [], "eta_joint": null
             }));
@@ -1031,7 +1056,7 @@ impl MobileRuntime {
         let vertices: Vec<[Vec3; 4]> = field.poses.iter().map(|pose| pose.vertices).collect();
         Ok(serde_json::json!({
             "timestamp": time.to_rfc3339(), "local_time": local_time, "daylight": true,
-            "tower_assignment": assignment_report(plant,sun), "dni": dni, "temperature": temperature, "temperature_source": plant.weather.temperature_source, "elevation": elevation,
+            "tower_assignment": assignment_report(plant,sun), "dni": dni, "temperature": temperature, "temperature_source": weather.temperature_source, "elevation": elevation,
             "sun": sun, "vertices": vertices,
             "tower_ids": field.mirrors.iter().map(|m| &m.tower_id).collect::<Vec<_>>(),
             "eta_joint": vec![serde_json::Value::Null; field.mirrors.len()],
@@ -2325,6 +2350,9 @@ mod tests {
             imported["plants"].as_array().unwrap().last().unwrap()["builtin"],
             false
         );
+        let weather_before =
+            serde_json::to_value(&runtime.bundle.plants[runtime.active].weather).unwrap();
+        let source_id = runtime.bundle.plants[runtime.active].id.clone();
         let rearranged = runtime
             .request(
                 "POST",
@@ -2333,6 +2361,15 @@ mod tests {
             )
             .unwrap();
         assert_eq!(rearranged["mirror_ids"].as_array().unwrap().len(), 6);
+        let design = &runtime.bundle.plants[runtime.active];
+        assert_eq!(design.config["design_method"], "free");
+        assert_eq!(design.config["source_plant_id"], source_id);
+        assert_eq!(design.config["latitude"], 37.5);
+        assert!(design.weather.dni_w_m2.is_empty());
+        assert_eq!(
+            serde_json::to_value(&runtime.environment(design).weather).unwrap(),
+            weather_before
+        );
         let state = runtime
             .request("GET", "state/export", &serde_json::json!({}))
             .unwrap();

@@ -782,6 +782,7 @@ function showHeliostatSummary() {
 function controlsBusy(value) {
   busy = value;
   for (const id of [
+    "plant",
     "date",
     "time",
     "prev",
@@ -796,6 +797,8 @@ function controlsBusy(value) {
     "towerColor",
   ])
     $(id).disabled = value;
+  for (const select of document.querySelectorAll("#designLayouts select"))
+    select.disabled = value || select.dataset.empty === "true";
   document.querySelector("#selectMirror button").disabled = value;
 }
 async function loadTime() {
@@ -1065,18 +1068,51 @@ for (const button of document.querySelectorAll("[data-mode]"))
     draw2D();
   };
 $("plane").onchange = draw2D;
+function showLayoutSelectors() {
+  const plants = meta.plants.filter(item => item.builtin);
+  const designs = meta.plants.filter(item => !item.builtin);
+  const isDesign = designs.some(item => item.id === meta.active_plant);
+  const populate = (select, items, placeholder) => {
+    select.replaceChildren();
+    if (placeholder) {
+      const option = document.createElement("option");
+      option.value = ""; option.textContent = placeholder; option.disabled = true;
+      select.append(option);
+    }
+    for (const item of items) {
+      const option = document.createElement("option");
+      option.value = item.id; option.textContent = item.name; select.append(option);
+    }
+    select.value = items.some(item => item.id === meta.active_plant) ? meta.active_plant : "";
+  };
+  populate($("plant"), plants, isDesign ? "切换到电厂或参考布局" : null);
+  $("designLayouts").replaceChildren();
+  const methodOf = item => {
+    if (item.design_method) return item.design_method;
+    // Existing saved layouts predate the explicit method field.
+    const match = item.name.match(/(Campo|非圆曲线|自由排布)重排$/);
+    return match ? ({Campo:"campo", 非圆曲线:"curved", 自由排布:"free"})[match[1]] : "imported";
+  };
+  for (const [method, title] of [["campo","Campo 径向交错"],["curved","非圆曲线交错"],["free","自由价值场"],["imported","导入的镜场布局"]]) {
+    const items = designs.filter(item => methodOf(item) === method);
+    const label = document.createElement("label");
+    const name = document.createElement("span"); name.textContent = title;
+    const select = document.createElement("select");
+    select.id = `design-${method}`; select.setAttribute("aria-label", title);
+    populate(select, items, items.length ? "选择设计方案" : "暂无方案");
+    select.dataset.empty = String(items.length === 0); select.disabled = items.length === 0;
+    select.onchange = () => selectLayout(select.value);
+    label.append(name, select); $("designLayouts").append(label);
+  }
+  if (isDesign) $("mobileManage").open = true;
+}
 async function init() {
   meta = await api("meta");
   readOperationParameters();
   mirrorIndex = new Map(meta.mirror_ids.map((id, i) => [id, i]));
   selected = meta.default_mirror;
   $("mirror").value = selected;
-  $("plant").replaceChildren();
-  for (const item of meta.plants) {
-    const op=document.createElement("option"); op.value=item.id; op.textContent=item.name;
-    $("plant").append(op);
-  }
-  $("plant").value=meta.active_plant;
+  showLayoutSelectors();
   $("timezoneLabel").textContent=`时刻 · ${meta.timezone}`;
   $("plantBadge").textContent = `${meta.plant_name} · ${meta.tower_count} 座塔 · 全模型 ${meta.mirror_ids.length.toLocaleString()} 面镜`;
   $("towerColor").hidden = meta.tower_count < 2;
@@ -1162,11 +1198,13 @@ async function init() {
 }
 init().catch((e) => status(e.message, true));
 
-$("plant").onchange = async () => {
-  controlsBusy(true); status("正在切换电厂并载入镜场…");
-  try { await apiPost("plants/select", {plant_id:$("plant").value}); location.reload(); }
+async function selectLayout(id) {
+  if (!id || busy) return;
+  controlsBusy(true); status("正在载入镜场…");
+  try { await apiPost("plants/select", {plant_id:id}); location.reload(); }
   catch(e) { status(e.message,true); controlsBusy(false); }
-};
+}
+$("plant").onchange = () => selectLayout($("plant").value);
 $("importPlant").onclick=()=>$("importDialog").showModal();
 $("rearrange").onclick=()=>$("rearrangeDialog").showModal();
 for (const b of document.querySelectorAll("[data-close]")) b.onclick=()=>b.closest("dialog").close();

@@ -39,13 +39,19 @@ def polygon_rings(geometry):
 
 class ViewerModel:
     def __init__(self, root=ROOT, *, config_path=None, layout_path=None,
-                 weather_path=None, source=None, note=None, clear_sky=False):
+                 weather_path=None, source=None, note=None, clear_sky=False, environment_model=None):
         config_path = Path(config_path or root/'data/gemasolar_config.json')
         layout_path = Path(layout_path or root/'data/processed/gemasolar_layout.csv')
         # Plant catalogues carry Chinese names and notes.  Windows defaults to
         # a legacy ANSI code page, so the application data must always be
         # decoded explicitly as UTF-8.
         self.config = config_with_towers(json.loads(config_path.read_text(encoding='utf-8')))
+        if environment_model is not None:
+            for key in ('latitude', 'longitude', 'altitude_m', 'timezone', 'year',
+                        'coordinate_datum', 'coordinate_accuracy', 'coordinate_source_name',
+                        'coordinate_source_url', 'coordinate_note'):
+                if key in environment_model.config:
+                    self.config[key] = environment_model.config[key]
         self.towers = towers_from_config(self.config)
         self.tower_by_id = {tower.tower_id: tower for tower in self.towers}
         self.mirrors = load_layout(layout_path)
@@ -64,36 +70,41 @@ class ViewerModel:
         self.clear_sky = bool(clear_sky)
         self.source = source or 'Gemasolar 公开研究重建布局 · PVGIS-SARAH3 2023 历史卫星 DNI'
         self.note = note or '平坦地形、140 m 名义瞄准高度；非业主竣工测量。界面显示平面矩形几何，不显示接收器通量。'
-        if self.clear_sky:
-            year = int(self.config.get('year', 2023))
-            index = pd.date_range(f'{year}-01-01', f'{year + 1}-01-01', freq='h',
-                                  inclusive='left', tz='UTC')
-            self.weather = pd.DataFrame({'time_utc': index, 'dni_w_m2': 0.})
+        if environment_model is not None:
+            self.clear_sky = environment_model.clear_sky
+            self.weather = environment_model.weather
+            self.temperature_source = environment_model.temperature_source
         else:
-            self.weather = pd.read_csv(weather_path or root/'data/processed/gemasolar_dni_2023.csv')
-        self.weather.index = pd.to_datetime(self.weather.time_utc, utc=True)
-        self.temperature_source = 'historical'
-        if self.clear_sky:
-            archive_path = root/'data/temperature_archive.json'
-            archive = json.loads(archive_path.read_text(encoding='utf-8')) if archive_path.exists() else {'plants': []}
-            profile = next((entry for entry in archive['plants']
-                            if abs(entry['latitude'] - self.config['latitude']) < 1e-5
-                            and abs(entry['longitude'] - self.config['longitude']) < 1e-5
-                            and entry['year'] == year), None)
-            if profile is not None and len(profile['temperature_series_c']) == len(self.weather):
-                self.weather['temperature_c'] = profile['temperature_series_c']
-                self.temperature_source = 'era5_land_reanalysis'
+            if self.clear_sky:
+                year = int(self.config.get('year', 2023))
+                index = pd.date_range(f'{year}-01-01', f'{year + 1}-01-01', freq='h',
+                                      inclusive='left', tz='UTC')
+                self.weather = pd.DataFrame({'time_utc': index, 'dni_w_m2': 0.})
             else:
-                # Explicit illustrative fallback for custom sites without an archive.
-                latitude = float(self.config['latitude'])
-                altitude = float(self.config.get('altitude_m', 0.))
-                day = self.weather.index.dayofyear.to_numpy()
-                solar_hour = self.weather.index.hour.to_numpy() + self.config['longitude'] / 15.
-                peak_day = 200 if latitude >= 0 else 18
-                seasonal = (5 + abs(latitude) * .3) * np.cos(2 * np.pi * (day - peak_day) / 365.25)
-                diurnal = 5 * np.cos(2 * np.pi * (solar_hour - 15) / 24)
-                self.weather['temperature_c'] = 27 - .52 * abs(latitude) - .006 * altitude + seasonal + diurnal
-                self.temperature_source = 'illustrative_simulation'
+                self.weather = pd.read_csv(weather_path or root/'data/processed/gemasolar_dni_2023.csv')
+            self.weather.index = pd.to_datetime(self.weather.time_utc, utc=True)
+            self.temperature_source = 'historical'
+            if self.clear_sky:
+                archive_path = root/'data/temperature_archive.json'
+                archive = json.loads(archive_path.read_text(encoding='utf-8')) if archive_path.exists() else {'plants': []}
+                profile = next((entry for entry in archive['plants']
+                                if abs(entry['latitude'] - self.config['latitude']) < 1e-5
+                                and abs(entry['longitude'] - self.config['longitude']) < 1e-5
+                                and entry['year'] == year), None)
+                if profile is not None and len(profile['temperature_series_c']) == len(self.weather):
+                    self.weather['temperature_c'] = profile['temperature_series_c']
+                    self.temperature_source = 'era5_land_reanalysis'
+                else:
+                    # Explicit illustrative fallback for custom sites without an archive.
+                    latitude = float(self.config['latitude'])
+                    altitude = float(self.config.get('altitude_m', 0.))
+                    day = self.weather.index.dayofyear.to_numpy()
+                    solar_hour = self.weather.index.hour.to_numpy() + self.config['longitude'] / 15.
+                    peak_day = 200 if latitude >= 0 else 18
+                    seasonal = (5 + abs(latitude) * .3) * np.cos(2 * np.pi * (day - peak_day) / 365.25)
+                    diurnal = 5 * np.cos(2 * np.pi * (solar_hour - 15) / 24)
+                    self.weather['temperature_c'] = 27 - .52 * abs(latitude) - .006 * altitude + seasonal + diurnal
+                    self.temperature_source = 'illustrative_simulation'
 
         self.cache = OrderedDict()
         self.optical_efficiency_cache = OrderedDict()

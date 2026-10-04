@@ -20,7 +20,7 @@
     <div class="controlarea">
       <div class="controlstack">
         <section class="workspacebar" aria-label="电厂与布局管理">
-          <label>当前电厂 / 布局 <select id="plant"></select></label>
+          <label>电厂 / 参考布局 <select id="plant"></select></label>
 
         </section>
         <section class="toolbar" aria-label="时间与目标镜控制">
@@ -183,7 +183,8 @@
           <button id="exportCoordinates" title="导出全场坐标">导出坐标</button>
           <span id="layoutStatus"></span>
       </div>
-      <p class="carddescription">导入坐标或创建重排布局。此处操作会保存在本设备。</p>
+      <div id="designLayouts" class="saved-designs cardcontrols" aria-label="按排布方法选择镜场设计"></div>
+      <p class="carddescription">导入坐标或重排会创建独立镜场设计，保存在本设备；原电厂与参考布局保留。</p>
     </details>
     <details class="poseeditor" id="operationSettings">
       <summary><span class="cardtitle">05 / 聚光启停参数</span> </summary>

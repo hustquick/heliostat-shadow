@@ -112,10 +112,19 @@ def test_catalog_selection_import_and_rearrangement(tmp_path):
     active = (tmp_path/'active.txt').read_text()
     assert active == imported['active_plant']
 
+    source_weather = workspace.active.weather.copy()
+    source_temperature = workspace.active.temperature_source
     rearranged = workspace.rearrange(dict(scheme='campo', separation_m=1, dr2=.9, dr3=1.8))
     assert len(rearranged['mirror_ids']) == 60
     assert 'Campo重排' in rearranged['plant_name']
     config = json.loads((tmp_path/rearranged['active_plant']/'config.json').read_text())
+    assert config['design_method'] == 'campo'
+    assert config['source_plant_id'] == imported['active_plant']
+    assert workspace.active.temperature_source == source_temperature
+    assert np.allclose(workspace.active.weather.temperature_c, source_weather.temperature_c)
+    restored = ViewerWorkspace(ROOT, tmp_path)
+    assert restored.active.config['design_method'] == 'campo'
+    assert np.allclose(restored.active.weather.temperature_c, source_weather.temperature_c)
     assert config['latitude'] == 35
     assert config['coordinate_accuracy'] == 'user_supplied'
     assert config['coordinate_source_url'] is None
@@ -192,3 +201,21 @@ def test_every_catalog_receiver_has_explicit_audit_status():
         assert by_id[key]['model_receiver_height_m'] == height
     for key in ['ps10', 'khi-solar-one', 'yumen-xinneng-beam-down']:
         assert by_id[key]['receiver_geometry_status'] == 'unsupported-geometry'
+
+
+def test_rearranged_reference_keeps_historical_weather_after_reload(tmp_path):
+    workspace = ViewerWorkspace(ROOT, tmp_path)
+    source = workspace.active
+    weather = source.weather.copy()
+    expected = {key: source.config[key] for key in ('latitude', 'longitude', 'timezone', 'year')}
+    workspace.rearrange(dict(scheme='campo', separation_m=1, dr2=.9, dr3=1.8))
+    restored = ViewerWorkspace(ROOT, tmp_path)
+    assert restored.active.weather is restored._model_for('gemasolar').weather
+    assert not restored.active.clear_sky
+    assert restored.active.config['source_plant_id'] == 'gemasolar'
+    assert not (tmp_path/restored.active_id/'weather.csv').exists()
+    assert restored._plants[restored.active_id]['weather'] == restored._plants['gemasolar']['weather']
+    assert {key: restored.active.config[key] for key in expected} == expected
+    assert restored.active.weather.index.equals(weather.index)
+    assert np.allclose(restored.active.weather.dni_w_m2, weather.dni_w_m2)
+    assert np.allclose(restored.active.weather.temperature_c, weather.temperature_c)
