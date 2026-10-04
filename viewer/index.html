@@ -96,8 +96,12 @@
             <button id="viewTop" type="button" aria-label="东-北俯视图" title="东-北俯视图">俯视<br /><small>E–N</small></button>
           </div>
           </div>
-        <div class="field-efficiency" aria-live="polite"><span>全场平均光学效率</span><strong id="fieldEfficiency">—</strong></div>
         <div id="scene" aria-label="三维镜场，可拖动旋转、滚轮缩放、点击选镜">
+        <div class="field-efficiency" aria-live="polite"><span>全场平均光学效率</span><strong id="fieldEfficiency">—</strong></div>
+        <div id="efficiencyScale" class="efficiency-scale" hidden>
+          <span id="efficiencyMin"></span><i></i><span id="efficiencyMax"></span>
+          <strong>总光学效率</strong>
+        </div>
 
           <div id="night" hidden>
             太阳在地平线以下<br /><small
@@ -109,10 +113,7 @@
 
         </div>
         <div class="carddescription scene-description">
-        <div id="efficiencyScale" class="efficiency-scale" hidden>
-          <span id="efficiencyMin"></span><i></i><span id="efficiencyMax"></span>
-          <strong>总光学效率</strong>
-        </div>
+
 
           <p><span class="scene-help-desktop">拖动旋转 · 右键平移 · 滚轮缩放 · 单击镜面选中。</span><span class="scene-help-touch">单指拖动旋转 · 双指拖动平移 · 双指捏合缩放 · 轻点镜面选中。</span></p>
           <p>“效率着色”按每面镜的总光学效率由蓝色（低）至红色（高）显示，开启后仅用加粗绿色外边框标出目标镜，不叠加影响镜或阴影/遮挡颜色。</p>

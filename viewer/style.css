@@ -926,3 +926,20 @@ main > details.spatial > .scene-description { position:absolute; left:var(--card
 
 /* Keep automatic card navigation quiet; keyboard focus retains its normal ring. */
 main > details > summary.navigation-focus:focus-visible { outline:none; }
+
+/* Readouts overlay the canvas without intercepting mirror picking or gestures. */
+#scene > .field-efficiency,
+#scene > .efficiency-scale {
+ position:absolute; z-index:3; left:12px; right:12px;
+ margin:0; padding:8px 10px; box-sizing:border-box;
+ pointer-events:none; border-radius:8px;
+ background:rgba(16,33,43,.78);
+}
+#scene > .field-efficiency { top:10px; }
+#scene > .efficiency-scale { bottom:10px; height:auto; min-height:26px; }
+@media(max-width:600px) {
+ #scene > .field-efficiency,
+ #scene > .efficiency-scale { left:8px; right:8px; padding:6px 8px; }
+ #scene > .field-efficiency { gap:8px; font-size:11px; }
+ #scene > .field-efficiency strong { font-size:17px; }
+}
