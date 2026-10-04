@@ -1205,13 +1205,35 @@ async function init() {
   setDate(item.date, item.utc);
   $("plane").disabled = true;
   await loadTime();
+  if (location.hash === "#layout-field-top") {
+    const card = document.querySelector("main > .spatial");
+    card.open = true;
+    viewPreference = "overview";
+    $("viewMode").value = "overview";
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    sizeSceneArea();
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    resize();
+    cameraTransition = null;
+    topView();
+    const heading = card.querySelector("summary");
+    heading.focus({preventScroll:true});
+    card.scrollIntoView({block:"start", behavior:"instant"});
+    history.replaceState(null, "", location.pathname + location.search);
+  }
 }
 init().catch((e) => status(e.message, true));
+
+function reloadLayoutInTopView() {
+  // Carry the destination through reload in desktop and native WebViews.
+  history.replaceState(null, "", location.pathname + location.search + "#layout-field-top");
+  location.reload();
+}
 
 async function selectLayout(id) {
   if (!id || busy) return;
   controlsBusy(true); status("正在载入镜场…");
-  try { await apiPost("plants/select", {plant_id:id}); location.reload(); }
+  try { await apiPost("plants/select", {plant_id:id}); reloadLayoutInTopView(); }
   catch(e) { status(e.message,true); controlsBusy(false); }
 }
 $("plant").onchange = () => selectLayout($("plant").value);
@@ -1224,7 +1246,7 @@ $("importForm").onsubmit=async(e)=>{
   const body=Object.fromEntries([...f.entries()].filter(([k])=>k!=="file")); body.csv=await file.text(); body.plant_id=meta.environment_plant_id || meta.active_plant;
   $("importDialog").close(); stopPlay(); controlsBusy(true);
   $("designProgress").hidden=false; $("designProgress").textContent="正在校验并导入布局…";
-  try { await apiPost("plants/import",body); location.reload(); }
+  try { await apiPost("plants/import",body); reloadLayoutInTopView(); }
   catch(err){ $("designProgress").hidden=true; status(err.message,true); controlsBusy(false); }
 };
 $("rearrangeForm").onsubmit=async(e)=>{
@@ -1233,7 +1255,7 @@ $("rearrangeForm").onsubmit=async(e)=>{
   if (body.scheme === "imported") return $("importDialog").showModal();
   stopPlay(); controlsBusy(true);
   $("designProgress").hidden=false; $("designProgress").textContent="正在基于当前电厂生成布局…";
-  try { await apiPost("layout/rearrange",body); location.reload(); }
+  try { await apiPost("layout/rearrange",body); reloadLayoutInTopView(); }
   catch(err){ $("designProgress").hidden=true; status(err.message,true); controlsBusy(false); }
 };
 

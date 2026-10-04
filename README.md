@@ -26,7 +26,7 @@
 
 ## 多平台应用
 
-当前版本为 **v1.0.1**。四个平台共享 Three.js 交互界面和 Rust 几何内核，但交付方式不同：
+当前版本为 **v1.0.2**。四个平台共享 Three.js 交互界面和 Rust 几何内核，但交付方式不同：
 
 | 平台 | 应用形式 | 计算与数据模式 | 当前交付物 |
 |---|---|---|---|
@@ -371,15 +371,15 @@ heliostat-shadow/
 ```bash
 source "$HOME/venv/bin/activate"
 python -m pip install -r requirements-build.txt
-./scripts/build_macos_app.sh 1.0.1
+./scripts/build_macos_app.sh 1.0.2
 ```
 
 输出位于 `dist/macos/`：
 
 ```text
 塔式镜场设计与优化.app
-Heliostat-Viewer-macOS-arm64-v1.0.1.dmg
-Heliostat-Viewer-macOS-arm64-v1.0.1.dmg.sha256
+Heliostat-Viewer-macOS-arm64-v1.0.2.dmg
+Heliostat-Viewer-macOS-arm64-v1.0.2.dmg.sha256
 ```
 
 ## 主要参考

@@ -28,7 +28,7 @@ def assert_matches_python(mirrors, sun, indices, absolute=3e-8):
 
 
 def test_rust_core_version_matches_release():
-    assert version() == "1.0.1"
+    assert version() == "1.0.2"
 
 
 def test_random_tilted_field_matches_python():

@@ -47,7 +47,7 @@ jobs:
         run: ./scripts/smoke_windows_server.ps1
       - uses: actions/upload-artifact@v4
         with:
-          name: Heliostat-Viewer-Windows-v1.0.1
+          name: Heliostat-Viewer-Windows-v1.0.2
           path: |
             dist/windows/*.exe
             dist/windows/*.zip
@@ -80,7 +80,7 @@ jobs:
           unzip -p dist/android/*.apk assets/mobile/plant_bundle.bundle | gzip -dc | grep -q '"plants"'
       - uses: actions/upload-artifact@v4
         with:
-          name: Heliostat-Viewer-Android-v1.0.1
+          name: Heliostat-Viewer-Android-v1.0.2
           path: |
             dist/android/*.apk
             dist/android/*.sha256
@@ -97,7 +97,7 @@ jobs:
       - run: chmod +x scripts/build_ios.sh && ./scripts/build_ios.sh
       - uses: actions/upload-artifact@v4
         with:
-          name: Heliostat-Viewer-iOS-Simulator-v1.0.1
+          name: Heliostat-Viewer-iOS-Simulator-v1.0.2
           path: |
             dist/ios/*.zip
             dist/ios/*.sha256
@@ -111,12 +111,12 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: Heliostat-Viewer-Windows-v1.0.1
+          name: Heliostat-Viewer-Windows-v1.0.2
           path: release-assets/windows
       - name: Upload packages to existing release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload v1.0.1 release-assets/windows/* --clobber --repo "${{ github.repository }}"
+        run: gh release upload v1.0.2 release-assets/windows/* --clobber --repo "${{ github.repository }}"
 
   publish-android-release:
     needs: android
@@ -127,12 +127,12 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: Heliostat-Viewer-Android-v1.0.1
+          name: Heliostat-Viewer-Android-v1.0.2
           path: release-assets/android
       - name: Upload packages to existing release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload v1.0.1 release-assets/android/* --clobber --repo "${{ github.repository }}"
+        run: gh release upload v1.0.2 release-assets/android/* --clobber --repo "${{ github.repository }}"
 
   publish-ios-release:
     needs: ios-simulator
@@ -143,9 +143,9 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: Heliostat-Viewer-iOS-Simulator-v1.0.1
+          name: Heliostat-Viewer-iOS-Simulator-v1.0.2
           path: release-assets/ios
       - name: Upload packages to existing release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload v1.0.1 release-assets/ios/* --clobber --repo "${{ github.repository }}"
+        run: gh release upload v1.0.2 release-assets/ios/* --clobber --repo "${{ github.repository }}"
