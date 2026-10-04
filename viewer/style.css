@@ -944,3 +944,15 @@ main > details > summary.navigation-focus:focus-visible { outline:none; }
  #scene > .field-efficiency strong { font-size:17px; }
 }
 #scene > #hover { top:58px; z-index:4; }
+
+.projection-stage > .projection-legend {
+ position:absolute; z-index:3; top:10px; left:12px; right:12px;
+ display:flex; margin:0; padding:8px 10px;
+ pointer-events:none; border-radius:8px;
+ background:rgba(16,33,43,.78); box-sizing:border-box;
+}
+@media(max-width:600px) {
+ .projection-stage > .projection-legend { left:8px; right:8px; padding:6px 8px; gap:14px; }
+}
+/* Reserve drawing space beneath the floating legend, including u/v labels. */
+.projection-stage > #projection { box-sizing:border-box; padding-top:52px; }
