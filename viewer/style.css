@@ -943,3 +943,4 @@ main > details > summary.navigation-focus:focus-visible { outline:none; }
  #scene > .field-efficiency { gap:8px; font-size:11px; }
  #scene > .field-efficiency strong { font-size:17px; }
 }
+#scene > #hover { top:58px; z-index:4; }
