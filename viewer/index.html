@@ -17,6 +17,13 @@
       </div>
       <div class="badge" id="plantBadge">载入电厂数据库…</div>
     </header>
+    <dialog id="updatesDialog" aria-labelledby="updatesTitle">
+      <h2 id="updatesTitle">应用更新</h2>
+      <p id="updateVersion"></p><p id="updateMessage" role="status"></p>
+      <progress id="updateProgress" max="100" hidden></progress>
+      <pre id="updateNotes"></pre>
+      <div class="update-actions"><button id="checkUpdates">检查更新</button><button id="downloadUpdate" hidden>下载新版</button><button id="installUpdate" hidden>安装并重启</button><button id="closeUpdates">关闭</button></div>
+    </dialog>
     <div class="controlarea">
       <div class="controlstack">
         <section class="workspacebar" aria-label="电厂与布局管理">

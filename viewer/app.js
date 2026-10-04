@@ -1,3 +1,4 @@
+import {initUpdates} from "./updates.js";
 import {defaultOperationParameters, validateOperationParameters, nextOperationState, parkedVertices} from "./operation.js";
 import * as THREE from "three";
 import { OrbitControls } from "./vendor/OrbitControls.js";
@@ -1394,6 +1395,7 @@ $("poseFontIncrease").onclick=()=>adjustPatternFont(0.1);
 
 // Native desktop menus use the same actions as the on-page controls.
 window.heliostatDesktopCommand = command => {
+  if (command === "updates") return openUpdates();
   const reveal = id => {
     const editor = document.querySelector(".poseeditor");
     editor.open = true;
@@ -1448,3 +1450,5 @@ $("operationForm").onsubmit = async event => {
   } catch (error) { status(error.message, true); }
   finally { controlsBusy(false); }
 };
+
+const openUpdates = initUpdates(api, apiPost);

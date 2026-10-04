@@ -53,7 +53,7 @@ public sealed class ViewerForm : Form
         Add("视图", ("全场视角", "overview", Keys.Control | Keys.D1), ("聚焦目标", "focus", Keys.Control | Keys.D2), ("等轴测视图", "iso", Keys.Control | Keys.D3), ("俯视 E–N", "top", Keys.Control | Keys.D4), ("切换效率着色", "efficiency", Keys.None), ("切换目标塔着色", "tower", Keys.None), ("切换仅目标与候选镜", "neighbors", Keys.None));
         Add("图案", ("添加文字…", "text", Keys.None), ("生成当前文字图案", "textApply", Keys.None), ("添加图案图片…", "image", Keys.None), ("清除图案并恢复跟踪", "reset", Keys.None));
         Add("时间", ("播放 / 暂停", "play", Keys.None), ("上一小时", "prev", Keys.None), ("下一小时", "next", Keys.None));
-        Add("帮助", ("操作说明", "help", Keys.None));
+        Add("帮助", ("检查更新…", "updates", Keys.None), ("操作说明", "help", Keys.None));
         Controls.Add(menu);
         MainMenuStrip = menu;
     }
@@ -68,6 +68,9 @@ public sealed class ViewerForm : Form
             var webData = Path.Combine(appData, "WebView2");
             var environment = await CoreWebView2Environment.CreateAsync(null, webData);
             await webView.EnsureCoreWebView2Async(environment);
+            webView.CoreWebView2.WebMessageReceived += (_, e) => {
+                if (e.Source.StartsWith("http://127.0.0.1:") && e.TryGetWebMessageAsString() == "update-quit") Close();
+            };
             webView.NavigateToString("""
                 <!doctype html><meta charset="utf-8"><style>
                 body{margin:0;height:100vh;display:grid;place-items:center;background:#08131a;color:#d9edf4;font:16px 'Segoe UI'}
@@ -91,6 +94,8 @@ public sealed class ViewerForm : Form
                 WorkingDirectory = Path.GetDirectoryName(executable)!,
             };
             start.Environment["HELIOSTAT_VIEWER_DATA"] = appData;
+            start.Environment["HELIOSTAT_APP_PATH"] = AppContext.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar);
+            start.Environment["HELIOSTAT_APP_PID"] = Environment.ProcessId.ToString();
             server = new Process { StartInfo = start, EnableRaisingEvents = true };
             server.OutputDataReceived += (_, e) => WriteLog(e.Data);
             server.ErrorDataReceived += (_, e) => WriteLog(e.Data);

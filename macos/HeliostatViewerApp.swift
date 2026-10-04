@@ -53,7 +53,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKSc
         ("视图", [("全场视角", "overview", "1"), ("聚焦目标", "focus", "2"), ("等轴测视图", "iso", "3"), ("俯视 E–N", "top", "4"), ("切换效率着色", "efficiency", ""), ("切换目标塔着色", "tower", ""), ("切换仅目标与候选镜", "neighbors", "")]),
         ("图案", [("添加文字…", "text", ""), ("生成当前文字图案", "textApply", ""), ("添加图案图片…", "image", ""), ("清除图案并恢复跟踪", "reset", "")]),
         ("时间", [("播放 / 暂停", "play", ""), ("上一小时", "prev", ""), ("下一小时", "next", "")]),
-        ("帮助", [("操作说明", "help", "")])
+        ("帮助", [("检查更新…", "updates", ""), ("操作说明", "help", "")])
     ]
 
     @objc private func desktopAction(_ sender: NSMenuItem) {
@@ -62,6 +62,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKSc
     }
 
     func userContentController(_ controller: WKUserContentController, didReceive message: WKScriptMessage) {
+        if message.name == "heliostatUpdateQuit" { NSApp.terminate(nil); return }
         guard let body = message.body as? [String: String], let text = body["text"] else { return }
         let panel = NSSavePanel()
         panel.nameFieldStringValue = "heliostat-coordinates.csv"
@@ -76,6 +77,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKSc
         let configuration = WKWebViewConfiguration()
         configuration.websiteDataStore = .nonPersistent()
         configuration.userContentController.add(self, name: "heliostatExport")
+        configuration.userContentController.add(self, name: "heliostatUpdateQuit")
         webView = WKWebView(frame: .zero, configuration: configuration)
         webView.setValue(false, forKey: "drawsBackground")
         webView.loadHTMLString("""
@@ -130,6 +132,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKSc
         let process = Process()
         process.executableURL = executable
         process.arguments = ["--port", "0", "--port-file", port.path]
+        var environment = ProcessInfo.processInfo.environment
+        environment["HELIOSTAT_APP_PATH"] = Bundle.main.bundlePath
+        environment["HELIOSTAT_APP_PID"] = String(ProcessInfo.processInfo.processIdentifier)
+        process.environment = environment
         process.currentDirectoryURL = resources.appendingPathComponent("server", isDirectory: true)
         process.standardOutput = logHandle
         process.standardError = logHandle

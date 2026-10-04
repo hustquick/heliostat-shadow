@@ -26,6 +26,7 @@ jobs:
       - run: cargo test --manifest-path rust/Cargo.toml
       - run: cargo test --manifest-path rust/Cargo.toml --features android-jni
       - run: node tests/operation_state.mjs
+      - run: node tests/update_ui.mjs
       - run: python -m pytest -q
 
   windows:
@@ -45,9 +46,11 @@ jobs:
           ./scripts/build_windows.ps1
       - shell: pwsh
         run: ./scripts/smoke_windows_server.ps1
+      - shell: pwsh
+        run: ./scripts/test_windows_update.ps1
       - uses: actions/upload-artifact@v4
         with:
-          name: Heliostat-Viewer-Windows-v1.0.2
+          name: Heliostat-Viewer-Windows
           path: |
             dist/windows/*.exe
             dist/windows/*.zip
@@ -72,6 +75,14 @@ jobs:
           "$SDKMANAGER" "ndk;28.0.13004108"
       - run: cargo install cargo-ndk --locked
       - run: chmod +x android/gradlew scripts/build_android.sh
+      - name: Restore persistent Android signing identity
+        env:
+          SIGNING_KEY: ${{ secrets.ANDROID_SIGNING_KEYSTORE }}
+        run: |
+          test -n "$SIGNING_KEY"
+          mkdir -p "$HOME/.android"
+          printf '%s' "$SIGNING_KEY" | base64 -d > "$HOME/.android/debug.keystore"
+          chmod 600 "$HOME/.android/debug.keystore"
       - run: ./scripts/build_android.sh
       - name: Verify packaged Android viewer resources
         run: |
@@ -80,7 +91,7 @@ jobs:
           unzip -p dist/android/*.apk assets/mobile/plant_bundle.bundle | gzip -dc | grep -q '"plants"'
       - uses: actions/upload-artifact@v4
         with:
-          name: Heliostat-Viewer-Android-v1.0.2
+          name: Heliostat-Viewer-Android
           path: |
             dist/android/*.apk
             dist/android/*.sha256
@@ -97,55 +108,49 @@ jobs:
       - run: chmod +x scripts/build_ios.sh && ./scripts/build_ios.sh
       - uses: actions/upload-artifact@v4
         with:
-          name: Heliostat-Viewer-iOS-Simulator-v1.0.2
+          name: Heliostat-Viewer-iOS-Simulator
           path: |
             dist/ios/*.zip
             dist/ios/*.sha256
 
-  publish-windows-release:
-    needs: windows
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
+  macos:
+    runs-on: macos-15
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12", cache: pip}
+      - uses: dtolnay/rust-toolchain@stable
+      - run: python -m pip install -r requirements.txt -r requirements-build.txt
+      - run: PYTHON_BIN="$(command -v python)" zsh scripts/build_macos_app.sh
+      - uses: actions/upload-artifact@v4
         with:
-          name: Heliostat-Viewer-Windows-v1.0.2
-          path: release-assets/windows
-      - name: Upload packages to existing release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh release upload v1.0.2 release-assets/windows/* --clobber --repo "${{ github.repository }}"
+          name: Heliostat-Viewer-macOS
+          path: |
+            dist/macos/*.dmg
+            dist/macos/*.zip
+            dist/macos/*.sha256
 
-  publish-android-release:
-    needs: android
+  publish-release:
+    needs: [core-and-python, windows, android, ios-simulator, macos]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    concurrency:
+      group: heliostat-release-publication
+      cancel-in-progress: false
     steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: python -m pip install requests cryptography
       - uses: actions/download-artifact@v4
         with:
-          name: Heliostat-Viewer-Android-v1.0.2
-          path: release-assets/android
-      - name: Upload packages to existing release
+          pattern: Heliostat-Viewer-*
+          path: release-assets
+          merge-multiple: true
+      - name: Publish complete version with signed update manifest
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload v1.0.2 release-assets/android/* --clobber --repo "${{ github.repository }}"
-
-  publish-ios-release:
-    needs: ios-simulator
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: Heliostat-Viewer-iOS-Simulator-v1.0.2
-          path: release-assets/ios
-      - name: Upload packages to existing release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh release upload v1.0.2 release-assets/ios/* --clobber --repo "${{ github.repository }}"
+          UPDATE_SIGNING_KEY: ${{ secrets.UPDATE_SIGNING_KEY }}
+        run: python -m scripts.publish_release release-assets

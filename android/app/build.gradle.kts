@@ -1,5 +1,8 @@
 plugins { id("com.android.application") }
 
+val appVersion = rootProject.file("../VERSION").readText().trim()
+val appBuild = rootProject.file("../BUILD_NUMBER").readText().trim().toInt()
+
 android {
     namespace = "com.hustquick.heliostatviewer"
     compileSdk = 35
@@ -8,8 +11,8 @@ android {
         applicationId = "com.hustquick.heliostatviewer"
         minSdk = 26
         targetSdk = 35
-        versionCode = 20003
-        versionName = "1.0.2"
+        versionCode = appBuild
+        versionName = appVersion
     }
     buildTypes {
         release {

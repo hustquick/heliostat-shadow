@@ -21,6 +21,7 @@ PY
 mkdir -p "${BUILD}" "${OUTPUT}" "${ROOT}/ios/Frameworks"
 PYTHON_BIN="${PYTHON:-${HOME}/venv/bin/python}"
 if [[ ! -x "${PYTHON_BIN}" ]]; then PYTHON_BIN="python3"; fi
+"${PYTHON_BIN}" "${ROOT}/scripts/version_info.py"
 "${PYTHON_BIN}" "${ROOT}/scripts/build_mobile_bundle.py"
 
 rustup target add aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
@@ -41,6 +42,7 @@ xcodebuild -create-xcframework \
 (cd "${ROOT}/ios" && "${XCODEGEN_BIN}" generate)
 xcodebuild -project "${ROOT}/ios/HeliostatViewerIOS.xcodeproj" -scheme HeliostatViewer \
   -configuration Release -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
+  MARKETING_VERSION="$(cat "${ROOT}/VERSION")" CURRENT_PROJECT_VERSION="$(cat "${ROOT}/BUILD_NUMBER")" \
   CODE_SIGNING_ALLOWED=NO CONFIGURATION_BUILD_DIR="${BUILD}/simulator" build
 ditto -c -k --sequesterRsrc --keepParent "${BUILD}/simulator/塔式镜场设计与优化.app" \
   "${OUTPUT}/Heliostat-Viewer-iOS-Simulator-v${VERSION}.zip"

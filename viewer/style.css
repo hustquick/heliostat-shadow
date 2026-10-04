@@ -956,3 +956,9 @@ main > details > summary.navigation-focus:focus-visible { outline:none; }
 }
 /* Reserve drawing space beneath the floating legend, including u/v labels. */
 .projection-stage > #projection { box-sizing:border-box; padding-top:52px; }
+
+#updatesDialog { color: #d9edf4; background: #10212b; border: 1px solid #416071; border-radius: 16px; max-width: min(560px, 86vw); }
+#updatesDialog::backdrop { background: #0009; }
+#updateNotes { white-space: pre-wrap; font: inherit; max-height: 35vh; overflow: auto; }
+#updateProgress { width: 100%; }
+.update-actions { display: flex; gap: 10px; flex-wrap: wrap; }

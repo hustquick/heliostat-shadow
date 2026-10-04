@@ -9,6 +9,7 @@ if (-not (Test-Path $Python)) { throw "Python virtual environment not found: $Py
 Remove-Item $Build,$Output -Recurse -Force -ErrorAction SilentlyContinue
 New-Item $Build,$Output,"$Root\windows\assets" -ItemType Directory -Force | Out-Null
 
+& $Python "$Root\scripts\version_info.py"
 & $Python -m maturin build --release --manifest-path "$Root\rust\heliostat-core\Cargo.toml" `
   --features python-bindings --out "$Build\wheels"
 & $Python -m pip install --force-reinstall (Get-ChildItem "$Build\wheels\*.whl" | Select-Object -First 1).FullName
@@ -26,7 +27,7 @@ New-Item $Build,$Output,"$Root\windows\assets" -ItemType Directory -Force | Out-
   "$Root\desktop\server_entry.py"
 
 dotnet publish "$Root\windows\HeliostatViewer\HeliostatViewer.csproj" -c Release -r win-x64 `
-  --self-contained true -p:PublishSingleFile=false -o "$Output\app"
+  --self-contained true -p:Version=$Version -p:PublishSingleFile=false -o "$Output\app"
 Copy-Item "$Build\pyinstaller-dist\heliostat-viewer-server" "$Output\app\server" -Recurse
 Compress-Archive -Path "$Output\app\*" -DestinationPath "$Output\Heliostat-Viewer-Windows-x64-v$Version-portable.zip"
 

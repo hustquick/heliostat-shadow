@@ -9,6 +9,7 @@ export ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME}}"
 
 PYTHON_BIN="${PYTHON:-${HOME}/venv/bin/python}"
 if [[ ! -x "${PYTHON_BIN}" ]]; then PYTHON_BIN="python3"; fi
+"${PYTHON_BIN}" "${ROOT}/scripts/version_info.py"
 "${PYTHON_BIN}" "${ROOT}/scripts/build_mobile_bundle.py"
 rm -rf "${ROOT}/android/app/src/main/assets/viewer" "${ROOT}/android/app/src/main/assets/mobile"
 mkdir -p "${ROOT}/android/app/src/main/assets"

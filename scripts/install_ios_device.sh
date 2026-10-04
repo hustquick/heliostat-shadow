@@ -22,6 +22,7 @@ mkdir -p "${ROOT}/build/ios-device"
 # Otherwise Rust changes can leave the phone running an older calculation engine.
 PYTHON_BIN="${PYTHON:-${HOME}/venv/bin/python}"
 if [[ ! -x "${PYTHON_BIN}" ]]; then PYTHON_BIN="python3"; fi
+"${PYTHON_BIN}" "${ROOT}/scripts/version_info.py"
 "${PYTHON_BIN}" "${ROOT}/scripts/build_mobile_bundle.py"
 rustup target add aarch64-apple-ios
 cargo build --manifest-path "${ROOT}/rust/Cargo.toml" --release --target aarch64-apple-ios
@@ -47,6 +48,7 @@ xcodebuild \
   -allowProvisioningUpdates -allowProvisioningDeviceRegistration \
   DEVELOPMENT_TEAM="${TEAM_ID}" CODE_SIGN_STYLE=Automatic \
   PRODUCT_BUNDLE_IDENTIFIER="${BUNDLE_ID}" \
+  MARKETING_VERSION="$(cat "${ROOT}/VERSION")" CURRENT_PROJECT_VERSION="$(cat "${ROOT}/BUILD_NUMBER")" \
   CONFIGURATION_BUILD_DIR="${ROOT}/build/ios-device" build
 
 if ! output="$(xcrun devicectl device install app --device "${DEVICE_ID}" "${APP_DIR}" 2>&1)"; then

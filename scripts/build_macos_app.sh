@@ -20,6 +20,8 @@ if [[ ! -x "${PYTHON_BIN}" ]]; then
   echo "Python virtual environment not found: ${PYTHON_BIN}" >&2
   exit 1
 fi
+"${PYTHON_BIN}" "${ROOT}/scripts/version_info.py"
+
 if ! "${PYTHON_BIN}" -m PyInstaller --version >/dev/null 2>&1; then
   echo "Install requirements-build.txt into ~/venv before building." >&2
   exit 1
@@ -29,11 +31,10 @@ if ! command -v cargo >/dev/null 2>&1; then
   exit 1
 fi
 
-(
-  source "${HOME}/venv/bin/activate"
-  maturin develop --release --manifest-path "${ROOT}/rust/heliostat-core/Cargo.toml" \
-    --features python-bindings
-)
+mkdir -p "${ROOT}/build/macos-wheels"
+"${PYTHON_BIN}" -m maturin build --release --manifest-path "${ROOT}/rust/heliostat-core/Cargo.toml" \
+  --features python-bindings --out "${ROOT}/build/macos-wheels"
+"${PYTHON_BIN}" -m pip install --force-reinstall --no-deps "${ROOT}"/build/macos-wheels/*.whl
 
 "${PYTHON_BIN}" - "${BUILD_ROOT}" "${OUTPUT_ROOT}" <<'PY'
 from pathlib import Path
@@ -87,7 +88,7 @@ cat > "${CONTENTS}/Info.plist" <<PLIST
   <key>CFBundleName</key><string>塔式镜场设计与优化</string>
   <key>CFBundlePackageType</key><string>APPL</string>
   <key>CFBundleShortVersionString</key><string>${VERSION}</string>
-  <key>CFBundleVersion</key><string>1</string>
+  <key>CFBundleVersion</key><string>$(cat "${ROOT}/BUILD_NUMBER")</string>
   <key>LSMinimumSystemVersion</key><string>12.0</string>
   <key>NSHighResolutionCapable</key><true/>
   <key>NSAppTransportSecurity</key><dict><key>NSAllowsLocalNetworking</key><true/></dict>
@@ -111,3 +112,6 @@ hdiutil create -volname "塔式镜场设计与优化" -srcfolder "${DMG_STAGE}" 
 
 echo "APP=${APP}"
 echo "DMG=${DMG}"
+
+"${PYTHON_BIN}" "${ROOT}/scripts/package_macos_update.py" "${APP}" "${OUTPUT_ROOT}/Heliostat-Viewer-macOS-arm64-v${VERSION}-update.zip"
+shasum -a 256 "${OUTPUT_ROOT}/Heliostat-Viewer-macOS-arm64-v${VERSION}-update.zip" > "${OUTPUT_ROOT}/Heliostat-Viewer-macOS-arm64-v${VERSION}-update.zip.sha256"

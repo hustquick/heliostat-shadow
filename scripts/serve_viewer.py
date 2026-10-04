@@ -14,6 +14,7 @@ from urllib.parse import parse_qs, urlparse
 from rust_core import available as rust_available, version as rust_version
 from viewer.model import ROOT, ViewerModel
 from viewer.workspace import ViewerWorkspace
+from desktop.updates import UpdateManager
 
 
 class LocalViewerServer(ThreadingHTTPServer):
@@ -45,7 +46,9 @@ class ViewerHandler(SimpleHTTPRequestHandler):
                     model.config['tower_assignment_strategy']=strategy
                     model.cache.clear(); model.optical_efficiency_cache.clear()
 
-            if url.path == '/api/health':
+            if url.path == '/api/update/status':
+                data = self.server.updater.status()
+            elif url.path == '/api/health':
                 data = {'status': 'ok', 'rust_core': rust_available(),
                         'rust_core_version': rust_version()}
             elif url.path == '/api/meta':
@@ -75,7 +78,12 @@ class ViewerHandler(SimpleHTTPRequestHandler):
             if length <= 0 or length > 20_000_000:
                 raise ValueError('请求大小无效')
             data = json.loads(self.rfile.read(length))
-            if self.path == '/api/plants/select':
+            if self.path.startswith('/api/update/'):
+                origin = self.headers.get('Origin')
+                if origin and origin != 'http://' + self.headers.get('Host', ''):
+                    raise ValueError('更新请求来源无效')
+                result = self.server.updater.start(self.path.rsplit('/', 1)[1])
+            elif self.path == '/api/plants/select':
                 result = self.model.select(str(data.get('plant_id', '')))
             elif self.path == '/api/plants/import':
                 result = self.model.import_csv(data)
@@ -148,6 +156,7 @@ def main():
         parser.error('--access-token with at least 16 characters is required for non-loopback use')
     server = LocalViewerServer((args.host, args.port), partial(ViewerHandler, model=ViewerWorkspace()))
     server.access_token = args.access_token
+    server.updater = UpdateManager(ROOT)
     if args.port_file:
         args.port_file.parent.mkdir(parents=True, exist_ok=True)
         args.port_file.write_text(f'{server.server_port}\n', encoding='utf-8')
