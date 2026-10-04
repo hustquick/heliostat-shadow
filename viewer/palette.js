@@ -8,7 +8,7 @@ export function multiplyBlend(first, second) {
     return Math.round(a * b / 255).toString(16).padStart(2, "0");
   }).join("");
 }
-const shadow = "#5be3ff", blocking = "#ff8acc";
+const shadow = "#a0b4ff", blocking = "#ff9ad6";
 export const fieldColors = {
   target: "#ffcc47", body: "#69b6aa", candidate: "#6c8d9b",
   shadow, blocking, overlap: multiplyBlend(shadow, blocking),
