@@ -13,6 +13,8 @@ use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::sync::{Mutex, OnceLock};
 use thiserror::Error;
 
+pub mod energy;
+
 const VECTOR_TOL: f64 = 1e-12;
 const DEPTH_TOL: f64 = 1e-9;
 const GRID: f64 = 1e-9;
@@ -170,6 +172,20 @@ fn atmospheric_transmittance(distance: f64) -> f64 {
 }
 
 fn gauss_legendre(order: usize) -> (Vec<f64>, Vec<f64>) {
+    // Reuse quadrature nodes across all mirrors and all annual samples.
+    type QuadratureNodes = (Vec<f64>, Vec<f64>);
+    type QuadratureCache = std::sync::RwLock<std::collections::HashMap<usize, QuadratureNodes>>;
+    static CACHE: OnceLock<QuadratureCache> = OnceLock::new();
+    let cache = CACHE.get_or_init(Default::default);
+    if let Some(value) = cache.read().unwrap().get(&order) {
+        return value.clone();
+    }
+    let value = compute_gauss_legendre(order);
+    cache.write().unwrap().insert(order, value.clone());
+    value
+}
+
+fn compute_gauss_legendre(order: usize) -> (Vec<f64>, Vec<f64>) {
     let mut nodes = vec![0.0; order];
     let mut weights = vec![0.0; order];
     let half = order.div_ceil(2);
@@ -1400,6 +1416,15 @@ impl MobileRuntime {
                     .unwrap_or(""),
             ),
             ("POST", "plants/import") => self.import_csv(payload),
+            ("POST", "analysis/optimize-step") => {
+                energy::optimize_step(&self.bundle.plants[self.active], payload)
+            }
+            ("POST", "analysis/energy") => {
+                let samples: Vec<energy::EnergySample> =
+                    serde_json::from_value(payload["samples"].clone())
+                        .map_err(|e| e.to_string())?;
+                energy::energy(&self.bundle.plants[self.active], &samples)
+            }
             ("POST", "layout/rearrange") => self.rearrange(payload),
             ("GET", "state/export") => Ok(self.export_state()),
             ("POST", "state/import") => self.import_state(payload),
@@ -2189,10 +2214,27 @@ mod python {
         .map_err(|e| PyValueError::new_err(e.to_string()))
     }
 
+    #[pyfunction]
+    fn evaluate_energy_json(payload: &str) -> PyResult<String> {
+        energy::energy_json(payload).map_err(PyValueError::new_err)
+    }
+
+    #[pyfunction]
+    fn optimize_energy_step_json(payload: &str) -> PyResult<String> {
+        let value: serde_json::Value =
+            serde_json::from_str(payload).map_err(|e| PyValueError::new_err(e.to_string()))?;
+        let plant: MobilePlant = serde_json::from_value(value["plant"].clone())
+            .map_err(|e| PyValueError::new_err(e.to_string()))?;
+        let result = energy::optimize_step(&plant, &value).map_err(PyValueError::new_err)?;
+        serde_json::to_string(&result).map_err(|e| PyValueError::new_err(e.to_string()))
+    }
+
     #[pymodule]
     fn _heliostat_rust(module: &Bound<'_, PyModule>) -> PyResult<()> {
         module.add_function(wrap_pyfunction!(compute_field_json, module)?)?;
         module.add_function(wrap_pyfunction!(resolve_towers_json, module)?)?;
+        module.add_function(wrap_pyfunction!(evaluate_energy_json, module)?)?;
+        module.add_function(wrap_pyfunction!(optimize_energy_step_json, module)?)?;
         module.add("CORE_VERSION", env!("CARGO_PKG_VERSION"))?;
         Ok(())
     }
@@ -2386,6 +2428,20 @@ mod tests {
                 .unwrap()["mode"],
             "offline"
         );
+        let energy = runtime
+            .request(
+                "POST",
+                "analysis/energy",
+                &serde_json::json!({"samples":[
+            {"sun":[0.0,0.0,1.0],"dni":800.0,"duration_hours":2.0}]}),
+            )
+            .unwrap();
+        assert_eq!(energy["incident_normal_kwh"], 6.4);
+        assert!(energy["receiver_incident_kwh"].as_f64().unwrap() > 0.0);
+        let step = runtime.request("POST", "analysis/optimize-step", &serde_json::json!({"samples":[
+            {"sun":[0.0,0.0,1.0],"dni":800.0,"duration_hours":2.0}],"candidates":[],"threshold_wh":0.0})).unwrap();
+        assert_eq!(step["accepted"], false);
+        assert_eq!(runtime.metadata().unwrap()["active_plant"], "test");
         let frame = runtime
             .request(
                 "GET",

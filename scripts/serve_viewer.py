@@ -79,6 +79,10 @@ class ViewerHandler(SimpleHTTPRequestHandler):
                 result = self.model.select(str(data.get('plant_id', '')))
             elif self.path == '/api/plants/import':
                 result = self.model.import_csv(data)
+            elif self.path == '/api/analysis/optimize-step':
+                result = self.model.optimize_energy_step(data)
+            elif self.path == '/api/analysis/energy':
+                result = self.model.optical_energy(data)
             elif self.path == '/api/layout/rearrange':
                 result = self.model.rearrange(data)
             else:

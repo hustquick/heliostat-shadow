@@ -449,3 +449,19 @@ DNI、统一反射率和清洁度是同一时刻整个模型的公共倍率，�
 ### 离线逐时气温
 
 14 个目录电厂随包提供 2025 年 ERA5-Land 2 m 逐时气温，每个位置覆盖 8,760 个 UTC 小时；数据通过 Open-Meteo 历史气象接口取得，为再分析估算，非电厂现场实测。Gemasolar 及其布局保留原有历史气温。来源及坐标、请求地址记录在 `data/temperature_archive.json`，可用 `python scripts/fetch_temperature_archive.py` 更新；数据依据 CC BY 4.0 使用并在界面 07 卡片提供来源链接。自定义场址或不匹配的数据年份采用显式标注的季节与昼夜温度示意模型，不能用作工程气象依据。四端均离线读取同一温度序列；DNI 的原有历史/晴空数据来源保持独立。
+
+
+## 年能量评价与共用优化内核（2026-10-04）
+
+优化目标支持 `seasonal`（原四季正午筛选指标）、`annual-stratified`（按当地月/小时分层的加权近似）和 `annual-hourly`（完整逐时气象年）。分层方法保留各组的 DNI 小时积分，但不能保证光学效率的积分完全一致。年评价要求连续完整的 UTC 小时序列：普通年 8,760 行，闰年 8,784 行；缺失、重复、负值和非有限 DNI 均拒绝处理。
+
+```bash
+~/venv/bin/python -m scripts.optimize_field_greedy --plant ps10 --objective annual-stratified --max-moves 3 --annual-evaluation --output reports/ps10_annual_optimizer
+~/venv/bin/python -m scripts.evaluate_annual_energy --plant ps10 --candidate reports/ps10_annual_optimizer/ps10_greedy_layout.csv --output reports/ps10_annual_comparison
+```
+
+`--annual-evaluation` 对原布局及优化候选使用同一份全年输入独立复核。如果候选年接收能量下降，导出的最终布局退回原布局，报告保留被拒绝候选及搜索记录。每次接受移动使用目录配置的接收器积分阶数；不再用低阶积分接受后才以高阶积分检查。预算耗尽或短名单收益不足均不构成全局收敛证明。导出的 `annual_energy.json` 包含气象来源、覆盖时数、逐样本时长及接收器入射光学能量，单位 kWh；不代表发电量。
+
+`rust/heliostat-core/src/energy.rs` 是 macOS、Windows、Android、iOS 共用的加权光学能量与候选全场复核内核。桌面 Python 入口和移动端原生桥均可调用 `analysis/energy` 与 `analysis/optimize-step`；后者返回候选及验收结果，不直接改变当前布局。太阳方向、DNI 和小时权重采用相同输入，避免各端自行定义不同目标。当前完整候选筛选与年度数据组织仍由研究命令行流程提供；四端交互式优化界面尚未接入。
+
+目录中多数电厂当前使用晴空估算 DNI，不能把计算称为实测年发电量或典型气象年（TMY）结果；接收器入射年能量不包含启停滞回、可用率、储热或发电循环。镜位移动暂限单塔，多塔联合移动与逐时选塔仍需后续实现。PS10 验证见 `reports/ps10_annual_optimizer_2026-10-04/RESULTS.md`。

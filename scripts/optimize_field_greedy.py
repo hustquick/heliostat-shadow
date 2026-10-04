@@ -6,7 +6,10 @@ compatible filename for the original PS10 experiment and now uses this same
 implementation.
 """
 
-from optimize_ps10_greedy import main
+try:
+    from scripts.optimize_ps10_greedy import main
+except ModuleNotFoundError:
+    from optimize_ps10_greedy import main
 
 
 if __name__ == '__main__':

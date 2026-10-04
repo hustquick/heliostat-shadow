@@ -1,0 +1,1084 @@
+{
+  "plant_id": "ps10",
+  "provenance": {
+    "year": 2025,
+    "coverage_hours": 8760,
+    "active_hours": 4402,
+    "sample_count": 151,
+    "method": "month_local_hour_stratified",
+    "dni_source": "pvlib Ineichen clear-sky estimate",
+    "dni_kwh_m2": 3231.0293114029605,
+    "assumptions": "Hourly instantaneous DNI treated as interval mean; geometric horizon, continuous tracking, no availability/start-stop or storage model.",
+    "is_tmy": false
+  },
+  "baseline": {
+    "energy_weighted_optical_efficiency": 0.5498599089722501,
+    "incident_normal_kwh": 241939474.83785346,
+    "metric": "receiver_incident_optical_energy",
+    "receiver_incident_kwh": 133032817.61113611,
+    "samples": [
+      {
+        "incident_normal_wh": 506447312.9790267,
+        "receiver_incident_wh": 79575645.4576968,
+        "timestamp": "2025-01-18T08:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 218.17588269360942
+      },
+      {
+        "incident_normal_wh": 1595311295.8552332,
+        "receiver_incident_wh": 607958673.2125411,
+        "timestamp": "2025-01-17T09:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 687.2550040732947
+      },
+      {
+        "incident_normal_wh": 1943511395.73185,
+        "receiver_incident_wh": 961744583.0008178,
+        "timestamp": "2025-01-17T10:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 837.2584934742309
+      },
+      {
+        "incident_normal_wh": 2085603143.1817305,
+        "receiver_incident_wh": 1144238197.0951204,
+        "timestamp": "2025-01-17T11:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 898.4711638327742
+      },
+      {
+        "incident_normal_wh": 2142384589.004093,
+        "receiver_incident_wh": 1223587559.7997544,
+        "timestamp": "2025-01-17T12:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 922.9324290926091
+      },
+      {
+        "incident_normal_wh": 2145940430.3396523,
+        "receiver_incident_wh": 1229176752.3604488,
+        "timestamp": "2025-01-17T13:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 924.4642741675408
+      },
+      {
+        "incident_normal_wh": 2097967181.1727176,
+        "receiver_incident_wh": 1163513245.6789198,
+        "timestamp": "2025-01-17T14:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 903.7975518561792
+      },
+      {
+        "incident_normal_wh": 1972123819.6984196,
+        "receiver_incident_wh": 1000855657.190292,
+        "timestamp": "2025-01-17T15:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 849.5846342097474
+      },
+      {
+        "incident_normal_wh": 1668260514.4638147,
+        "receiver_incident_wh": 678687583.6851,
+        "timestamp": "2025-01-17T16:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 718.6812941410788
+      },
+      {
+        "incident_normal_wh": 745100558.8377159,
+        "receiver_incident_wh": 160126732.6604648,
+        "timestamp": "2025-01-19T17:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 320.98693774026435
+      },
+      {
+        "incident_normal_wh": 906198307.742007,
+        "receiver_incident_wh": 254166074.28099558,
+        "timestamp": "2025-02-16T08:00:00+00:00",
+        "duration_hours": 28.0,
+        "dni_w_m2": 432.21454696181485
+      },
+      {
+        "incident_normal_wh": 1560356919.0135043,
+        "receiver_incident_wh": 718790592.9027007,
+        "timestamp": "2025-02-15T09:00:00+00:00",
+        "duration_hours": 28.0,
+        "dni_w_m2": 744.2178528567164
+      },
+      {
+        "incident_normal_wh": 1796407322.790595,
+        "receiver_incident_wh": 984406448.4526333,
+        "timestamp": "2025-02-15T10:00:00+00:00",
+        "duration_hours": 28.0,
+        "dni_w_m2": 856.8029431808052
+      },
+      {
+        "incident_normal_wh": 1901430662.2777314,
+        "receiver_incident_wh": 1117103932.5543008,
+        "timestamp": "2025-02-15T11:00:00+00:00",
+        "duration_hours": 28.0,
+        "dni_w_m2": 906.8942032383811
+      },
+      {
+        "incident_normal_wh": 1946083192.3828142,
+        "receiver_incident_wh": 1168332073.5710015,
+        "timestamp": "2025-02-15T12:00:00+00:00",
+        "duration_hours": 28.0,
+        "dni_w_m2": 928.1913883083408
+      },
+      {
+        "incident_normal_wh": 1951412526.26253,
+        "receiver_incident_wh": 1174345546.6815386,
+        "timestamp": "2025-02-15T13:00:00+00:00",
+        "duration_hours": 28.0,
+        "dni_w_m2": 930.7332332982984
+      },
+      {
+        "incident_normal_wh": 1919621381.7430906,
+        "receiver_incident_wh": 1138822719.820293,
+        "timestamp": "2025-02-15T14:00:00+00:00",
+        "duration_hours": 28.0,
+        "dni_w_m2": 915.5703324095301
+      },
+      {
+        "incident_normal_wh": 1836646097.496497,
+        "receiver_incident_wh": 1037094519.490331,
+        "timestamp": "2025-02-15T15:00:00+00:00",
+        "duration_hours": 28.0,
+        "dni_w_m2": 875.9949717149726
+      },
+      {
+        "incident_normal_wh": 1653626243.66033,
+        "receiver_incident_wh": 819208034.945081,
+        "timestamp": "2025-02-15T16:00:00+00:00",
+        "duration_hours": 28.0,
+        "dni_w_m2": 788.7029931987927
+      },
+      {
+        "incident_normal_wh": 1187405840.94108,
+        "receiver_incident_wh": 417499436.24249274,
+        "timestamp": "2025-02-16T17:00:00+00:00",
+        "duration_hours": 28.0,
+        "dni_w_m2": 566.337492817591
+      },
+      {
+        "incident_normal_wh": 68552303.2319643,
+        "receiver_incident_wh": 7972541.689226361,
+        "timestamp": "2025-02-24T18:00:00+00:00",
+        "duration_hours": 14.0,
+        "dni_w_m2": 65.39253589740163
+      },
+      {
+        "incident_normal_wh": 482576088.24097985,
+        "receiver_incident_wh": 105500994.46913205,
+        "timestamp": "2025-03-20T07:00:00+00:00",
+        "duration_hours": 28.0,
+        "dni_w_m2": 230.16640350321182
+      },
+      {
+        "incident_normal_wh": 1560210149.0351264,
+        "receiver_incident_wh": 667496372.7260467,
+        "timestamp": "2025-03-16T08:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 672.1335422849169
+      },
+      {
+        "incident_normal_wh": 1942098637.5698354,
+        "receiver_incident_wh": 1056965550.2550937,
+        "timestamp": "2025-03-16T09:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 836.6498817763573
+      },
+      {
+        "incident_normal_wh": 2102530143.057503,
+        "receiver_incident_wh": 1251298237.7170749,
+        "timestamp": "2025-03-16T10:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 905.7632612427308
+      },
+      {
+        "incident_normal_wh": 2179793714.8630877,
+        "receiver_incident_wh": 1338130971.2403576,
+        "timestamp": "2025-03-16T11:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 939.0481608694766
+      },
+      {
+        "incident_normal_wh": 2213663526.2010293,
+        "receiver_incident_wh": 1378873644.5873938,
+        "timestamp": "2025-03-16T12:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 953.6391672702306
+      },
+      {
+        "incident_normal_wh": 2217163538.3713064,
+        "receiver_incident_wh": 1382090578.2451742,
+        "timestamp": "2025-03-16T13:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 955.1469613193144
+      },
+      {
+        "incident_normal_wh": 2191499231.5505614,
+        "receiver_incident_wh": 1349117405.3703368,
+        "timestamp": "2025-03-16T14:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 944.090860021441
+      },
+      {
+        "incident_normal_wh": 2127212097.8314795,
+        "receiver_incident_wh": 1274454082.8296022,
+        "timestamp": "2025-03-16T15:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 916.3961684206399
+      },
+      {
+        "incident_normal_wh": 1994110858.0819802,
+        "receiver_incident_wh": 1106844956.5482128,
+        "timestamp": "2025-03-16T16:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 859.0565800256784
+      },
+      {
+        "incident_normal_wh": 1693830569.8325377,
+        "receiver_incident_wh": 761952898.2981874,
+        "timestamp": "2025-03-16T17:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 729.6967922148804
+      },
+      {
+        "incident_normal_wh": 796280770.258434,
+        "receiver_incident_wh": 188005385.61295038,
+        "timestamp": "2025-03-18T18:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 343.03520913394135
+      },
+      {
+        "incident_normal_wh": 63728833.17429305,
+        "receiver_incident_wh": 18529113.797611464,
+        "timestamp": "2025-03-31T18:00:00+00:00",
+        "duration_hours": 2.0,
+        "dni_w_m2": 425.53975143090736
+      },
+      {
+        "incident_normal_wh": 112163791.61449452,
+        "receiver_incident_wh": 18042937.570563324,
+        "timestamp": "2025-04-24T06:00:00+00:00",
+        "duration_hours": 20.0,
+        "dni_w_m2": 74.89569418702857
+      },
+      {
+        "incident_normal_wh": 1192576593.6481228,
+        "receiver_incident_wh": 457947673.02128243,
+        "timestamp": "2025-04-16T07:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 530.8834551496301
+      },
+      {
+        "incident_normal_wh": 1687248445.9332535,
+        "receiver_incident_wh": 887602530.2227669,
+        "timestamp": "2025-04-15T08:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 751.0899420999232
+      },
+      {
+        "incident_normal_wh": 1897919034.8891997,
+        "receiver_incident_wh": 1124812081.509228,
+        "timestamp": "2025-04-15T09:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 844.8713652462683
+      },
+      {
+        "incident_normal_wh": 2004012659.7763917,
+        "receiver_incident_wh": 1237784674.9201276,
+        "timestamp": "2025-04-15T10:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 892.0996526782321
+      },
+      {
+        "incident_normal_wh": 2058837953.8842177,
+        "receiver_incident_wh": 1302529972.8948379,
+        "timestamp": "2025-04-15T11:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 916.5054994142645
+      },
+      {
+        "incident_normal_wh": 2081902867.786592,
+        "receiver_incident_wh": 1330006984.5925093,
+        "timestamp": "2025-04-15T12:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 926.7730002611341
+      },
+      {
+        "incident_normal_wh": 2079988537.9197972,
+        "receiver_incident_wh": 1327801980.0839922,
+        "timestamp": "2025-04-15T13:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 925.920823504177
+      },
+      {
+        "incident_normal_wh": 2052584386.220373,
+        "receiver_incident_wh": 1295118856.5990684,
+        "timestamp": "2025-04-15T14:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 913.7216819001037
+      },
+      {
+        "incident_normal_wh": 1991531338.6395245,
+        "receiver_incident_wh": 1225536660.4419734,
+        "timestamp": "2025-04-15T15:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 886.5435090097693
+      },
+      {
+        "incident_normal_wh": 1874336413.3638365,
+        "receiver_incident_wh": 1103268781.0783026,
+        "timestamp": "2025-04-15T16:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 834.3734033849039
+      },
+      {
+        "incident_normal_wh": 1638688096.6090477,
+        "receiver_incident_wh": 838728227.6726376,
+        "timestamp": "2025-04-15T17:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 729.4729774790924
+      },
+      {
+        "incident_normal_wh": 1068686509.0430125,
+        "receiver_incident_wh": 372306779.3916528,
+        "timestamp": "2025-04-16T18:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 475.73295452413845
+      },
+      {
+        "incident_normal_wh": 15432375.598119317,
+        "receiver_incident_wh": 1502124.6807047715,
+        "timestamp": "2025-04-27T19:00:00+00:00",
+        "duration_hours": 11.0,
+        "dni_w_m2": 18.735887235478852
+      },
+      {
+        "incident_normal_wh": 637223343.0126884,
+        "receiver_incident_wh": 171700052.85807618,
+        "timestamp": "2025-05-17T06:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 274.5137781795791
+      },
+      {
+        "incident_normal_wh": 1440100399.4200296,
+        "receiver_incident_wh": 672954654.1326642,
+        "timestamp": "2025-05-15T07:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 620.3906462899873
+      },
+      {
+        "incident_normal_wh": 1776830434.0553956,
+        "receiver_incident_wh": 1008828419.0302343,
+        "timestamp": "2025-05-15T08:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 765.4528682689802
+      },
+      {
+        "incident_normal_wh": 1943692501.0912466,
+        "receiver_incident_wh": 1181794056.6590781,
+        "timestamp": "2025-05-15T09:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 837.3365130838248
+      },
+      {
+        "incident_normal_wh": 2034327373.633614,
+        "receiver_incident_wh": 1279944117.4327493,
+        "timestamp": "2025-05-15T10:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 876.3817263034376
+      },
+      {
+        "incident_normal_wh": 2082773808.1592793,
+        "receiver_incident_wh": 1334030261.018335,
+        "timestamp": "2025-05-15T11:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 897.2522953539791
+      },
+      {
+        "incident_normal_wh": 2102945478.9908178,
+        "receiver_incident_wh": 1352032287.6648254,
+        "timestamp": "2025-05-15T12:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 905.9421866344505
+      },
+      {
+        "incident_normal_wh": 2099835214.9767165,
+        "receiver_incident_wh": 1349383402.3428676,
+        "timestamp": "2025-05-15T13:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 904.6022948445432
+      },
+      {
+        "incident_normal_wh": 2072708882.7639909,
+        "receiver_incident_wh": 1324034784.6327486,
+        "timestamp": "2025-05-15T14:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 892.9163576836928
+      },
+      {
+        "incident_normal_wh": 2014669099.8103113,
+        "receiver_incident_wh": 1259330985.40164,
+        "timestamp": "2025-05-15T15:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 867.913004812147
+      },
+      {
+        "incident_normal_wh": 1908035586.4823802,
+        "receiver_incident_wh": 1150737928.6449866,
+        "timestamp": "2025-05-15T16:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 821.9756283095466
+      },
+      {
+        "incident_normal_wh": 1708843948.789501,
+        "receiver_incident_wh": 938162660.6846678,
+        "timestamp": "2025-05-15T17:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 736.1645078532011
+      },
+      {
+        "incident_normal_wh": 1289925393.6763816,
+        "receiver_incident_wh": 547728112.9395659,
+        "timestamp": "2025-05-15T18:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 555.6957341106537
+      },
+      {
+        "incident_normal_wh": 306529637.25448436,
+        "receiver_incident_wh": 61609618.558296435,
+        "timestamp": "2025-05-19T19:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 132.0519873752776
+      },
+      {
+        "incident_normal_wh": 762010813.1079042,
+        "receiver_incident_wh": 232795170.64300725,
+        "timestamp": "2025-06-13T06:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 339.21421523678254
+      },
+      {
+        "incident_normal_wh": 1419615176.572951,
+        "receiver_incident_wh": 690293022.1006898,
+        "timestamp": "2025-06-13T07:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 631.9512003975104
+      },
+      {
+        "incident_normal_wh": 1712466678.7243416,
+        "receiver_incident_wh": 986258735.1063018,
+        "timestamp": "2025-06-13T08:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 762.3160072668882
+      },
+      {
+        "incident_normal_wh": 1863682441.5343235,
+        "receiver_incident_wh": 1139120618.5987768,
+        "timestamp": "2025-06-13T09:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 829.6307164949721
+      },
+      {
+        "incident_normal_wh": 1947859372.818912,
+        "receiver_incident_wh": 1230607624.8485608,
+        "timestamp": "2025-06-13T10:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 867.1026410340576
+      },
+      {
+        "incident_normal_wh": 1993788406.732813,
+        "receiver_incident_wh": 1279160973.939614,
+        "timestamp": "2025-06-13T11:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 887.5482579828972
+      },
+      {
+        "incident_normal_wh": 2013707801.979645,
+        "receiver_incident_wh": 1296710154.155027,
+        "timestamp": "2025-06-13T12:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 896.4155101405048
+      },
+      {
+        "incident_normal_wh": 2012223684.2191522,
+        "receiver_incident_wh": 1295600817.4082556,
+        "timestamp": "2025-06-13T13:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 895.7548451830221
+      },
+      {
+        "incident_normal_wh": 1989006868.138315,
+        "receiver_incident_wh": 1275149060.7364192,
+        "timestamp": "2025-06-13T14:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 885.4197240644348
+      },
+      {
+        "incident_normal_wh": 1938614561.141564,
+        "receiver_incident_wh": 1221413876.361801,
+        "timestamp": "2025-06-13T15:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 862.9872512204294
+      },
+      {
+        "incident_normal_wh": 1847226262.769157,
+        "receiver_incident_wh": 1126667655.9186223,
+        "timestamp": "2025-06-13T16:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 822.3051383409602
+      },
+      {
+        "incident_normal_wh": 1682146789.5270982,
+        "receiver_incident_wh": 957525145.0308678,
+        "timestamp": "2025-06-13T17:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 748.8189055943171
+      },
+      {
+        "incident_normal_wh": 1356737153.5593429,
+        "receiver_incident_wh": 634444213.0930244,
+        "timestamp": "2025-06-13T18:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 603.9606274747714
+      },
+      {
+        "incident_normal_wh": 614276123.7522632,
+        "receiver_incident_wh": 165769987.0291799,
+        "timestamp": "2025-06-14T19:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 273.4491291632202
+      },
+      {
+        "incident_normal_wh": 588524833.1379849,
+        "receiver_incident_wh": 149572951.2649825,
+        "timestamp": "2025-07-16T06:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 253.53461587485683
+      },
+      {
+        "incident_normal_wh": 1399956319.5899699,
+        "receiver_incident_wh": 642075514.9901496,
+        "timestamp": "2025-07-17T07:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 603.0967050894232
+      },
+      {
+        "incident_normal_wh": 1744605765.0551724,
+        "receiver_incident_wh": 982393490.8887876,
+        "timestamp": "2025-07-17T08:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 751.5705839257433
+      },
+      {
+        "incident_normal_wh": 1915966509.52341,
+        "receiver_incident_wh": 1161736472.4524148,
+        "timestamp": "2025-07-17T09:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 825.3922445906579
+      },
+      {
+        "incident_normal_wh": 2009665590.3621404,
+        "receiver_incident_wh": 1262618121.0885937,
+        "timestamp": "2025-07-17T10:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 865.7575089442748
+      },
+      {
+        "incident_normal_wh": 2060709152.6203966,
+        "receiver_incident_wh": 1319895448.521917,
+        "timestamp": "2025-07-17T11:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 887.746912315799
+      },
+      {
+        "incident_normal_wh": 2083596205.780611,
+        "receiver_incident_wh": 1340401430.9085574,
+        "timestamp": "2025-07-17T12:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 897.6065816190137
+      },
+      {
+        "incident_normal_wh": 2083871476.1621754,
+        "receiver_incident_wh": 1340860378.4600973,
+        "timestamp": "2025-07-17T13:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 897.7251672190164
+      },
+      {
+        "incident_normal_wh": 2061595400.0404623,
+        "receiver_incident_wh": 1321150294.0843759,
+        "timestamp": "2025-07-17T14:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 888.1287048699184
+      },
+      {
+        "incident_normal_wh": 2011377919.008906,
+        "receiver_incident_wh": 1266874652.6988223,
+        "timestamp": "2025-07-17T15:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 866.4951746488456
+      },
+      {
+        "incident_normal_wh": 1919017081.9028656,
+        "receiver_incident_wh": 1170361617.5483334,
+        "timestamp": "2025-07-17T16:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 826.7064214152896
+      },
+      {
+        "incident_normal_wh": 1750261943.9781513,
+        "receiver_incident_wh": 996513734.6071438,
+        "timestamp": "2025-07-17T17:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 754.007247715976
+      },
+      {
+        "incident_normal_wh": 1411931655.990038,
+        "receiver_incident_wh": 659247275.7545921,
+        "timestamp": "2025-07-17T18:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 608.2556417106177
+      },
+      {
+        "incident_normal_wh": 615623900.2951531,
+        "receiver_incident_wh": 162967793.2155338,
+        "timestamp": "2025-07-16T19:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 265.20880733696805
+      },
+      {
+        "incident_normal_wh": 173583957.2308448,
+        "receiver_incident_wh": 28626400.28328059,
+        "timestamp": "2025-08-10T06:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 74.77941361268137
+      },
+      {
+        "incident_normal_wh": 1253681330.9332836,
+        "receiver_incident_wh": 504060399.6440627,
+        "timestamp": "2025-08-16T07:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 540.0819077979736
+      },
+      {
+        "incident_normal_wh": 1709565930.8992732,
+        "receiver_incident_wh": 917803506.1981183,
+        "timestamp": "2025-08-16T08:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 736.4755354370242
+      },
+      {
+        "incident_normal_wh": 1914822838.8789232,
+        "receiver_incident_wh": 1143068229.2585316,
+        "timestamp": "2025-08-16T09:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 824.89955493474
+      },
+      {
+        "incident_normal_wh": 2021151696.3025253,
+        "receiver_incident_wh": 1255051663.688755,
+        "timestamp": "2025-08-16T10:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 870.7056866481136
+      },
+      {
+        "incident_normal_wh": 2077219023.7537289,
+        "receiver_incident_wh": 1320666827.7286994,
+        "timestamp": "2025-08-16T11:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 894.8593119975856
+      },
+      {
+        "incident_normal_wh": 2101626454.5259702,
+        "receiver_incident_wh": 1346988505.9808948,
+        "timestamp": "2025-08-16T12:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 905.3739551135602
+      },
+      {
+        "incident_normal_wh": 2101108706.9124045,
+        "receiver_incident_wh": 1346585672.8916678,
+        "timestamp": "2025-08-16T13:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 905.1509110974943
+      },
+      {
+        "incident_normal_wh": 2075514401.106924,
+        "receiver_incident_wh": 1319234937.7578633,
+        "timestamp": "2025-08-16T14:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 894.1249660131259
+      },
+      {
+        "incident_normal_wh": 2017693197.0971587,
+        "receiver_incident_wh": 1253632420.1240442,
+        "timestamp": "2025-08-16T15:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 869.2157762515433
+      },
+      {
+        "incident_normal_wh": 1908112349.6423452,
+        "receiver_incident_wh": 1141894971.555979,
+        "timestamp": "2025-08-16T16:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 822.0086976333636
+      },
+      {
+        "incident_normal_wh": 1695199654.865138,
+        "receiver_incident_wh": 910095635.2846014,
+        "timestamp": "2025-08-16T17:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 730.2865896682656
+      },
+      {
+        "incident_normal_wh": 1215261957.5550082,
+        "receiver_incident_wh": 483511328.87077594,
+        "timestamp": "2025-08-16T18:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 523.5309646208159
+      },
+      {
+        "incident_normal_wh": 160168405.42889592,
+        "receiver_incident_wh": 28693459.475241132,
+        "timestamp": "2025-08-08T19:00:00+00:00",
+        "duration_hours": 24.0,
+        "dni_w_m2": 89.12504753655524
+      },
+      {
+        "incident_normal_wh": 323749.717031738,
+        "receiver_incident_wh": 17649.630185301347,
+        "timestamp": "2025-09-01T06:00:00+00:00",
+        "duration_hours": 1.0,
+        "dni_w_m2": 4.323580622752902
+      },
+      {
+        "incident_normal_wh": 902353747.9554762,
+        "receiver_incident_wh": 284576742.4504719,
+        "timestamp": "2025-09-15T07:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 401.6888123021137
+      },
+      {
+        "incident_normal_wh": 1551886529.855546,
+        "receiver_incident_wh": 767494223.2829045,
+        "timestamp": "2025-09-15T08:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 690.832678888684
+      },
+      {
+        "incident_normal_wh": 1811811538.150624,
+        "receiver_incident_wh": 1045365975.8088074,
+        "timestamp": "2025-09-16T09:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 806.5400365699024
+      },
+      {
+        "incident_normal_wh": 1937277819.945754,
+        "receiver_incident_wh": 1177874904.9965928,
+        "timestamp": "2025-09-16T10:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 862.3921919274125
+      },
+      {
+        "incident_normal_wh": 2000023673.5148985,
+        "receiver_incident_wh": 1246650652.5551257,
+        "timestamp": "2025-09-16T11:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 890.3239287370501
+      },
+      {
+        "incident_normal_wh": 2024854722.0793047,
+        "receiver_incident_wh": 1275741514.387482,
+        "timestamp": "2025-09-16T12:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 901.3776362532586
+      },
+      {
+        "incident_normal_wh": 2019794082.9476547,
+        "receiver_incident_wh": 1269661234.1830275,
+        "timestamp": "2025-09-16T13:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 899.1248588620193
+      },
+      {
+        "incident_normal_wh": 1983242155.4089108,
+        "receiver_incident_wh": 1228084317.407493,
+        "timestamp": "2025-09-16T14:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 882.853523597285
+      },
+      {
+        "incident_normal_wh": 1902618472.5463073,
+        "receiver_incident_wh": 1144320709.1680114,
+        "timestamp": "2025-09-16T15:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 846.9633513827823
+      },
+      {
+        "incident_normal_wh": 1741952499.6814733,
+        "receiver_incident_wh": 973115369.6072229,
+        "timestamp": "2025-09-15T16:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 775.4418178781399
+      },
+      {
+        "incident_normal_wh": 1389683833.7098303,
+        "receiver_incident_wh": 627082902.1827257,
+        "timestamp": "2025-09-15T17:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 618.6270627269636
+      },
+      {
+        "incident_normal_wh": 474905408.07281375,
+        "receiver_incident_wh": 120392106.11921626,
+        "timestamp": "2025-09-11T18:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 211.40732196973812
+      },
+      {
+        "incident_normal_wh": 39954096.18086906,
+        "receiver_incident_wh": 4624801.899042335,
+        "timestamp": "2025-10-28T07:00:00+00:00",
+        "duration_hours": 6.0,
+        "dni_w_m2": 88.92916706924136
+      },
+      {
+        "incident_normal_wh": 712935808.9274039,
+        "receiver_incident_wh": 116248062.74697068,
+        "timestamp": "2025-10-20T07:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 307.1304663493452
+      },
+      {
+        "incident_normal_wh": 1601078569.75268,
+        "receiver_incident_wh": 660556123.6093836,
+        "timestamp": "2025-10-18T08:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 689.7395272232098
+      },
+      {
+        "incident_normal_wh": 1912194018.0842898,
+        "receiver_incident_wh": 1015352826.8576922,
+        "timestamp": "2025-10-17T09:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 823.767067343991
+      },
+      {
+        "incident_normal_wh": 2048731234.6433508,
+        "receiver_incident_wh": 1197326959.3451486,
+        "timestamp": "2025-10-17T10:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 882.5868635594712
+      },
+      {
+        "incident_normal_wh": 2110747192.4425125,
+        "receiver_incident_wh": 1272785882.9346507,
+        "timestamp": "2025-10-17T11:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 909.3031398377332
+      },
+      {
+        "incident_normal_wh": 2128182206.7193544,
+        "receiver_incident_wh": 1296052758.793931,
+        "timestamp": "2025-10-17T12:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 916.8140882269184
+      },
+      {
+        "incident_normal_wh": 2107722997.0877008,
+        "receiver_incident_wh": 1277401765.5911133,
+        "timestamp": "2025-10-17T13:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 908.0003261509481
+      },
+      {
+        "incident_normal_wh": 2040131195.6598113,
+        "receiver_incident_wh": 1210179044.357677,
+        "timestamp": "2025-10-17T14:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 878.8819942703317
+      },
+      {
+        "incident_normal_wh": 1887077749.257709,
+        "receiver_incident_wh": 1050654803.6509359,
+        "timestamp": "2025-10-16T15:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 812.9470590612498
+      },
+      {
+        "incident_normal_wh": 1502103625.671897,
+        "receiver_incident_wh": 710908461.5951173,
+        "timestamp": "2025-10-15T16:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 647.101437858385
+      },
+      {
+        "incident_normal_wh": 830733286.5525856,
+        "receiver_incident_wh": 254093021.98974416,
+        "timestamp": "2025-10-12T17:00:00+00:00",
+        "duration_hours": 25.0,
+        "dni_w_m2": 443.767781278085
+      },
+      {
+        "incident_normal_wh": 3001547.746850447,
+        "receiver_incident_wh": 195084.1618285139,
+        "timestamp": "2025-10-02T18:00:00+00:00",
+        "duration_hours": 3.0,
+        "dni_w_m2": 13.361590753429567
+      },
+      {
+        "incident_normal_wh": 18435317.817939248,
+        "receiver_incident_wh": 1339320.3383535675,
+        "timestamp": "2025-11-03T07:00:00+00:00",
+        "duration_hours": 6.0,
+        "dni_w_m2": 41.0330257699861
+      },
+      {
+        "incident_normal_wh": 1252155954.6539438,
+        "receiver_incident_wh": 381125592.5437403,
+        "timestamp": "2025-11-14T08:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 557.4056065945257
+      },
+      {
+        "incident_normal_wh": 1799935805.4708388,
+        "receiver_incident_wh": 830464108.522791,
+        "timestamp": "2025-11-15T09:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 801.253474657606
+      },
+      {
+        "incident_normal_wh": 1996959446.223572,
+        "receiver_incident_wh": 1073041611.396513,
+        "timestamp": "2025-11-15T10:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 888.9598674428192
+      },
+      {
+        "incident_normal_wh": 2081220856.0969512,
+        "receiver_incident_wh": 1191934423.4918547,
+        "timestamp": "2025-11-15T11:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 926.4693981913101
+      },
+      {
+        "incident_normal_wh": 2109447104.7194293,
+        "receiver_incident_wh": 1230653587.7881398,
+        "timestamp": "2025-11-15T12:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 939.0345017447514
+      },
+      {
+        "incident_normal_wh": 2095842284.2857418,
+        "receiver_incident_wh": 1211653809.727241,
+        "timestamp": "2025-11-15T13:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 932.9782248423118
+      },
+      {
+        "incident_normal_wh": 2033879302.901406,
+        "receiver_incident_wh": 1122449258.020812,
+        "timestamp": "2025-11-15T14:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 905.3949888272065
+      },
+      {
+        "incident_normal_wh": 1887073911.9376163,
+        "receiver_incident_wh": 927945329.3832289,
+        "timestamp": "2025-11-15T15:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 840.0435861545598
+      },
+      {
+        "incident_normal_wh": 1516205728.56177,
+        "receiver_incident_wh": 551353599.3180668,
+        "timestamp": "2025-11-15T16:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 674.9491313042072
+      },
+      {
+        "incident_normal_wh": 308447129.1007395,
+        "receiver_incident_wh": 40035162.580767944,
+        "timestamp": "2025-11-11T17:00:00+00:00",
+        "duration_hours": 30.0,
+        "dni_w_m2": 137.30730462105427
+      },
+      {
+        "incident_normal_wh": 715053811.4371126,
+        "receiver_incident_wh": 130988510.16286364,
+        "timestamp": "2025-12-13T08:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 308.042895056657
+      },
+      {
+        "incident_normal_wh": 1691051681.780333,
+        "receiver_incident_wh": 650571787.3361583,
+        "timestamp": "2025-12-15T09:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 728.4996561295161
+      },
+      {
+        "incident_normal_wh": 1996464130.6178973,
+        "receiver_incident_wh": 978026718.0670185,
+        "timestamp": "2025-12-15T10:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 860.0703623078215
+      },
+      {
+        "incident_normal_wh": 2119346799.3594148,
+        "receiver_incident_wh": 1141704278.0465517,
+        "timestamp": "2025-12-15T11:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 913.0078229939696
+      },
+      {
+        "incident_normal_wh": 2164027740.6649923,
+        "receiver_incident_wh": 1206478478.9421518,
+        "timestamp": "2025-12-15T12:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 932.2562296082409
+      },
+      {
+        "incident_normal_wh": 2156528884.497051,
+        "receiver_incident_wh": 1195082209.1129074,
+        "timestamp": "2025-12-15T13:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 929.0257463542036
+      },
+      {
+        "incident_normal_wh": 2092887328.3777306,
+        "receiver_incident_wh": 1103257127.4208324,
+        "timestamp": "2025-12-15T14:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 901.6091675186638
+      },
+      {
+        "incident_normal_wh": 1932927143.967477,
+        "receiver_incident_wh": 896177784.7665585,
+        "timestamp": "2025-12-15T15:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 832.6988316650514
+      },
+      {
+        "incident_normal_wh": 1515006647.5455856,
+        "receiver_incident_wh": 497453710.0749,
+        "timestamp": "2025-12-15T16:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 652.6600184146641
+      },
+      {
+        "incident_normal_wh": 187040968.44827357,
+        "receiver_incident_wh": 14494765.435849572,
+        "timestamp": "2025-12-19T17:00:00+00:00",
+        "duration_hours": 31.0,
+        "dni_w_m2": 80.57665100646003
+      }
+    ],
+    "unit": "kWh",
+    "engine": "shared_rust"
+  },
+  "candidate": null,
+  "elapsed_seconds": 7.977898708006251,
+  "model_scope": "Receiver incident optical energy, not electricity; catalogue geometry is reconstructed."
+}

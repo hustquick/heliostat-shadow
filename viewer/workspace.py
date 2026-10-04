@@ -445,3 +445,28 @@ class ViewerWorkspace:
             normal=reflected+sun; normal/=np.linalg.norm(normal,axis=1)[:,None]
             score += np.maximum(0, normal@sun)
         return score/len(suns)*atmospheric_transmittance(distance)
+
+    def optical_energy(self, payload):
+        from scripts.annual_energy import Sample, evaluate_energy
+        from scripts.optimize_ps10_greedy import receiver_for
+        samples = [Sample(pd.Timestamp('2000-01-01', tz='UTC'), np.asarray(row['sun'], dtype=float),
+                          float(row['dni']), float(row['duration_hours'])) for row in payload['samples']]
+        if not samples:
+            raise ValueError('Energy inputs must not be empty')
+        model = self.active
+        from rust_core import optical_energy
+        shared = optical_energy(model.mirrors, samples, model.config)
+        if shared is not None:
+            return shared
+        return evaluate_energy(model.mirrors, samples, model.config, receiver_for(model.config))
+
+    def optimize_energy_step(self, payload):
+        from scripts.annual_energy import Sample
+        from rust_core import optimize_energy_step
+        samples = [Sample(pd.Timestamp('2000-01-01',tz='UTC'),np.asarray(s['sun']),float(s['dni']),float(s['duration_hours'])) for s in payload['samples']]
+        candidates = [(int(c['index']), np.asarray(c['xy']), 0.) for c in payload['candidates']]
+        model = self.active
+        result = optimize_energy_step(model.mirrors,samples,model.config,candidates,float(payload['threshold_wh']))
+        if result is None:
+            raise ValueError('Please rebuild the shared Rust optimization core')
+        return result

@@ -57,3 +57,24 @@ def resolve_towers(mirrors, sun, config):
         raise RuntimeError("双塔全场收益策略需要更新后的 Rust 内核，请重新构建安装包")
     plant = dict(id="assignment",name="assignment",layout_status="fixed",reported_mirrors=len(mirrors),source="model",note="",config=config,metadata={},weather=dict(start_utc="2023-01-01T00:00:00Z",step_seconds=3600,dni_w_m2=[],temperature_c=12.,source=""),mirrors=[_mirror_payload(m) for m in mirrors])
     return json.loads(_heliostat_rust.resolve_towers_json(json.dumps(dict(plant=plant,sun=list(map(float,sun))))))
+
+
+def optical_energy(mirrors, samples, config):
+    """Same energy kernel as Android/iOS; return None for the reference fallback."""
+    if not available() or not hasattr(_heliostat_rust, 'evaluate_energy_json'):
+        return None
+    plant = dict(id='energy', name='energy', layout_status='model', reported_mirrors=len(mirrors),
+                 source='model', note='', config=config, metadata={}, mirrors=[_mirror_payload(m) for m in mirrors])
+    inputs = [dict(sun=list(map(float, s.sun)), dni=float(s.dni), duration_hours=float(s.duration_hours)) for s in samples]
+    return json.loads(_heliostat_rust.evaluate_energy_json(json.dumps(dict(plant=plant, samples=inputs))))
+
+
+def optimize_energy_step(mirrors, samples, config, candidates, threshold_wh):
+    if not available() or not hasattr(_heliostat_rust, 'optimize_energy_step_json'):
+        return None
+    plant = dict(id='energy', name='energy', layout_status='model', reported_mirrors=len(mirrors),
+                 source='model', note='', config=config, metadata={}, mirrors=[_mirror_payload(m) for m in mirrors])
+    inputs = [dict(sun=list(map(float,s.sun)),dni=float(s.dni),duration_hours=float(s.duration_hours)) for s in samples]
+    moves = [dict(index=int(i),xy=list(map(float,xy))) for i,xy,*_ in candidates]
+    return json.loads(_heliostat_rust.optimize_energy_step_json(json.dumps(dict(plant=plant,samples=inputs,
+        candidates=moves,threshold_wh=float(threshold_wh)))))

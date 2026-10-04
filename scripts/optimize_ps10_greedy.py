@@ -17,7 +17,7 @@ from __future__ import annotations
 import argparse
 import json
 import tempfile
-from dataclasses import dataclass, replace
+from dataclasses import replace
 from pathlib import Path
 
 import numpy as np
@@ -35,11 +35,7 @@ from viewer.workspace import ViewerWorkspace
 ROOT = Path(__file__).resolve().parents[1]
 
 
-@dataclass(frozen=True)
-class Sample:
-    timestamp: pd.Timestamp
-    sun: np.ndarray
-    dni: float
+from scripts.annual_energy import Sample, weather_samples, evaluate_energy
 
 
 def annual_representative_samples(config: dict) -> list[Sample]:
@@ -104,13 +100,20 @@ def fast_screen_scores(points: np.ndarray, mirror: Heliostat, samples: list[Samp
         normal = sample.sun[None, :] + reflected
         normal /= np.linalg.norm(normal, axis=1)[:, None]
         cosine = np.clip(normal @ sample.sun, 0., None)
-        total += sample.dni * cosine * atmospheric_transmittance(distance)
+        total += sample.duration_hours * sample.dni * cosine * atmospheric_transmittance(distance)
     return total
 
 
 def delivered_power(mirrors: list[Heliostat], samples: list[Sample], config: dict,
                     receiver: CylindricalReceiver) -> tuple[float, float]:
-    """Return representative received power sum and corresponding optical efficiency."""
+    """Return duration-weighted received Wh and energy-weighted optical efficiency.
+
+    Legacy seasonal samples have unit weights, preserving the old numeric score.
+    """
+    from rust_core import optical_energy
+    shared = optical_energy(mirrors, samples, config)
+    if shared is not None:
+        return shared['receiver_incident_kwh']*1000, shared['energy_weighted_optical_efficiency']
     delivered = normal = 0.0
     for sample in samples:
         field = PreparedField.from_mirrors(mirrors, sample.sun)
@@ -124,8 +127,8 @@ def delivered_power(mirrors: list[Heliostat], samples: list[Sample], config: dic
             sunshape_mrad=config['sunshape_mrad'], slope_error_mrad=config['slope_error_mrad'],
             tracking_error_mrad=config['tracking_error_mrad'],
             receiver_quadrature_order=config['receiver_quadrature_order'])
-        delivered += float(result.receiver_incident_power_w.sum())
-        normal += float(result.incident_normal_power_w.sum())
+        delivered += sample.duration_hours * float(result.receiver_incident_power_w.sum())
+        normal += sample.duration_hours * float(result.incident_normal_power_w.sum())
     return delivered, delivered / normal if normal else 0.0
 
 
@@ -145,6 +148,8 @@ def legal_grid(mirrors: list[Heliostat], clearance: float, step: float) -> np.nd
 def grid_neighbours(mirrors: list[Heliostat], grid: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """Nearest and second-nearest mirror for every shared grid point."""
     xy = np.array([mirror.centre[:2] for mirror in mirrors])
+    if len(mirrors) < 2:
+        return np.full((len(grid),2),np.inf), np.zeros((len(grid),2),dtype=int)
     distances, indices = cKDTree(xy).query(grid, k=2)
     return np.asarray(distances), np.asarray(indices)
 
@@ -167,6 +172,8 @@ def screened_candidates(index: int, mirrors: list[Heliostat], grid: np.ndarray,
                         [9, 9], [9, -9], [-9, 9], [-9, -9]], dtype=float)
     local = current + offsets
     local = local[cKDTree(others).query(local, k=1)[0] >= clearance]
+    legal = legal[np.linalg.norm(legal-np.asarray(receiver.centre[:2]),axis=1) > receiver.radius]
+    local = local[np.linalg.norm(local-np.asarray(receiver.centre[:2]),axis=1) > receiver.radius]
     pool = legal if region == 'global' else local
     mirror = mirrors[index]
     scores = fast_screen_scores(pool, mirror, samples, receiver)
@@ -245,9 +252,13 @@ def main() -> None:
                         help='Search the whole legal field or only 9 local displacement directions.')
     parser.add_argument('--full-validation-candidates', type=int, default=3,
                         help='Top proxy candidates re-evaluated using the whole field before acceptance.')
+    parser.add_argument('--objective', choices=('seasonal', 'annual-stratified', 'annual-hourly'), default='seasonal')
+    parser.add_argument('--annual-evaluation', action='store_true', help='Evaluate both layouts over a complete hourly year; reject annual regression.')
     parser.add_argument('--output', type=Path,
                         help='Results directory; defaults to reports/<plant>_greedy_optimization.')
     args = parser.parse_args()
+    if args.max_moves < 0 or args.relative_gain_limit < 0 or not np.isfinite(args.relative_gain_limit) or args.grid_step_m <= 0 or not np.isfinite(args.grid_step_m) or args.candidates_per_mirror < 1 or not 1 <= args.full_validation_candidates <= 64:
+        parser.error('Invalid optimizer budget, threshold or grid settings')
     output = args.output or ROOT/'reports'/f'{args.plant}_greedy_optimization'
     output.mkdir(parents=True, exist_ok=True)
 
@@ -257,34 +268,48 @@ def main() -> None:
         model = workspace.active
         config, mirrors = model.config, list(model.mirrors)
         plant_name = workspace.metadata()['plant_name']
-        # Search uses the same finite-cylinder interception model at a lower
-        # quadrature order. The final before/after values are recomputed at
-        # the catalogue order, normally 64.
-        search_config = dict(config, receiver_quadrature_order=16)
         initial = list(mirrors)
         receiver = receiver_for(config)
-        samples = annual_representative_samples(config)
-        clearance = float(np.hypot(mirrors[0].width, mirrors[0].height) + 1.0)
+        if args.objective == 'seasonal':
+            samples = annual_representative_samples(config)
+            objective_provenance = dict(method='four_seasonal_noon_samples', is_annual_energy=False)
+        else:
+            samples, objective_provenance = weather_samples(model, stratified=args.objective == 'annual-stratified')
+        search_config = dict(config)
+        clearance = float(max(np.hypot(m.width, m.height) for m in mirrors) + 1.0)
         grid = legal_grid(mirrors, clearance, args.grid_step_m)
         baseline_search_power, _ = delivered_power(mirrors, samples, search_config, receiver)
         current_power = baseline_search_power
         threshold = baseline_search_power * args.relative_gain_limit
         history = []
+        stop_reason = 'move_budget_exhausted'
         for step in range(1, args.max_moves + 1):
+            print(f"Round {step}/{args.max_moves}: screening {len(mirrors)} mirrors over {len(samples)} samples", flush=True)
             options = ranked_moves(mirrors, samples, search_config, receiver, grid, clearance,
                                    args.candidates_per_mirror, args.candidate_region)
             winner = None
-            for index, destination, local_gain_w in options[:args.full_validation_candidates]:
-                trial = list(mirrors)
-                trial[index] = retarget(trial[index], destination, receiver)
-                trial_power, _ = delivered_power(trial, samples, search_config, receiver)
-                exact_gain = trial_power - current_power
-                if winner is None or exact_gain > winner[3]:
-                    winner = (index, destination, local_gain_w, exact_gain, trial, trial_power)
+            shortlisted = options[:args.full_validation_candidates]
+            from rust_core import optimize_energy_step
+            decision = optimize_energy_step(mirrors, samples, search_config, shortlisted, threshold)
+            if decision is not None:
+                if decision['accepted']:
+                    index, destination, local_gain_w = shortlisted[decision['candidate_ordinal']]
+                    trial = list(mirrors)
+                    trial[index] = retarget(trial[index], destination, receiver)
+                    winner = (index, destination, local_gain_w, decision['gain_wh'], trial, decision['final_wh'])
+            else:
+                for index, destination, local_gain_w in shortlisted:
+                    trial = list(mirrors)
+                    trial[index] = retarget(trial[index], destination, receiver)
+                    trial_power, _ = delivered_power(trial, samples, search_config, receiver)
+                    exact_gain = trial_power - current_power
+                    if winner is None or exact_gain > winner[3]:
+                        winner = (index, destination, local_gain_w, exact_gain, trial, trial_power)
             if winner is None or winner[3] <= threshold:
+                stop_reason = 'shortlist_gain_below_threshold'
                 history.append(dict(step=step, accepted=False, stop_reason='no_global_gain_above_limit',
                                     best_proxy_gain=0. if not options else options[0][2],
-                                    best_global_gain_w=0. if winner is None else winner[3]))
+                                    best_global_gain=0. if winner is None else winner[3]))
                 break
             index, destination, local_gain_w, exact_gain, trial, trial_power = winner
             previous = mirrors[index]
@@ -292,38 +317,61 @@ def main() -> None:
             history.append(dict(step=step, accepted=True, mirror_id=previous.mirror_id,
                                 from_x_m=previous.centre[0], from_y_m=previous.centre[1],
                                 to_x_m=float(destination[0]), to_y_m=float(destination[1]),
-                                proxy_gain=local_gain_w, exact_global_gain_w=exact_gain))
+                                proxy_gain=local_gain_w, exact_global_gain=exact_gain))
+        annual_report = None
+        if args.annual_evaluation or args.objective == 'annual-hourly':
+            print("Starting independent full hourly-year validation", flush=True)
+            hourly, provenance = weather_samples(model)
+            before = evaluate_energy(initial, hourly, config, receiver)
+            after = evaluate_energy(mirrors, hourly, config, receiver)
+            accepted = after['receiver_incident_kwh'] >= before['receiver_incident_kwh']
+            annual_report = dict(provenance=provenance, baseline=before, candidate=after, accepted=accepted)
+            if not accepted:
+                mirrors = initial
         baseline_power, baseline_eta = delivered_power(initial, samples, config, receiver)
         final_power, final_eta = delivered_power(mirrors, samples, config, receiver)
+    if annual_report is not None:
+        (output/'annual_energy.json').write_text(json.dumps(annual_report, ensure_ascii=False, indent=2)+'\n')
     pd.DataFrame(history).to_csv(output/'move_history.csv', index=False)
     save_layout(output/'ps10_greedy_layout.csv', mirrors)
     save_comparison_plot(output/'layout_comparison.png', initial, mirrors, args.plant)
     summary = dict(
         plant_id=args.plant, plant_name=plant_name,
         baseline=f'{plant_name}: catalogue parameterised reconstruction; not an as-built coordinate survey',
+        stop_reason=stop_reason,
+        convergence_claim=False,
+        objective=args.objective, objective_provenance=objective_provenance,
+        annual_validation_accepted=None if annual_report is None else annual_report["accepted"],
+        objective_unit="Wh" if args.objective != "seasonal" else "representative W sum",
+        sample_duration_hours=[s.duration_hours for s in samples],
         representative_samples=[sample.timestamp.isoformat() for sample in samples],
         mirrors=len(mirrors), grid_candidates=len(grid), clearance_m=clearance,
-        accepted_moves=sum(row.get('accepted', False) for row in history),
-        baseline_receiver_incident_w=baseline_power, final_receiver_incident_w=final_power,
+        search_accepted_moves=sum(row.get('accepted', False) for row in history),
+        accepted_moves=0 if annual_report is not None and not annual_report['accepted'] else sum(row.get('accepted', False) for row in history),
+        baseline_objective=baseline_power, final_objective=final_power,
+        baseline_receiver_incident_w=baseline_power if args.objective == 'seasonal' else None,
+        final_receiver_incident_w=final_power if args.objective == 'seasonal' else None,
+        baseline_receiver_incident_kwh=baseline_power/1000 if args.objective != 'seasonal' else None,
+        final_receiver_incident_kwh=final_power/1000 if args.objective != 'seasonal' else None,
         relative_receiver_power_gain=(final_power / baseline_power - 1.) if baseline_power else 0.,
         baseline_optical_efficiency=baseline_eta, final_optical_efficiency=final_eta,
         relative_gain_limit=args.relative_gain_limit,
-        absolute_gain_threshold_w=threshold,
+        absolute_gain_threshold=threshold,
+        absolute_gain_threshold_w=threshold if args.objective == 'seasonal' else None,
         full_validation_candidates=args.full_validation_candidates,
         candidate_region=args.candidate_region,
         search_receiver_quadrature_order=search_config['receiver_quadrature_order'],
         final_receiver_quadrature_order=config['receiver_quadrature_order'])
     (output/'summary.json').write_text(json.dumps(summary, ensure_ascii=False, indent=2)+'\n')
     (output/'RESULTS.md').write_text(
-        f'# {plant_name} 最大净增益贪心局部改良\n\n'
-        f'基线为 {len(mirrors)} 面镜的参数化重建场，不是竣工逐镜坐标。搜索用四季四个时刻的晴空 DNI '
-        '代表全年；每轮检查每一面镜，先用余弦和沿程透过率做全平面筛选。筛选排名前几名还会在全场完整阴影/遮挡与接收器计算中复核，只有全场实际净增益超过阈值才接受移动。搜索使用 16 阶接收器积分以控制成本；最终前后结果用目录配置的 64 阶积分独立复算。\n\n'
-        f"- 接受移动：{summary['accepted_moves']}\n"
-        f"- 代表性接收功率指标：{baseline_power / 1e6:.4f} → {final_power / 1e6:.4f} MW（等权代表时刻均值的比例指标）\n"
-        f"- 相对提升：{summary['relative_receiver_power_gain'] * 100:.3f}%\n"
-        f"- 光学效率：{baseline_eta * 100:.3f}% → {final_eta * 100:.3f}%\n\n"
-        '输出：`move_history.csv`、`ps10_greedy_layout.csv`、`layout_comparison.png`、`summary.json`。\n')
-    print(json.dumps(summary, ensure_ascii=False, indent=2))
+        f'# {plant_name} 镜场优化\n\n'
+        f'评价目标：{args.objective}；单位：{summary["objective_unit"]}。\n\n'
+        '每轮筛选全部镜面，候选移动经过完整全场复核；每次接受与最终评价使用相同接收器积分阶数。\n'
+        '季节样本仅为筛选指标；分层年评价是近似；完整逐时复核才属于本气象年的年能量计算。\n'
+        f'逐时全年复核是否通过：{summary["annual_validation_accepted"]}（None 表示未执行）。\n'
+        f'最终目标相对收益：{summary["relative_receiver_power_gain"]*100:.4f}%。\n'
+        '坐标来源仍为模型/研究重建；接收器入射能量不等于发电量。\n')
+    print(json.dumps({k:v for k,v in summary.items() if k not in ("representative_samples", "sample_duration_hours")}, ensure_ascii=False, indent=2))
 
 
 if __name__ == '__main__':
