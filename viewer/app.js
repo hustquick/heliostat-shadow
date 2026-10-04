@@ -1,17 +1,11 @@
 import {defaultOperationParameters, validateOperationParameters, nextOperationState, parkedVertices} from "./operation.js";
 import * as THREE from "three";
 import { OrbitControls } from "./vendor/OrbitControls.js";
-const $ = (id) => document.getElementById(id),
-  colors = {
-    target: "#ffcc47",
-    body: "#69b6aa",
-    candidate: "#6c8d9b",
-    shadow: "#3199ed",
-    blocking: "#f68b4b",
-    overlap: "#ad7bdb",
-    visible: "#64cab0",
-    incoming: "#ff3dbb",
-  };
+import {fieldColors as colors} from "./palette.js";
+const $ = (id) => document.getElementById(id);
+for (const swatch of document.querySelectorAll("[data-loss-color]"))
+  swatch.style.backgroundColor = colors[swatch.dataset.lossColor];
+
 let meta,
   frame,
   target,
@@ -295,7 +289,7 @@ function drawDetails() {
   );
   arrow(c, target.normal, 18, "#80df86");
   const r = V(target.aim).sub(V(c));
-  arrow(c, target.reflected, r.length(), colors.blocking);
+  arrow(c, target.reflected, r.length(), colors.reflected);
   const ball = new THREE.Mesh(
     new THREE.SphereGeometry(0.65, 8, 8),
     new THREE.MeshBasicMaterial({ color: colors.target }),
