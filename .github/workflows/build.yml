@@ -83,6 +83,7 @@ jobs:
           mkdir -p "$HOME/.android"
           printf '%s' "$SIGNING_KEY" | base64 -d > "$HOME/.android/debug.keystore"
           chmod 600 "$HOME/.android/debug.keystore"
+          keytool -list -keystore "$HOME/.android/debug.keystore" -storepass android -alias androiddebugkey
           echo "HELIOSTAT_ANDROID_KEYSTORE=$HOME/.android/debug.keystore" >> "$GITHUB_ENV"
       - run: ./scripts/build_android.sh
       - name: Verify packaged Android viewer resources
