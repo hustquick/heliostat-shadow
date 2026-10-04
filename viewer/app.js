@@ -1217,6 +1217,10 @@ async function init() {
     cameraTransition = null;
     topView();
     const heading = card.querySelector("summary");
+    // Programmatic navigation must not paint a clipped keyboard focus ring.
+    heading.classList.add("navigation-focus");
+    heading.addEventListener("blur", () => heading.classList.remove("navigation-focus"), {once:true});
+    heading.addEventListener("keydown", () => heading.classList.remove("navigation-focus"), {once:true});
     heading.focus({preventScroll:true});
     card.scrollIntoView({block:"start", behavior:"instant"});
     history.replaceState(null, "", location.pathname + location.search);
