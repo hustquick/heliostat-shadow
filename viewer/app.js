@@ -1133,10 +1133,10 @@ async function init() {
   if (meta.plant_details) {
     const d=meta.plant_details;
     $("source").replaceChildren(document.createTextNode(
-      `${d.location} · ${coordinateText} · ${d.capacity_mw} MW · ` +
+      `${d.location} · ${coordinateText} · ${d.capacity_mw} ${d.capacity_kind === "thermal" ? "MWth" : "MW"} · ` +
       (d.reported_towers ? `${d.reported_towers} 座塔、间距约 ${d.reported_tower_spacing_m} m · ` : "") +
-      `塔高 ${d.tower_height_m} m · ` +
-      `接收器 R ${d.model_receiver_radius_m} m × H ${d.model_receiver_height_m} m · ` +
+      (d.tower_height_m ? `塔高／瞄准标高 ${d.tower_height_m} m · ` : `模型瞄准标高 ${d.model_tower_height_m} m（估值） · `) +
+      `${d.receiver_geometry_status === "published" ? "接收器" : "模型接收器（近似）"} R ${d.model_receiver_radius_m} m × H ${d.model_receiver_height_m} m · ` +
       `定日镜 ${d.model_heliostat_width_m} m × ${d.model_heliostat_height_m} m · ` +
       (d.reported_heliostats ? `${d.reported_heliostats.toLocaleString()} 面公开镜数` : "公开镜数缺失") + " · "
     ));
@@ -1385,5 +1385,4 @@ $("operationForm").onsubmit = async event => {
   } catch (error) { status(error.message, true); }
   finally { controlsBusy(false); }
 };
-
 

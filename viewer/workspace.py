@@ -145,6 +145,7 @@ class ViewerWorkspace:
         folder = self.user_root/'catalog-cache'/item['id']
         layout, config = folder/'layout.csv', folder/'config.json'
         count = int(item.get('reported_heliostats') or 2650)
+        tower_height = float(item.get('tower_height_m') or item['model_tower_height_m'])
         fingerprint = hashlib.sha256(json.dumps(
             {'model_version': CATALOG_MODEL_VERSION, 'simulation_year': 2025, 'plant': item},
             ensure_ascii=False, sort_keys=True,
@@ -181,7 +182,7 @@ class ViewerWorkspace:
             elif item.get('model_layout_type') == 'rectangular_hex':
                 mirrors = rectangular_hex_field(
                     count=count, mirror_width_m=width, mirror_height_m=height,
-                    tower_height_m=float(item['tower_height_m']), receiver_radius_m=receiver_radius,
+                    tower_height_m=tower_height, receiver_radius_m=receiver_radius,
                     field_width_m=float(item['model_field_width_m']),
                     field_height_m=float(item['model_field_height_m']),
                     inner_radius_m=float(item['model_field_inner_radius_m']),
@@ -189,7 +190,7 @@ class ViewerWorkspace:
             elif item.get('model_layout_type') == 'annular_hex':
                 mirrors = annular_hex_field(
                     count=count, mirror_width_m=width, mirror_height_m=height,
-                    tower_height_m=float(item['tower_height_m']),
+                    tower_height_m=tower_height,
                     receiver_radius_m=receiver_radius,
                     field_radius_m=float(item['model_field_outer_radius_m']),
                     inner_radius_m=float(item['model_field_inner_radius_m']),
@@ -199,7 +200,7 @@ class ViewerWorkspace:
             else:
                 mirrors = campo_radial_stagger_candidates(
                     mirror_width_m=width, mirror_height_m=height,
-                    tower_height_m=item['tower_height_m'], receiver_radius_m=receiver_radius,
+                    tower_height_m=tower_height, receiver_radius_m=receiver_radius,
                     radial_increments=(np.cos(np.pi/6), .9, 1.8), candidate_count=count,
                     first_row_count=int(item.get('model_first_row_count', min(46, count))),
                     separation_m=1.)
@@ -208,7 +209,7 @@ class ViewerWorkspace:
                         mirrors, outer_radius_m=float(item['model_field_outer_radius_m']),
                         inner_radius_m=(float(item['model_field_inner_radius_m'])
                                         if item.get('model_field_inner_radius_m') is not None else None),
-                        tower_height_m=float(item['tower_height_m']),
+                        tower_height_m=tower_height,
                         receiver_radius_m=receiver_radius)
             pd.DataFrame([dict(mirror_id=m.mirror_id, x=m.centre[0], y=m.centre[1], z=m.centre[2],
                 width=m.width, height=m.height, aim_x=m.aim_point[0], aim_y=m.aim_point[1],
@@ -228,7 +229,7 @@ class ViewerWorkspace:
                         coordinate_source_url=item.get(
                             'coordinate_source_url', item['source_url']),
                         coordinate_note=item.get('coordinate_note'),
-                        expected_mirrors=count, optical_height_m=item['tower_height_m'],
+                        expected_mirrors=count, optical_height_m=tower_height,
                         receiver_radius_m=receiver_radius,
                         receiver_height_m=receiver_height,
                         mirror_width_m=width, mirror_height_m=height,

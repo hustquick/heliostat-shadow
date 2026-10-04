@@ -134,7 +134,7 @@ def test_catalog_selection_import_and_rearrangement(tmp_path):
 
 def test_catalog_coordinates_have_provenance_and_valid_ranges():
     catalog = json.loads((ROOT/'data/power_tower_catalog.json').read_text())
-    assert len(catalog) == 14
+    assert len(catalog) >= 29
     for plant in catalog:
         assert -90 <= plant['latitude'] <= 90
         assert -180 <= plant['longitude'] <= 180
@@ -188,7 +188,7 @@ def test_crescent_dunes_published_receiver_and_extent(tmp_path):
 
 def test_every_catalog_receiver_has_explicit_audit_status():
     catalog = json.loads((ROOT/'data/power_tower_catalog.json').read_text())
-    assert len(catalog) == 14
+    assert len(catalog) >= 29
     for plant in catalog:
         assert plant['receiver_geometry_status'] in {
             'published', 'unverified-estimate', 'unsupported-geometry'}
