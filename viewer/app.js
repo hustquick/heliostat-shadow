@@ -797,8 +797,9 @@ function controlsBusy(value) {
     "towerColor",
   ])
     $(id).disabled = value;
-  for (const select of document.querySelectorAll("#designLayouts select"))
-    select.disabled = value || select.dataset.empty === "true";
+  for (const id of ["designMethod", "currentLayout", "rearrange", "importPlant", "exportCoordinates"])
+    $(id).disabled = value;
+  updateDesignMethod();
   document.querySelector("#selectMirror button").disabled = value;
 }
 async function loadTime() {
@@ -1068,43 +1069,52 @@ for (const button of document.querySelectorAll("[data-mode]"))
     draw2D();
   };
 $("plane").onchange = draw2D;
+function updateDesignMethod() {
+  const method = $("designMethod").value;
+  for (const label of $("designParameters").querySelectorAll("[data-methods]")) {
+    const visible = label.dataset.methods.split(" ").includes(method);
+    label.hidden = !visible;
+    for (const input of label.querySelectorAll("input")) input.disabled = busy || !visible;
+  }
+  $("designParameters").hidden = method === "imported";
+  $("rearrange").hidden = method === "imported";
+  $("importPlant").hidden = method !== "imported";
+}
 function showLayoutSelectors() {
   const plants = meta.plants.filter(item => item.builtin);
-  const designs = meta.plants.filter(item => !item.builtin);
-  const isDesign = designs.some(item => item.id === meta.active_plant);
-  const populate = (select, items, placeholder) => {
+  const sourceId = meta.environment_plant_id || meta.active_plant;
+  const sourcePlant = plants.find(item => item.id === sourceId);
+  const populate = (select, items) => {
     select.replaceChildren();
-    if (placeholder) {
-      const option = document.createElement("option");
-      option.value = ""; option.textContent = placeholder; option.disabled = true;
-      select.append(option);
-    }
     for (const item of items) {
       const option = document.createElement("option");
       option.value = item.id; option.textContent = item.name; select.append(option);
     }
-    select.value = items.some(item => item.id === meta.active_plant) ? meta.active_plant : "";
   };
-  populate($("plant"), plants, isDesign ? "切换到电厂或参考布局" : null);
-  $("designLayouts").replaceChildren();
-  const methodOf = item => {
-    if (item.design_method) return item.design_method;
-    // Existing saved layouts predate the explicit method field.
-    const match = item.name.match(/(Campo|非圆曲线|自由排布)重排$/);
-    return match ? ({Campo:"campo", 非圆曲线:"curved", 自由排布:"free"})[match[1]] : "imported";
-  };
-  for (const [method, title] of [["campo","Campo 径向交错"],["curved","非圆曲线交错"],["free","自由价值场"],["imported","导入的镜场布局"]]) {
-    const items = designs.filter(item => methodOf(item) === method);
-    const label = document.createElement("label");
-    const name = document.createElement("span"); name.textContent = title;
-    const select = document.createElement("select");
-    select.id = `design-${method}`; select.setAttribute("aria-label", title);
-    populate(select, items, items.length ? "选择设计方案" : "暂无方案");
-    select.dataset.empty = String(items.length === 0); select.disabled = items.length === 0;
-    select.onchange = () => selectLayout(select.value);
-    label.append(name, select); $("designLayouts").append(label);
+  populate($("plant"), plants);
+  if (!sourcePlant) {
+    const option = document.createElement("option");
+    option.value = ""; option.textContent = "自定义场址"; option.disabled = true;
+    $("plant").prepend(option);
   }
-  if (isDesign) $("mobileManage").open = true;
+  $("plant").value = sourcePlant?.id || "";
+  const source = meta.plants.find(item => item.id === sourceId);
+  const items = [{id:sourceId, name:"原厂参考布局"}];
+  const used = new Map();
+  for (const design of meta.plants.filter(item => !item.builtin && item.id !== sourceId && item.environment_plant_id === sourceId)) {
+    const prefix = source?.name + " · ";
+    const name = design.name.startsWith(prefix) ? design.name.slice(prefix.length) : design.name;
+    const count = (used.get(name) || 0) + 1; used.set(name, count);
+    items.push({id:design.id, name: `${name} · 方案 ${count}`});
+  }
+  populate($("currentLayout"), items);
+  $("currentLayout").value = meta.active_plant;
+  $("currentLayout").onchange = () => selectLayout($("currentLayout").value);
+  const activeDesign = meta.plants.find(item => item.id === meta.active_plant && !item.builtin);
+  if (activeDesign?.design_method) $("designMethod").value = activeDesign.design_method;
+  if (meta.active_plant !== sourceId) $("mobileManage").open = true;
+  $("designMethod").onchange = updateDesignMethod;
+  updateDesignMethod();
 }
 async function init() {
   meta = await api("meta");
@@ -1206,20 +1216,25 @@ async function selectLayout(id) {
 }
 $("plant").onchange = () => selectLayout($("plant").value);
 $("importPlant").onclick=()=>$("importDialog").showModal();
-$("rearrange").onclick=()=>$("rearrangeDialog").showModal();
+
 for (const b of document.querySelectorAll("[data-close]")) b.onclick=()=>b.closest("dialog").close();
 $("importForm").onsubmit=async(e)=>{
   e.preventDefault(); const f=new FormData(e.currentTarget), file=f.get("file");
   if (!(file instanceof File) || !file.size) return;
-  const body=Object.fromEntries([...f.entries()].filter(([k])=>k!=="file")); body.csv=await file.text();
-  $("importDialog").close(); status("正在校验坐标并创建电厂…");
-  try { await apiPost("plants/import",body); location.reload(); } catch(err){ status(err.message,true); }
+  const body=Object.fromEntries([...f.entries()].filter(([k])=>k!=="file")); body.csv=await file.text(); body.plant_id=meta.environment_plant_id || meta.active_plant;
+  $("importDialog").close(); stopPlay(); controlsBusy(true);
+  $("designProgress").hidden=false; $("designProgress").textContent="正在校验并导入布局…";
+  try { await apiPost("plants/import",body); location.reload(); }
+  catch(err){ $("designProgress").hidden=true; status(err.message,true); controlsBusy(false); }
 };
 $("rearrangeForm").onsubmit=async(e)=>{
   e.preventDefault(); const body=Object.fromEntries(new FormData(e.currentTarget));
-  $("rearrangeDialog").close(); status("正在生成候选场、筛选镜距并重排…"); controlsBusy(true);
+  body.plant_id=meta.environment_plant_id || meta.active_plant;
+  if (body.scheme === "imported") return $("importDialog").showModal();
+  stopPlay(); controlsBusy(true);
+  $("designProgress").hidden=false; $("designProgress").textContent="正在基于当前电厂生成布局…";
   try { await apiPost("layout/rearrange",body); location.reload(); }
-  catch(err){ status(err.message,true); controlsBusy(false); }
+  catch(err){ $("designProgress").hidden=true; status(err.message,true); controlsBusy(false); }
 };
 
 // Presentation poses are deliberately separate from tracking/optical calculations.
@@ -1385,4 +1400,3 @@ $("operationForm").onsubmit = async event => {
   } catch (error) { status(error.message, true); }
   finally { controlsBusy(false); }
 };
-

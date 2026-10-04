@@ -908,8 +908,18 @@ main > details.spatial > .scene-description { position:absolute; left:var(--card
 #areaNote > div { grid-template-columns:4em 7ch 1.4em; column-gap:5px; }
 @media(max-width:600px) { #areaNote { column-gap:16px; } }
 
-.saved-designs > label { display:flex; flex-direction:column; gap:8px; width:100%; }
-.saved-designs select { width:100%; min-width:0; height:40px; padding:8px 12px; }
-
-#designLayouts.saved-designs { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
-@media(max-width:600px) { #designLayouts.saved-designs { grid-template-columns:minmax(0,1fr); } }
+.field-management.cardcontrols { display:grid; gap:20px; }
+.design-form { display:block; margin:0; padding:0; }
+.design-toolbar,.layout-toolbar { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:end; gap:12px; }
+.field-management label { display:flex; flex-direction:column; align-items:stretch; gap:8px; min-width:0; }
+.field-management select,.field-management input { width:100%; min-width:0; box-sizing:border-box; height:40px; padding:8px 12px; }
+.field-management button { height:40px; min-width:104px; margin:0; white-space:nowrap; }
+.design-parameters { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin-top:16px; }
+.layout-toolbar { padding-top:20px; border-top:1px solid var(--line); }
+.field-management [hidden] { display:none !important; }
+#layoutStatus { color:var(--muted); font-size:12px; }
+#designProgress { margin:0; color:var(--accent); line-height:1.6; }
+@media(max-width:600px) {
+  .design-parameters { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+  .field-management button { min-width:88px; padding:8px 10px; }
+}

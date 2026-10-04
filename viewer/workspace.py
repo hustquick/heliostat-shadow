@@ -93,6 +93,29 @@ class ViewerWorkspace:
     def active(self):
         return self._model_for(self.active_id)
 
+    def _environment_id(self, plant_id):
+        visited = set()
+        while plant_id not in visited:
+            visited.add(plant_id)
+            plant = self._plants[plant_id]
+            if plant['builtin']:
+                return plant_id
+            config = json.loads(plant['config'].read_text())
+            source_id = config.get('source_plant_id')
+            if source_id in ('gemasolar-campo', 'gemasolar-curved', 'gemasolar-free'):
+                source_id = 'gemasolar'
+            if not source_id and plant['name'].endswith(('Campo重排', '非圆曲线重排', '自由排布重排')):
+                candidates = [(key, item) for key, item in self._plants.items()
+                              if item['builtin'] and plant['name'].startswith(item['name'] + ' · ')]
+                if candidates:
+                    source_id = max(candidates, key=lambda pair: len(pair[1]['name']))[0]
+                elif plant['name'].startswith(('Gemasolar · ', 'Gemasolar 重建参考 · ')):
+                    source_id = 'gemasolar'
+            if source_id not in self._plants or source_id == plant_id:
+                return plant_id
+            plant_id = source_id
+        return plant_id
+
     def _model_for(self, plant_id):
         with self.lock:
             if plant_id not in self._models:
@@ -104,22 +127,14 @@ class ViewerWorkspace:
                     catalog_note = p['catalog'].get(
                         'model_note',
                         '镜位是参数化重建；接收器公开尺寸缺失时使用逐电厂建模值。')
-                config = json.loads(p['config'].read_text())
-                source_id = config.get('source_plant_id')
-                if source_id in ('gemasolar-campo', 'gemasolar-curved', 'gemasolar-free'):
-                    source_id = 'gemasolar'
-                if not source_id and p['name'].endswith(('Campo重排', '非圆曲线重排', '自由排布重排')):
-                    candidates = [(key, item) for key, item in self._plants.items()
-                                  if item['builtin'] and p['name'].startswith(item['name'] + ' · ')]
-                    if candidates:
-                        source_id = max(candidates, key=lambda pair: len(pair[1]['name']))[0]
-                    elif p['name'].startswith('Gemasolar · '):
-                        source_id = 'gemasolar'
+                source_id = self._environment_id(plant_id)
                 environment = self._model_for(source_id) if source_id in self._plants and source_id != plant_id else None
                 self._models[plant_id] = ViewerModel(
                     self.root, config_path=p['config'], layout_path=p['layout'],
                     weather_path=p['weather'], clear_sky=p['clear_sky'], environment_model=environment,
-                    source=(p['name'] + (' · pvlib 晴空辐照度' if p['clear_sky'] else ' · PVGIS-SARAH3 2023 DNI')),
+                    source=('Gemasolar 公开地图提取的 2,650 面定日镜参考布局 · PVGIS-SARAH3 2023 历史卫星 DNI'
+                            if plant_id == 'gemasolar' else
+                            p['name'] + (' · pvlib 晴空辐照度' if p['clear_sky'] else ' · PVGIS-SARAH3 2023 DNI')),
                     note=(f'参数化重建场用于方法比较；镜位不是电厂竣工坐标。{catalog_note}' if p.get('catalog') else
                           '用户导入/重排布局；坐标与参数由用户负责核验。' if not p['builtin'] else None))
             return self._models[plant_id]
@@ -129,6 +144,7 @@ class ViewerWorkspace:
         plant = self._plants[self.active_id]
         catalog = plant.get('catalog')
         data.update(active_plant=self.active_id, plant_name=plant['name'],
+                    environment_plant_id=self._environment_id(self.active_id),
                     plant_details=catalog,
                     layout_status=('公开研究重建坐标' if self.active_id == 'gemasolar' else
                                    '参数化重建场，非实测坐标' if catalog else
@@ -136,6 +152,7 @@ class ViewerWorkspace:
                     reported_mirrors=catalog.get('reported_heliostats') if catalog else len(data['mirror_ids']),
                     plants=[dict(id=k, name=v['name'], builtin=v['builtin'],
                                  catalog=bool(v.get('catalog')),
+                                 environment_plant_id=self._environment_id(k),
                                  design_method=None if v['builtin'] else json.loads(v['config'].read_text()).get('design_method'))
                             for k, v in self._plants.items()])
         return data
@@ -277,6 +294,13 @@ class ViewerWorkspace:
         return self.metadata()
 
     def import_csv(self, payload):
+        source_id = payload.get('plant_id', self.active_id)
+        if source_id not in self._plants:
+            raise ValueError('未知来源电厂')
+        source_model = self._model_for(source_id)
+        if payload.get('plant_id'):
+            payload = dict(source_model.config, **payload)
+            payload['_bind_source_environment'] = True
         name = str(payload.get('name', '')).strip()
         if not name:
             raise ValueError('请填写电厂名称')
@@ -287,7 +311,7 @@ class ViewerWorkspace:
         data.columns = [str(c).strip().lower() for c in data.columns]
         if not {'x', 'y'} <= set(data.columns) or not 1 <= len(data) <= 100000:
             raise ValueError('CSV 必须包含 x、y，镜面数量须为 1–100000')
-        base = dict(self.active.config)
+        base = dict(source_model.config)
         numeric = {'latitude': 37.562, 'longitude': -5.33, 'altitude_m': 0.,
                    'optical_height_m': 140., 'receiver_radius_m': 4.,
                    'receiver_height_m': 10.5, 'mirror_width_m': 12.305,
@@ -336,9 +360,10 @@ class ViewerWorkspace:
         folder = self.user_root/plant_id
         folder.mkdir(parents=True)
         if payload.get('_bind_source_environment'):
-            source_config = self.active.config
-            base.update(source_plant_id=source_config.get('source_plant_id', self.active_id),
-                        source_plant_name=source_config.get('source_plant_name', self._plants[self.active_id]['name']))
+            source_config = source_model.config
+            environment_id = self._environment_id(source_id)
+            base.update(source_plant_id=environment_id,
+                        source_plant_name=self._plants[environment_id]['name'])
             for key in ('coordinate_datum', 'coordinate_accuracy', 'coordinate_source_name',
                         'coordinate_source_url', 'coordinate_note'):
                 if key in source_config:
@@ -346,7 +371,7 @@ class ViewerWorkspace:
         out.to_csv(folder/'layout.csv', index=False)
         (folder/'config.json').write_text(json.dumps(base, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
         (folder/'plant.json').write_text(json.dumps({'id': plant_id, 'name': name,
-            'clear_sky': self.active.clear_sky if payload.get('_bind_source_environment') else True}, ensure_ascii=False, indent=2)+'\n',
+            'clear_sky': source_model.clear_sky if payload.get('_bind_source_environment') else True}, ensure_ascii=False, indent=2)+'\n',
                                           encoding='utf-8')
         self._plants = self._discover()
         return self.select(plant_id)
@@ -358,7 +383,10 @@ class ViewerWorkspace:
         return candidate
 
     def rearrange(self, payload):
-        model, scheme = self.active, str(payload.get('scheme', 'campo'))
+        source_id = payload.get('plant_id', self.active_id)
+        if source_id not in self._plants:
+            raise ValueError('未知来源电厂')
+        model, scheme = self._model_for(source_id), str(payload.get('scheme', 'campo'))
         count = len(model.mirrors)
         c = model.config
         width = float(np.median([m.width for m in model.mirrors]))
@@ -397,12 +425,12 @@ class ViewerWorkspace:
                 float(payload.get('north_fraction', .6)))
         else:
             raise ValueError('未知重排方式')
-        name = f"{self._plants[self.active_id]['name']} · {dict(campo='Campo', curved='非圆曲线', free='自由排布')[scheme]}重排"
+        name = f"{self._plants[source_id]['name']} · {dict(campo='Campo', curved='非圆曲线', free='自由排布')[scheme]}重排"
         csv = pd.DataFrame([dict(mirror_id=m.mirror_id, x=m.centre[0], y=m.centre[1], z=m.centre[2],
             width=m.width, height=m.height, aim_x=m.aim_point[0], aim_y=m.aim_point[1],
             aim_z=m.aim_point[2], roll_deg=m.roll_deg, mount_type=m.mount_type,
             tower_id=m.tower_id) for m in mirrors]).to_csv(index=False)
-        imported = dict(payload, name=name, csv=csv, **{k: c[k] for k in
+        imported = dict(payload, plant_id=source_id, name=name, csv=csv, **{k: c[k] for k in
             ('latitude','longitude','altitude_m','optical_height_m','receiver_radius_m','receiver_height_m','timezone','year')})
         imported.update(_bind_source_environment=True, design_method=scheme, mirror_width_m=width, mirror_height_m=height,
                         reflective_area_m2=min(float(c.get('reflective_area_m2', width*height)), width*height))

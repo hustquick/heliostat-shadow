@@ -583,7 +583,29 @@ impl MobileRuntime {
         }
     }
 
+    fn layout_source_index(&self, payload: &serde_json::Value) -> Result<usize, String> {
+        match payload.get("plant_id").and_then(serde_json::Value::as_str) {
+            Some(id) => self
+                .bundle
+                .plants
+                .iter()
+                .position(|p| p.id == id)
+                .ok_or_else(|| "未知来源电厂".into()),
+            None => Ok(self.active),
+        }
+    }
+
     pub fn import_csv(&mut self, payload: &serde_json::Value) -> Result<serde_json::Value, String> {
+        let source_index = self.layout_source_index(payload)?;
+        let bound = payload.get("plant_id").is_some();
+        let mut merged = self.bundle.plants[source_index].config.clone();
+        if bound {
+            merged
+                .as_object_mut()
+                .ok_or("电厂参数无效")?
+                .extend(payload.as_object().ok_or("导入参数无效")?.clone());
+        }
+        let payload = if bound { &merged } else { payload };
         let name = payload
             .get("name")
             .and_then(serde_json::Value::as_str)
@@ -692,7 +714,7 @@ impl MobileRuntime {
         if mirrors.is_empty() || mirrors.len() > 100_000 {
             return Err("镜面数量须为 1–100000".into());
         }
-        let active = &self.bundle.plants[self.active];
+        let active = &self.bundle.plants[source_index];
         let mut config = active.config.clone();
         let object = config.as_object_mut().ok_or("电厂参数无效")?;
         for (key, value) in [
@@ -705,13 +727,22 @@ impl MobileRuntime {
             ("receiver_height_m", receiver_height),
             ("mirror_width_m", width),
             ("mirror_height_m", height),
-            ("reflective_area_m2", width * height),
+            (
+                "reflective_area_m2",
+                Self::number(payload, "reflective_area_m2", width * height)?,
+            ),
         ] {
             object.insert(key.into(), serde_json::json!(value));
         }
         object.insert("timezone".into(), serde_json::json!(timezone));
         object.insert("expected_mirrors".into(), serde_json::json!(mirrors.len()));
         object.insert("design_method".into(), serde_json::json!("imported"));
+        if bound {
+            object.insert(
+                "source_plant_id".into(),
+                serde_json::json!(self.environment(active).id),
+            );
+        }
         object.insert("towers".into(), serde_json::json!([{"id":"tower-1","base":[0.0,0.0,0.0],"receiver":{"centre":[0.0,0.0,tower_height],"radius":receiver_radius,"height":receiver_height}}]));
         object.insert("tower_assignment_policy".into(), serde_json::json!("fixed"));
         let mut metadata = active.metadata.clone();
@@ -737,7 +768,11 @@ impl MobileRuntime {
             note: "坐标与参数由用户负责核验。".into(),
             config,
             metadata,
-            weather: self.environment(active).weather.clone(),
+            weather: if bound {
+                MobileWeather::default()
+            } else {
+                self.environment(active).weather.clone()
+            },
             mirrors,
             builtin: false,
         });
@@ -746,7 +781,8 @@ impl MobileRuntime {
     }
 
     pub fn rearrange(&mut self, payload: &serde_json::Value) -> Result<serde_json::Value, String> {
-        let source = self.bundle.plants[self.active].clone();
+        let source_index = self.layout_source_index(payload)?;
+        let source = self.bundle.plants[source_index].clone();
         let count = source.mirrors.len();
         if count < 6 {
             return Err("镜场重排至少需要 6 面镜".into());
@@ -839,7 +875,7 @@ impl MobileRuntime {
         plant.weather = MobileWeather::default();
         if plant.config.get("source_plant_id").is_none() {
             plant.config["source_plant_id"] =
-                serde_json::json!(self.environment(&self.bundle.plants[self.active]).id);
+                serde_json::json!(self.environment(&self.bundle.plants[source_index]).id);
             plant.config["source_plant_name"] =
                 serde_json::json!(self.environment(&self.bundle.plants[self.active]).name);
         }
@@ -891,10 +927,9 @@ impl MobileRuntime {
                     "gemasolar-campo" | "gemasolar-curved" | "gemasolar-free"
                 )
             })
+            && let Some(index) = self.bundle.plants.iter().position(|p| p.id == "gemasolar")
         {
-            if let Some(index) = self.bundle.plants.iter().position(|p| p.id == "gemasolar") {
-                self.active = index;
-            }
+            self.active = index;
         }
         self.metadata()
     }
@@ -923,16 +958,20 @@ impl MobileRuntime {
         if ["Campo重排", "非圆曲线重排", "自由排布重排"]
             .iter()
             .any(|suffix| plant.name.ends_with(suffix))
-        {
-            if let Some(source) = self
+            && let Some(source) = self
                 .bundle
                 .plants
                 .iter()
-                .filter(|p| p.builtin && plant.name.starts_with(&format!("{} · ", p.name)))
+                .filter(|p| {
+                    p.builtin
+                        && (plant.name.starts_with(&format!("{} · ", p.name))
+                            || (p.id == "gemasolar"
+                                && (plant.name.starts_with("Gemasolar · ")
+                                    || plant.name.starts_with("Gemasolar 重建参考 · "))))
+                })
                 .max_by_key(|p| p.name.len())
-            {
-                return source;
-            }
+        {
+            return source;
         }
         plant
     }
@@ -1006,7 +1045,7 @@ impl MobileRuntime {
         object.insert(
             "plants".into(),
             serde_json::json!(self.bundle.plants.iter().map(|item| serde_json::json!({
-            "id": item.id, "name": item.name, "builtin": item.builtin, "catalog": item.builtin && item.id != "gemasolar", "design_method": item.config.get("design_method")
+            "id": item.id, "name": item.name, "builtin": item.builtin, "catalog": item.builtin && item.id != "gemasolar", "design_method": item.config.get("design_method"), "environment_plant_id": self.environment(item).id
         })).collect::<Vec<_>>()),
         );
         Ok(value)
@@ -2402,6 +2441,7 @@ mod tests {
             )
             .unwrap();
         assert_eq!(rearranged["mirror_ids"].as_array().unwrap().len(), 6);
+        assert_eq!(rearranged["environment_plant_id"], source_id);
         let design = &runtime.bundle.plants[runtime.active];
         assert_eq!(design.config["design_method"], "free");
         assert_eq!(design.config["source_plant_id"], source_id);
@@ -2421,6 +2461,39 @@ mod tests {
             restored.metadata().unwrap()["active_plant"],
             state["active_plant"]
         );
+        let original_mirror = runtime.bundle.plants[0].mirrors[0].clone();
+        runtime.bundle.plants[0].mirrors = (0..8)
+            .map(|i| {
+                let mut mirror = original_mirror.clone();
+                mirror.mirror_id = format!("P{i}");
+                mirror
+            })
+            .collect();
+        let imported = runtime.request("POST", "plants/import", &serde_json::json!({
+            "plant_id":"test", "name":"Associated layout", "csv":"x,y\n50,0\n45,20\n25,45\n-25,45\n-45,20\n-50,0\n"
+        })).unwrap();
+        assert_eq!(imported["environment_plant_id"], "test");
+        assert_eq!(
+            runtime.bundle.plants[runtime.active].config["latitude"].as_f64(),
+            Some(1.0)
+        );
+        assert!(
+            runtime.bundle.plants[runtime.active]
+                .weather
+                .dni_w_m2
+                .is_empty()
+        );
+        let generated = runtime
+            .request(
+                "POST",
+                "layout/rearrange",
+                &serde_json::json!({
+                    "plant_id":"test", "scheme":"campo"
+                }),
+            )
+            .unwrap();
+        assert_eq!(generated["environment_plant_id"], "test");
+        assert_eq!(generated["mirror_ids"].as_array().unwrap().len(), 8);
     }
 
     #[test]

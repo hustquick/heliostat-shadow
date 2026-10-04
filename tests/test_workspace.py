@@ -164,7 +164,7 @@ def test_viewer_html_exposes_workspace_controls():
     assert (ROOT/'VERSION').read_text().strip() == '1.0.1'
     html = (ROOT/'viewer/index.html').read_text()
     for element_id in ('plant', 'importPlant', 'rearrange', 'efficiencyColor', 'towerColor',
-                       'efficiencyScale', 'viewIso', 'viewTop', 'importDialog', 'rearrangeDialog'):
+                       'efficiencyScale', 'viewIso', 'viewTop', 'importDialog', 'designMethod', 'currentLayout'):
         assert f'id="{element_id}"' in html
     app = (ROOT/'viewer/app.js').read_text()
     assert '中心坐标 x=${centre[0].toFixed(3)} m, y=${centre[1].toFixed(3)} m\\n' in app
@@ -212,6 +212,7 @@ def test_rearranged_reference_keeps_historical_weather_after_reload(tmp_path):
     expected = {key: source.config[key] for key in ('latitude', 'longitude', 'timezone', 'year')}
     workspace.rearrange(dict(scheme='campo', separation_m=1, dr2=.9, dr3=1.8))
     restored = ViewerWorkspace(ROOT, tmp_path)
+    assert restored.metadata()['environment_plant_id'] == 'gemasolar'
     assert restored.active.weather is restored._model_for('gemasolar').weather
     assert not restored.active.clear_sky
     assert restored.active.config['source_plant_id'] == 'gemasolar'
@@ -232,3 +233,26 @@ def test_legacy_rearrangement_resolves_source_environment(tmp_path):
     path.write_text(json.dumps(config))
     restored = ViewerWorkspace(ROOT, tmp_path)
     assert restored.active.weather is restored._model_for('gemasolar').weather
+
+
+def test_generate_and_import_use_explicit_top_plant_not_active_design(tmp_path):
+    workspace = ViewerWorkspace(ROOT, tmp_path)
+    workspace.select('ps10')
+    original = workspace.active
+    imported = workspace.import_csv(dict(plant_id='ps10', name='PS10 导入方案',
+        csv='x,y\n50,0\n45,20\n25,45\n-25,45\n-45,20\n-50,0\n'))
+    assert len(imported['mirror_ids']) == 6
+    assert imported['environment_plant_id'] == 'ps10'
+    assert workspace.active.weather is original.weather
+    assert workspace.active.config['latitude'] == original.config['latitude']
+    assert workspace.active.config['timezone'] == original.config['timezone']
+    assert workspace.active.config['mirror_width_m'] == original.config['mirror_width_m']
+    generated = workspace.rearrange(dict(plant_id='ps10', scheme='campo'))
+    assert len(generated['mirror_ids']) == 624
+    assert generated['environment_plant_id'] == 'ps10'
+    assert workspace.active.weather is original.weather
+    assert all(p['environment_plant_id'] == 'ps10' for p in generated['plants'] if not p['builtin'])
+    active_id = workspace.active_id
+    with pytest.raises(ValueError, match='未知来源电厂'):
+        workspace.rearrange(dict(plant_id='unknown', scheme='campo'))
+    assert workspace.active_id == active_id
