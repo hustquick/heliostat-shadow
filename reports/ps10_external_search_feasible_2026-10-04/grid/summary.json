@@ -1,0 +1,152 @@
+{
+  "mode": "grid",
+  "baseline_search_kwh": 132263257.08223797,
+  "final_search_kwh": 132278856.05437535,
+  "elapsed_search_seconds": 144.820843583002,
+  "evaluations": 685,
+  "history": [
+    {
+      "round": 1,
+      "proposed": 2496,
+      "evaluated": 684,
+      "before_kwh": 132263257.08223797,
+      "after_kwh": 132278856.05437535,
+      "pairs": [
+        {
+          "ids": [
+            "C0330",
+            "C0383"
+          ],
+          "potential": 0.5477357684450085
+        },
+        {
+          "ids": [
+            "C0353",
+            "C0429"
+          ],
+          "potential": 0.5477357684450026
+        },
+        {
+          "ids": [
+            "C0360",
+            "C0442"
+          ],
+          "potential": 0.5475257012894625
+        },
+        {
+          "ids": [
+            "C0337",
+            "C0396"
+          ],
+          "potential": 0.5475257012894584
+        },
+        {
+          "ids": [
+            "C0361",
+            "C0444"
+          ],
+          "potential": 0.5463908057229717
+        },
+        {
+          "ids": [
+            "C0338",
+            "C0398"
+          ],
+          "potential": 0.5463908057229654
+        },
+        {
+          "ids": [
+            "C0331",
+            "C0385"
+          ],
+          "potential": 0.5457059363423522
+        },
+        {
+          "ids": [
+            "C0354",
+            "C0431"
+          ],
+          "potential": 0.5457059363423472
+        },
+        {
+          "ids": [
+            "C0329",
+            "C0381"
+          ],
+          "potential": 0.5450570983202777
+        },
+        {
+          "ids": [
+            "C0352",
+            "C0427"
+          ],
+          "potential": 0.5450570983202777
+        },
+        {
+          "ids": [
+            "C0362",
+            "C0446"
+          ],
+          "potential": 0.5445210793363818
+        },
+        {
+          "ids": [
+            "C0339",
+            "C0400"
+          ],
+          "potential": 0.5445210793363816
+        },
+        {
+          "ids": [
+            "C0355",
+            "C0433"
+          ],
+          "potential": 0.5442514292829457
+        },
+        {
+          "ids": [
+            "C0332",
+            "C0387"
+          ],
+          "potential": 0.5442514292829365
+        },
+        {
+          "ids": [
+            "C0359",
+            "C0440"
+          ],
+          "potential": 0.5428096858359307
+        },
+        {
+          "ids": [
+            "C0336",
+            "C0394"
+          ],
+          "potential": 0.5428096858359237
+        }
+      ],
+      "kind": "single",
+      "step_m": 2.0,
+      "moves": [
+        {
+          "mirror_id": "C0368",
+          "xy": [
+            -30.28853027528292,
+            218.36542331749192
+          ]
+        }
+      ]
+    }
+  ],
+  "stop_reason": "round_budget",
+  "candidate_argmax": true,
+  "continuous_global_optimum_claim": false,
+  "pair_limit": 16,
+  "boundary": "initial mirror-centre convex hull; not a surveyed site boundary",
+  "margin_m": 1.0,
+  "annual_baseline_kwh": 133062035.32287209,
+  "annual_candidate_kwh": 133076155.24303034,
+  "annual_relative_gain": 0.00010611531774618044,
+  "annual_accepted": true,
+  "annual_engine": "shared_rust"
+}

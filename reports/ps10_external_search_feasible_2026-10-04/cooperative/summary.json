@@ -1,0 +1,161 @@
+{
+  "mode": "cooperative",
+  "baseline_search_kwh": 132263257.08223797,
+  "final_search_kwh": 132278856.05437535,
+  "elapsed_search_seconds": 350.4457930839999,
+  "evaluations": 1292,
+  "history": [
+    {
+      "round": 1,
+      "proposed": 5116,
+      "evaluated": 1291,
+      "before_kwh": 132263257.08223797,
+      "after_kwh": 132278856.05437535,
+      "evaluated_by_kind": {
+        "single": 1275,
+        "pair_translate": 16
+      },
+      "best_gain_kwh_by_kind": {
+        "single": 15598.972137376666,
+        "pair_translate": 5389.282041713595
+      },
+      "region_pairs_checked": 574,
+      "pairs": [
+        {
+          "ids": [
+            "C0123",
+            "C0170"
+          ],
+          "potential": 0.30899883170658565
+        },
+        {
+          "ids": [
+            "C0100",
+            "C0147"
+          ],
+          "potential": 0.3089988317065788
+        },
+        {
+          "ids": [
+            "C0108",
+            "C0154"
+          ],
+          "potential": 0.3079323215553857
+        },
+        {
+          "ids": [
+            "C0131",
+            "C0177"
+          ],
+          "potential": 0.30793232155538175
+        },
+        {
+          "ids": [
+            "C0107",
+            "C0153"
+          ],
+          "potential": 0.30479315090552733
+        },
+        {
+          "ids": [
+            "C0130",
+            "C0176"
+          ],
+          "potential": 0.3047931509055247
+        },
+        {
+          "ids": [
+            "C0106",
+            "C0152"
+          ],
+          "potential": 0.30197245528680944
+        },
+        {
+          "ids": [
+            "C0129",
+            "C0175"
+          ],
+          "potential": 0.30197245528680433
+        },
+        {
+          "ids": [
+            "C0124",
+            "C0171"
+          ],
+          "potential": 0.30175191376123556
+        },
+        {
+          "ids": [
+            "C0101",
+            "C0148"
+          ],
+          "potential": 0.3017519137612328
+        },
+        {
+          "ids": [
+            "C0119",
+            "C0166"
+          ],
+          "potential": 0.3013959955975525
+        },
+        {
+          "ids": [
+            "C0096",
+            "C0143"
+          ],
+          "potential": 0.3013959955975496
+        },
+        {
+          "ids": [
+            "C0125",
+            "C0172"
+          ],
+          "potential": 0.2962697192834204
+        },
+        {
+          "ids": [
+            "C0102",
+            "C0149"
+          ],
+          "potential": 0.2962697192834198
+        },
+        {
+          "ids": [
+            "C0135",
+            "C0181"
+          ],
+          "potential": 0.2958577825602085
+        },
+        {
+          "ids": [
+            "C0112",
+            "C0158"
+          ],
+          "potential": 0.29585778256020756
+        }
+      ],
+      "kind": "single",
+      "step_m": 2.0,
+      "moves": [
+        {
+          "mirror_id": "C0368",
+          "xy": [
+            -30.28853027528292,
+            218.36542331749192
+          ]
+        }
+      ]
+    }
+  ],
+  "stop_reason": "round_budget",
+  "candidate_argmax": true,
+  "continuous_global_optimum_claim": false,
+  "pair_limit": 16,
+  "boundary": "initial mirror-centre convex hull; not a surveyed site boundary",
+  "margin_m": 1.0,
+  "annual_baseline_kwh": 133062035.32287209,
+  "annual_candidate_kwh": 133076155.24303034,
+  "annual_relative_gain": 0.00010611531774618044,
+  "annual_accepted": true,
+  "annual_engine": "shared_rust"
+}

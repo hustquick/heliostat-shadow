@@ -1,0 +1,504 @@
+{
+  "plant": "ps10",
+  "mirrors": 624,
+  "search_samples": 16,
+  "search_provenance": {
+    "year": 2025,
+    "timestamp_offset_minutes": 0.0,
+    "coverage_hours": 8760,
+    "active_hours": 4402,
+    "sample_count": 151,
+    "method": "month_local_hour_stratified",
+    "dni_source": "pvlib Ineichen clear-sky estimate",
+    "plant_source": "PS10（西班牙） · pvlib 晴空辐照度",
+    "dni_kwh_m2": 3231.0293114029605,
+    "assumptions": "Hourly instantaneous DNI treated as mean of its corresponding UTC hour; fixed observation offset retained; geometric horizon, continuous tracking, no availability/start-stop or storage model.",
+    "is_tmy": false
+  },
+  "full_provenance": {
+    "year": 2025,
+    "timestamp_offset_minutes": 0.0,
+    "coverage_hours": 8760,
+    "active_hours": 4402,
+    "sample_count": 4402,
+    "method": "hourly_full_year",
+    "dni_source": "pvlib Ineichen clear-sky estimate",
+    "plant_source": "PS10（西班牙） · pvlib 晴空辐照度",
+    "dni_kwh_m2": 3231.0293114029605,
+    "assumptions": "Hourly instantaneous DNI treated as mean of its corresponding UTC hour; fixed observation offset retained; geometric horizon, continuous tracking, no availability/start-stop or storage model.",
+    "is_tmy": false
+  },
+  "steps_m": [
+    2.0
+  ],
+  "reports": [
+    {
+      "mode": "grid",
+      "baseline_search_kwh": 132263257.08223797,
+      "final_search_kwh": 132278856.05437535,
+      "elapsed_search_seconds": 144.820843583002,
+      "evaluations": 685,
+      "history": [
+        {
+          "round": 1,
+          "proposed": 2496,
+          "evaluated": 684,
+          "before_kwh": 132263257.08223797,
+          "after_kwh": 132278856.05437535,
+          "pairs": [
+            {
+              "ids": [
+                "C0330",
+                "C0383"
+              ],
+              "potential": 0.5477357684450085
+            },
+            {
+              "ids": [
+                "C0353",
+                "C0429"
+              ],
+              "potential": 0.5477357684450026
+            },
+            {
+              "ids": [
+                "C0360",
+                "C0442"
+              ],
+              "potential": 0.5475257012894625
+            },
+            {
+              "ids": [
+                "C0337",
+                "C0396"
+              ],
+              "potential": 0.5475257012894584
+            },
+            {
+              "ids": [
+                "C0361",
+                "C0444"
+              ],
+              "potential": 0.5463908057229717
+            },
+            {
+              "ids": [
+                "C0338",
+                "C0398"
+              ],
+              "potential": 0.5463908057229654
+            },
+            {
+              "ids": [
+                "C0331",
+                "C0385"
+              ],
+              "potential": 0.5457059363423522
+            },
+            {
+              "ids": [
+                "C0354",
+                "C0431"
+              ],
+              "potential": 0.5457059363423472
+            },
+            {
+              "ids": [
+                "C0329",
+                "C0381"
+              ],
+              "potential": 0.5450570983202777
+            },
+            {
+              "ids": [
+                "C0352",
+                "C0427"
+              ],
+              "potential": 0.5450570983202777
+            },
+            {
+              "ids": [
+                "C0362",
+                "C0446"
+              ],
+              "potential": 0.5445210793363818
+            },
+            {
+              "ids": [
+                "C0339",
+                "C0400"
+              ],
+              "potential": 0.5445210793363816
+            },
+            {
+              "ids": [
+                "C0355",
+                "C0433"
+              ],
+              "potential": 0.5442514292829457
+            },
+            {
+              "ids": [
+                "C0332",
+                "C0387"
+              ],
+              "potential": 0.5442514292829365
+            },
+            {
+              "ids": [
+                "C0359",
+                "C0440"
+              ],
+              "potential": 0.5428096858359307
+            },
+            {
+              "ids": [
+                "C0336",
+                "C0394"
+              ],
+              "potential": 0.5428096858359237
+            }
+          ],
+          "kind": "single",
+          "step_m": 2.0,
+          "moves": [
+            {
+              "mirror_id": "C0368",
+              "xy": [
+                -30.28853027528292,
+                218.36542331749192
+              ]
+            }
+          ]
+        }
+      ],
+      "stop_reason": "round_budget",
+      "candidate_argmax": true,
+      "continuous_global_optimum_claim": false,
+      "pair_limit": 16,
+      "boundary": "initial mirror-centre convex hull; not a surveyed site boundary",
+      "margin_m": 1.0,
+      "annual_baseline_kwh": 133062035.32287209,
+      "annual_candidate_kwh": 133076155.24303034,
+      "annual_relative_gain": 0.00010611531774618044,
+      "annual_accepted": true,
+      "annual_engine": "shared_rust"
+    },
+    {
+      "mode": "physics",
+      "baseline_search_kwh": 132263257.08223797,
+      "final_search_kwh": 132278856.05437535,
+      "elapsed_search_seconds": 318.16472933400655,
+      "evaluations": 1276,
+      "history": [
+        {
+          "round": 1,
+          "proposed": 4988,
+          "evaluated": 1275,
+          "before_kwh": 132263257.08223797,
+          "after_kwh": 132278856.05437535,
+          "pairs": [
+            {
+              "ids": [
+                "C0330",
+                "C0383"
+              ],
+              "potential": 0.5477357684450085
+            },
+            {
+              "ids": [
+                "C0353",
+                "C0429"
+              ],
+              "potential": 0.5477357684450026
+            },
+            {
+              "ids": [
+                "C0360",
+                "C0442"
+              ],
+              "potential": 0.5475257012894625
+            },
+            {
+              "ids": [
+                "C0337",
+                "C0396"
+              ],
+              "potential": 0.5475257012894584
+            },
+            {
+              "ids": [
+                "C0361",
+                "C0444"
+              ],
+              "potential": 0.5463908057229717
+            },
+            {
+              "ids": [
+                "C0338",
+                "C0398"
+              ],
+              "potential": 0.5463908057229654
+            },
+            {
+              "ids": [
+                "C0331",
+                "C0385"
+              ],
+              "potential": 0.5457059363423522
+            },
+            {
+              "ids": [
+                "C0354",
+                "C0431"
+              ],
+              "potential": 0.5457059363423472
+            },
+            {
+              "ids": [
+                "C0329",
+                "C0381"
+              ],
+              "potential": 0.5450570983202777
+            },
+            {
+              "ids": [
+                "C0352",
+                "C0427"
+              ],
+              "potential": 0.5450570983202777
+            },
+            {
+              "ids": [
+                "C0362",
+                "C0446"
+              ],
+              "potential": 0.5445210793363818
+            },
+            {
+              "ids": [
+                "C0339",
+                "C0400"
+              ],
+              "potential": 0.5445210793363816
+            },
+            {
+              "ids": [
+                "C0355",
+                "C0433"
+              ],
+              "potential": 0.5442514292829457
+            },
+            {
+              "ids": [
+                "C0332",
+                "C0387"
+              ],
+              "potential": 0.5442514292829365
+            },
+            {
+              "ids": [
+                "C0359",
+                "C0440"
+              ],
+              "potential": 0.5428096858359307
+            },
+            {
+              "ids": [
+                "C0336",
+                "C0394"
+              ],
+              "potential": 0.5428096858359237
+            }
+          ],
+          "kind": "single",
+          "step_m": 2.0,
+          "moves": [
+            {
+              "mirror_id": "C0368",
+              "xy": [
+                -30.28853027528292,
+                218.36542331749192
+              ]
+            }
+          ]
+        }
+      ],
+      "stop_reason": "round_budget",
+      "candidate_argmax": true,
+      "continuous_global_optimum_claim": false,
+      "pair_limit": 16,
+      "boundary": "initial mirror-centre convex hull; not a surveyed site boundary",
+      "margin_m": 1.0,
+      "annual_baseline_kwh": 133062035.32287209,
+      "annual_candidate_kwh": 133076155.24303034,
+      "annual_relative_gain": 0.00010611531774618044,
+      "annual_accepted": true,
+      "annual_engine": "shared_rust"
+    },
+    {
+      "mode": "cooperative",
+      "baseline_search_kwh": 132263257.08223797,
+      "final_search_kwh": 132278856.05437535,
+      "elapsed_search_seconds": 350.4457930839999,
+      "evaluations": 1292,
+      "history": [
+        {
+          "round": 1,
+          "proposed": 5116,
+          "evaluated": 1291,
+          "before_kwh": 132263257.08223797,
+          "after_kwh": 132278856.05437535,
+          "evaluated_by_kind": {
+            "single": 1275,
+            "pair_translate": 16
+          },
+          "best_gain_kwh_by_kind": {
+            "single": 15598.972137376666,
+            "pair_translate": 5389.282041713595
+          },
+          "region_pairs_checked": 574,
+          "pairs": [
+            {
+              "ids": [
+                "C0123",
+                "C0170"
+              ],
+              "potential": 0.30899883170658565
+            },
+            {
+              "ids": [
+                "C0100",
+                "C0147"
+              ],
+              "potential": 0.3089988317065788
+            },
+            {
+              "ids": [
+                "C0108",
+                "C0154"
+              ],
+              "potential": 0.3079323215553857
+            },
+            {
+              "ids": [
+                "C0131",
+                "C0177"
+              ],
+              "potential": 0.30793232155538175
+            },
+            {
+              "ids": [
+                "C0107",
+                "C0153"
+              ],
+              "potential": 0.30479315090552733
+            },
+            {
+              "ids": [
+                "C0130",
+                "C0176"
+              ],
+              "potential": 0.3047931509055247
+            },
+            {
+              "ids": [
+                "C0106",
+                "C0152"
+              ],
+              "potential": 0.30197245528680944
+            },
+            {
+              "ids": [
+                "C0129",
+                "C0175"
+              ],
+              "potential": 0.30197245528680433
+            },
+            {
+              "ids": [
+                "C0124",
+                "C0171"
+              ],
+              "potential": 0.30175191376123556
+            },
+            {
+              "ids": [
+                "C0101",
+                "C0148"
+              ],
+              "potential": 0.3017519137612328
+            },
+            {
+              "ids": [
+                "C0119",
+                "C0166"
+              ],
+              "potential": 0.3013959955975525
+            },
+            {
+              "ids": [
+                "C0096",
+                "C0143"
+              ],
+              "potential": 0.3013959955975496
+            },
+            {
+              "ids": [
+                "C0125",
+                "C0172"
+              ],
+              "potential": 0.2962697192834204
+            },
+            {
+              "ids": [
+                "C0102",
+                "C0149"
+              ],
+              "potential": 0.2962697192834198
+            },
+            {
+              "ids": [
+                "C0135",
+                "C0181"
+              ],
+              "potential": 0.2958577825602085
+            },
+            {
+              "ids": [
+                "C0112",
+                "C0158"
+              ],
+              "potential": 0.29585778256020756
+            }
+          ],
+          "kind": "single",
+          "step_m": 2.0,
+          "moves": [
+            {
+              "mirror_id": "C0368",
+              "xy": [
+                -30.28853027528292,
+                218.36542331749192
+              ]
+            }
+          ]
+        }
+      ],
+      "stop_reason": "round_budget",
+      "candidate_argmax": true,
+      "continuous_global_optimum_claim": false,
+      "pair_limit": 16,
+      "boundary": "initial mirror-centre convex hull; not a surveyed site boundary",
+      "margin_m": 1.0,
+      "annual_baseline_kwh": 133062035.32287209,
+      "annual_candidate_kwh": 133076155.24303034,
+      "annual_relative_gain": 0.00010611531774618044,
+      "annual_accepted": true,
+      "annual_engine": "shared_rust"
+    }
+  ],
+  "sampling_scope": "DNI integral conserved; optical approximation error must be checked on full year",
+  "model_scope": "Receiver incident optical energy, not electricity; reconstructed geometry; no APP integration",
+  "comparison_scope": "Same initial field, samples and steps. Grid/physics scores reused from separate completed runs; cooperative uses feasibility-filtered pairs. Tasks overlapped; wall time is not a controlled speed benchmark."
+}

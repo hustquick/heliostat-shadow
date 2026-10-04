@@ -465,3 +465,5 @@ DNI、统一反射率和清洁度是同一时刻整个模型的公共倍率，�
 `rust/heliostat-core/src/energy.rs` 是 macOS、Windows、Android、iOS 共用的加权光学能量与候选全场复核内核。桌面 Python 入口和移动端原生桥均可调用 `analysis/energy` 与 `analysis/optimize-step`；后者返回候选及验收结果，不直接改变当前布局。太阳方向、DNI 和小时权重采用相同输入，避免各端自行定义不同目标。当前完整候选筛选与年度数据组织仍由研究命令行流程提供；四端交互式优化界面尚未接入。
 
 目录中多数电厂当前使用晴空估算 DNI，不能把计算称为实测年发电量或典型气象年（TMY）结果；接收器入射年能量不包含启停滞回、可用率、储热或发电循环。镜位移动暂限单塔，多塔联合移动与逐时选塔仍需后续实现。PS10 验证见 `reports/ps10_annual_optimizer_2026-10-04/RESULTS.md`。
+
+APP 外的物理方向/镜对协同优化试验见 [验算说明](docs/external_field_search.md)。运行 `~/venv/bin/python -m scripts.experiment_field_search --plant ps10 --samples 4 --steps 2 --rounds 1 --pair-limit 16 --full-year`，可对同一已有布局比较三种搜索并进行逐时全年复核。本实验不接入四端 APP。
