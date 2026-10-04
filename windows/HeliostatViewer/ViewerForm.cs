@@ -144,7 +144,7 @@ public sealed class ViewerForm : Form
         closing = true;
         if (server is { HasExited: false })
         {
-            try { server.Kill(true); server.WaitForExit(3000); } catch { }
+            try { server.Kill(); server.WaitForExit(3000); } catch { }
         }
         server?.Dispose();
         log?.Dispose();
