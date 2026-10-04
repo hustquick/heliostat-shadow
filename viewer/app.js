@@ -1344,6 +1344,18 @@ $("poseTextApply").onclick = () => {
   ctx.font=`bold ${size}px sans-serif`;ctx.fillStyle="black";ctx.textAlign="center";ctx.textBaseline="middle";
   lines.forEach((line,i)=>ctx.fillText(line,canvas.width/2,canvas.height/2+(i-(lines.length-1)/2)*size*1.2));
   applyPatternCanvas(canvas);
+  const card = document.querySelector("main > .spatial");
+  card.open = true;
+  requestAnimationFrame(() => {
+    sizeSceneArea();
+    resize();
+    const heading = card.querySelector("summary");
+    heading.classList.add("navigation-focus");
+    heading.addEventListener("blur", () => heading.classList.remove("navigation-focus"), {once:true});
+    heading.addEventListener("keydown", () => heading.classList.remove("navigation-focus"), {once:true});
+    heading.focus({preventScroll:true});
+    card.scrollIntoView({block:"start", behavior:"smooth"});
+  });
 };
 $("exportCoordinates").onclick = async () => {
   if (!meta || !frame) return;

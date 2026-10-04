@@ -879,11 +879,11 @@ main > details.spatial > .scene-description { position:absolute; left:var(--card
 .scene-description .legend { display:flex; justify-content:center; padding:0; margin:0 0 8px; }
 .scene-description .efficiency-scale { margin:0 0 8px; }
 
-#scene > .legend {
- display:flex; position:absolute; z-index:3; left:16px; right:16px; bottom:12px;
- justify-content:center; align-items:center; padding:0; margin:0;
- pointer-events:none;
+.projection-legend {
+ display:flex; justify-content:center; align-items:center;
+ padding:0 var(--card-inset); margin:8px 0 12px;
 }
+
 
 .field-efficiency {
  display:flex; justify-content:center; align-items:baseline; gap:10px;
