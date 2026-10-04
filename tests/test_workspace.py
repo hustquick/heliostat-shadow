@@ -20,9 +20,11 @@ def test_catalog_selection_import_and_rearrangement(tmp_path):
             'shouhang-dunhuang-ii', 'powerchina-qinghai-gonghe', 'luneng-haixi',
             'supcon-delingha-50', 'ceec-hami', 'yumen-xinneng-beam-down'} <= {
         item['id'] for item in initial['plants']}
-    assert len(initial['plants']) >= 17
+    assert len(initial['plants']) >= 15
+    assert [p['id'] for p in initial['plants'] if p['id'].startswith('gemasolar')] == ['gemasolar']
 
     ps10 = workspace.select('ps10')
+    assert ViewerWorkspace(ROOT, tmp_path).active_id == 'ps10'
     assert ps10['plant_name'].startswith('PS10')
     assert len(ps10['mirror_ids']) == 624
     assert ps10['reported_mirrors'] == 624

@@ -64,14 +64,6 @@ class ViewerWorkspace:
                 layout=self.root/'data/processed/gemasolar_layout.csv', weather=weather,
                 builtin=True, clear_sky=False),
         }
-        variants = [('gemasolar-campo', 'Gemasolar · Campo 优化', 'campo.csv'),
-                    ('gemasolar-curved', 'Gemasolar · 非圆曲线', 'curved.csv'),
-                    ('gemasolar-free', 'Gemasolar · 自由排布', 'value_field.csv')]
-        for plant_id, name, filename in variants:
-            layout = self.root/'reports/three_layout_optimization'/filename
-            if layout.exists():
-                plants[plant_id] = dict(name=name, config=config, layout=layout,
-                    weather=weather, builtin=True, clear_sky=False)
         catalog_path = self.root/'data/power_tower_catalog.json'
         if catalog_path.exists():
             for item in json.loads(catalog_path.read_text(encoding='utf-8')):
@@ -114,11 +106,15 @@ class ViewerWorkspace:
                         '镜位是参数化重建；接收器公开尺寸缺失时使用逐电厂建模值。')
                 config = json.loads(p['config'].read_text())
                 source_id = config.get('source_plant_id')
+                if source_id in ('gemasolar-campo', 'gemasolar-curved', 'gemasolar-free'):
+                    source_id = 'gemasolar'
                 if not source_id and p['name'].endswith(('Campo重排', '非圆曲线重排', '自由排布重排')):
                     candidates = [(key, item) for key, item in self._plants.items()
                                   if item['builtin'] and p['name'].startswith(item['name'] + ' · ')]
                     if candidates:
                         source_id = max(candidates, key=lambda pair: len(pair[1]['name']))[0]
+                    elif p['name'].startswith('Gemasolar · '):
+                        source_id = 'gemasolar'
                 environment = self._model_for(source_id) if source_id in self._plants and source_id != plant_id else None
                 self._models[plant_id] = ViewerModel(
                     self.root, config_path=p['config'], layout_path=p['layout'],

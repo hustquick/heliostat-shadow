@@ -882,6 +882,19 @@ impl MobileRuntime {
             && let Some(index) = self.bundle.plants.iter().position(|p| p.id == id)
         {
             self.active = index;
+        } else if payload
+            .get("active_plant")
+            .and_then(serde_json::Value::as_str)
+            .is_some_and(|id| {
+                matches!(
+                    id,
+                    "gemasolar-campo" | "gemasolar-curved" | "gemasolar-free"
+                )
+            })
+        {
+            if let Some(index) = self.bundle.plants.iter().position(|p| p.id == "gemasolar") {
+                self.active = index;
+            }
         }
         self.metadata()
     }
@@ -891,6 +904,16 @@ impl MobileRuntime {
             .config
             .get("source_plant_id")
             .and_then(serde_json::Value::as_str);
+        let source_id = source_id.map(|id| {
+            if matches!(
+                id,
+                "gemasolar-campo" | "gemasolar-curved" | "gemasolar-free"
+            ) {
+                "gemasolar"
+            } else {
+                id
+            }
+        });
         if let Some(source) =
             source_id.and_then(|id| self.bundle.plants.iter().find(|p| p.id == id))
         {
