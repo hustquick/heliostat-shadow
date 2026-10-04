@@ -844,8 +844,11 @@ async function loadTime() {
 }
 function showEfficiencyScale() {
   const current = fieldEfficiencyData?.timestamp === frame?.timestamp;
-  $("fieldEfficiency").textContent = !concentrating || !frame?.daylight
-    ? "0.000%" : current ? `${(fieldEfficiencyData.mean * 100).toFixed(3)}%` : "计算中…";
+  if (!concentrating || !frame?.daylight) {
+    $("fieldEfficiency").textContent = "0.000%";
+  } else if (current) {
+    $("fieldEfficiency").textContent = `${(fieldEfficiencyData.mean * 100).toFixed(3)}%`;
+  }
   const visible = concentrating && efficiencyEnabled && efficiencyData;
   $("efficiencyScale").hidden = !visible;
   const meanLabel = $("fieldEfficiency");
