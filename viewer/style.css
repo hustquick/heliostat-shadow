@@ -893,3 +893,9 @@ main > details.spatial > .scene-description { position:absolute; left:var(--card
  color:var(--text); min-width:8ch; text-align:right;
  font-size:18px; font-variant-numeric:tabular-nums;
 }
+
+.scene-help-touch { display:none; }
+@media (pointer:coarse), (max-width:600px) {
+ .scene-help-desktop { display:none; }
+ .scene-help-touch { display:inline; }
+}
