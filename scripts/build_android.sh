@@ -32,6 +32,13 @@ rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-and
 mkdir -p "${OUTPUT}"
 APK="${OUTPUT}/Heliostat-Viewer-Android-v${VERSION}.apk"
 cp "${ROOT}/android/app/build/outputs/apk/debug/app-debug.apk" "${APK}"
+APKSIGNER="$("${PYTHON_BIN}" -c 'from pathlib import Path; import os; print(sorted(Path(os.environ["ANDROID_HOME"]).glob("build-tools/*/apksigner"))[-1])')"
+CERT_SHA="$("${APKSIGNER}" verify --print-certs "${APK}" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p')"
+EXPECTED_CERT="$(cat "${ROOT}/android/SIGNING_CERT_SHA256")"
+if [[ "${CERT_SHA}" != "${EXPECTED_CERT}" ]]; then
+  echo "Android signing certificate mismatch; refusing to publish this APK." >&2
+  exit 1
+fi
 (
   cd "${OUTPUT}"
   APK_NAME="$(basename "${APK}")"
