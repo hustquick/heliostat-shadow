@@ -19,9 +19,10 @@ export function initUpdates(get, post) {
     const date = /^\d{4}-\d{2}-\d{2}$/.test(data.date || "") ? data.date : "";
     $("updateDate").hidden = !showRelease || !date;
     $("updateDate").textContent = date ? `${date.replaceAll("-", ".")} 发布` : "";
-    $("checkUpdates").hidden = !["idle", "error"].includes(data.state);
+    $("checkUpdates").hidden = !["idle", "error"].includes(data.state) || Boolean(hasNewVersion);
     $("checkUpdates").textContent = data.state === "error" ? "重试" : "检查更新";
     $("downloadUpdate").hidden = !data.supported || !["available", "error"].includes(data.state) || !hasNewVersion;
+    $("downloadUpdate").textContent = data.state === "error" ? "重新下载" : "下载更新";
     $("installUpdate").hidden = data.state !== "ready";
     $("dismissUpdates").textContent = ["available", "ready"].includes(data.state) ? "稍后" : "完成";
     $("updateProgress").hidden = data.state !== "downloading";
