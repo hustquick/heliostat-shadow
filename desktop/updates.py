@@ -144,7 +144,7 @@ class UpdateManager:
             available = version_tuple(manifest['version']) > version_tuple(self.identity['version']) and manifest['build'] > self.identity['build']
             with self.lock:
                 self.manifest = manifest if available else None
-                self.state.update(state='available' if available else 'current', latest=manifest['version'], notes=manifest['notes'])
+                self.state.update(state='available' if available else 'current', latest=manifest['version'], notes=manifest['notes'], date=manifest.get('date', release.get('published_at', '')[:10]))
         except Exception as error:
             self._error(error)
 

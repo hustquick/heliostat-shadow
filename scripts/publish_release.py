@@ -1,5 +1,7 @@
 """Publish a complete immutable-by-workflow release and RSA-signed update feed."""
 import base64
+from datetime import datetime
+from zoneinfo import ZoneInfo
 import hashlib
 import json
 import os
@@ -33,7 +35,8 @@ def make_manifest(assets, key):
         entries[target] = {'url': f'{REPO}/releases/download/v{version}/{name}', 'size': path.stat().st_size,
                            'sha256': hashlib.file_digest(path.open('rb'), 'sha256').hexdigest()}
     raw = json.dumps({'schema': 1, 'version': version, 'build': build,
-                      'notes': (ROOT / 'RELEASE_NOTES.md').read_text(), 'platforms': entries},
+                      'notes': (ROOT / 'RELEASE_NOTES.md').read_text(),
+                      'date': datetime.now(ZoneInfo('Asia/Shanghai')).date().isoformat(), 'platforms': entries},
                      ensure_ascii=False, sort_keys=True, separators=(',', ':')).encode()
     private = serialization.load_pem_private_key(key, password=None)
     envelope = {'payload': base64.b64encode(raw).decode(),

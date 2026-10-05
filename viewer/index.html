@@ -17,12 +17,25 @@
       </div>
       <div class="badge" id="plantBadge">载入电厂数据库…</div>
     </header>
-    <dialog id="updatesDialog" aria-labelledby="updatesTitle">
-      <h2 id="updatesTitle">应用更新</h2>
-      <p id="updateVersion"></p><p id="updateMessage" role="status"></p>
-      <progress id="updateProgress" max="100" hidden></progress>
-      <pre id="updateNotes"></pre>
-      <div class="update-actions"><button id="checkUpdates">检查更新</button><button id="downloadUpdate" hidden>下载新版</button><button id="installUpdate" hidden>安装并重启</button><button id="closeUpdates">关闭</button></div>
+    <dialog id="updatesDialog" aria-labelledby="updatesTitle" aria-describedby="updateVersion updateMessage">
+      <button id="closeUpdates" class="update-close" aria-label="关闭更新窗口">×</button>
+      <div class="update-body">
+        <div id="updateStatusMark" class="update-status-mark" aria-hidden="true">↻</div>
+        <h2 id="updatesTitle">软件更新</h2>
+        <p id="updateVersion" class="update-version"></p>
+        <p id="updateDate" class="update-date" hidden></p>
+        <p id="updateMessage" class="update-message" role="status"></p>
+        <progress id="updateProgress" max="100" aria-label="更新下载进度" hidden></progress>
+        <section id="updateNotesPanel" class="update-notes" hidden>
+          <h3>本次改进</h3><p id="updateNotes"></p>
+        </section>
+      </div>
+      <div class="update-actions">
+        <button id="dismissUpdates" class="update-secondary">完成</button>
+        <button id="checkUpdates" class="update-primary">检查更新</button>
+        <button id="downloadUpdate" class="update-primary" hidden>下载更新</button>
+        <button id="installUpdate" class="update-primary" hidden>安装并重启</button>
+      </div>
     </dialog>
     <div class="controlarea">
       <div class="controlstack">

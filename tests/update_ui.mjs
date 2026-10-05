@@ -4,7 +4,7 @@ const source = fs.readFileSync(new URL('../viewer/updates.js', import.meta.url))
 const {initUpdates} = await import('data:text/javascript;base64,' + source.toString('base64'));
 const elements = new Map();
 globalThis.document = {getElementById: id => {
-  if (!elements.has(id)) elements.set(id, {showModal(){this.open=true;}, close(){this.open=false;}});
+  if (!elements.has(id)) elements.set(id, {dataset:{}, showModal(){this.open=true;}, close(){this.open=false;}});
   return elements.get(id);
 }};
 let quit = 0, phase = 'idle';
@@ -13,12 +13,14 @@ const identity = {current:'1.0.3',build:20004,platform:'windows-x64',supported:t
 const actions = [];
 const open = initUpdates(async()=>({...identity,state:phase}), async(path)=>{
   actions.push(path); phase = {'update/check':'available','update/download':'ready','update/install':'installing'}[path];
-  return {...identity,state:phase,latest:'1.0.4',notes:'<script>literal notes</script>'};
+  return {...identity,state:phase,latest:'1.0.4',date:'2026-10-05',notes:'<script>literal notes</script>'};
 });
 assert.equal(elements.has('openUpdates'), false, 'No on-page or mobile update button');
 await open();
 assert.deepEqual(actions,['update/check']);
 assert.equal(elements.get('downloadUpdate').hidden,false);
+assert.equal(elements.get('updateDate').textContent,'2026.10.05 发布');
+assert.equal(elements.get('updateVersion').textContent.includes('构建'),false);
 assert.equal(elements.get('installUpdate').hidden,true);
 assert.equal(elements.get('updateNotes').textContent,'<script>literal notes</script>');
 await elements.get('downloadUpdate').onclick();

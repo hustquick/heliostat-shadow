@@ -3,16 +3,27 @@ export function initUpdates(get, post) {
   let state, timer;
   function render(data) {
     state = data;
-    $("updateVersion").textContent = `当前版本 ${data.current} · 构建 ${data.build}` + (data.latest ? ` ｜ 最新 ${data.latest}` : "");
-    const messages = {idle: "点击检查更新获取最新版本。", checking: "正在检查更新…", available: "发现新版本。", current: "当前已是最新版本。", downloading: `正在下载 ${data.progress || 0}%`, ready: "新版已下载并校验，可安装更新。", installing: "正在安装新版…", manual: "iPhone 请连接电脑，由电脑安装新版。", permission: "请允许本应用安装软件，返回后再次点击安装。", error: `更新失败：${data.error || "请重试"}`};
+    $("updatesDialog").dataset.state = data.state;
+    const hasNewVersion = data.latest && data.latest !== data.current && ["available", "downloading", "ready", "installing", "error"].includes(data.state);
+    $("updateVersion").textContent = hasNewVersion ? `${data.current} → ${data.latest}` : `版本 ${data.current || "—"}`;
+    const titles = {idle:"软件更新", checking:"正在检查更新", available:"发现新版本", current:"已是最新版本", downloading:"正在下载更新", ready:"更新已就绪", installing:"正在安装更新", error:"暂时无法更新"};
+    $("updatesTitle").textContent = titles[data.state] || "软件更新";
+    $("updateStatusMark").textContent = {current:"✓", ready:"✓", available:"↓", downloading:"↓", error:"!"}[data.state] || "↻";
+    const messages = {idle:"获取最新版本和改进说明。", checking:"", available:"安装后将重新启动应用。", current:"", downloading:`已下载 ${data.progress || 0}%`, ready:"新版已准备好，安装后将重新启动应用。", installing:"应用即将重新启动。", error:"请检查网络连接后重试。"};
     $("updateMessage").textContent = messages[data.state] || "";
-    if (!data.supported && data.state !== "manual") $("updateMessage").textContent += " 此环境不能直接替换应用，请安装完整桌面版。";
-    $("updateNotes").textContent = data.notes || "";
-    $("checkUpdates").hidden = data.state === "manual";
-    $("checkUpdates").disabled = ["checking", "downloading", "installing"].includes(data.state);
-    $("downloadUpdate").hidden = !data.supported || !["available", "error"].includes(data.state) || !data.latest;
-    $("installUpdate").hidden = !["ready", "permission"].includes(data.state);
-    $("installUpdate").textContent = data.platform === "android" ? "安装更新" : "安装并重启";
+    $("updateMessage").hidden = !$("updateMessage").textContent;
+    if (!data.supported) { $("updateMessage").hidden = false; $("updateMessage").textContent = "请使用完整桌面版进行更新。"; }
+    const showRelease = ["available", "downloading", "ready", "installing"].includes(data.state) || (data.state === "current" && data.latest === data.current);
+    $("updateNotesPanel").hidden = !showRelease || !data.notes?.trim();
+    $("updateNotes").textContent = showRelease ? data.notes || "" : "";
+    const date = /^\d{4}-\d{2}-\d{2}$/.test(data.date || "") ? data.date : "";
+    $("updateDate").hidden = !showRelease || !date;
+    $("updateDate").textContent = date ? `${date.replaceAll("-", ".")} 发布` : "";
+    $("checkUpdates").hidden = !["idle", "error"].includes(data.state);
+    $("checkUpdates").textContent = data.state === "error" ? "重试" : "检查更新";
+    $("downloadUpdate").hidden = !data.supported || !["available", "error"].includes(data.state) || !hasNewVersion;
+    $("installUpdate").hidden = data.state !== "ready";
+    $("dismissUpdates").textContent = ["available", "ready"].includes(data.state) ? "稍后" : "完成";
     $("updateProgress").hidden = data.state !== "downloading";
     $("updateProgress").value = data.progress || 0;
     if (["checking", "downloading"].includes(data.state)) timer = setTimeout(refresh, 700);
@@ -20,7 +31,7 @@ export function initUpdates(get, post) {
   async function refresh() {
     clearTimeout(timer);
     try { render(await get("update/status")); }
-    catch (error) { $("updateMessage").textContent = `更新接口连接失败：${error.message}`; }
+    catch (error) { render({...state, state:"error"}); }
   }
   async function action(name) {
     clearTimeout(timer);
@@ -30,12 +41,16 @@ export function initUpdates(get, post) {
         window.webkit?.messageHandlers?.heliostatUpdateQuit?.postMessage("quit");
         window.chrome?.webview?.postMessage("update-quit");
       }
-    } catch (error) { $("updateMessage").textContent = error.message; }
+    } catch (error) { $("updateMessage").hidden = false;
+      $("updateMessage").textContent = name === "install" ? "暂时无法安装，请确认应用目录可写后重试。" : "暂时无法获取更新，请检查网络后重试。"; }
   }
   async function open() { $("updatesDialog").showModal(); await refresh(); if (state?.supported && ["idle", "current", "error"].includes(state.state)) await action("check"); }
   $("checkUpdates").onclick = () => action("check");
   $("downloadUpdate").onclick = () => action("download");
   $("installUpdate").onclick = () => action("install");
-  $("closeUpdates").onclick = () => { clearTimeout(timer); $("updatesDialog").close(); };
+  const close = () => { clearTimeout(timer); $("updatesDialog").close(); };
+  $("closeUpdates").onclick = close;
+  $("dismissUpdates").onclick = close;
+  $("updatesDialog").onclose = () => clearTimeout(timer);
   return open;
 }

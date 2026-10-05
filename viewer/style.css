@@ -957,8 +957,39 @@ main > details > summary.navigation-focus:focus-visible { outline:none; }
 /* Reserve drawing space beneath the floating legend, including u/v labels. */
 .projection-stage > #projection { box-sizing:border-box; padding-top:52px; }
 
-#updatesDialog { color: #d9edf4; background: #10212b; border: 1px solid #416071; border-radius: 16px; max-width: min(560px, 86vw); }
-#updatesDialog::backdrop { background: #0009; }
-#updateNotes { white-space: pre-wrap; font: inherit; max-height: 35vh; overflow: auto; }
-#updateProgress { width: 100%; }
-.update-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+#updatesDialog {
+  box-sizing: border-box; width: min(480px, calc(100vw - 48px)); max-width: none;
+  padding: 0; max-height: calc(100vh - 64px); overflow-y: auto; color: #e6f0f4; background: #11242f;
+  border: 1px solid #36505e; border-radius: 22px; box-shadow: 0 28px 100px #0009;
+}
+#updatesDialog::backdrop { background: #020a10a8; backdrop-filter: blur(5px); }
+#updatesDialog [hidden] { display: none !important; }
+#updatesDialog .update-close {
+  position: absolute; top: 14px; right: 14px; width: 32px; height: 32px; padding: 0;
+  border: 0; background: transparent; color: #93abb7; font-size: 25px; line-height: 1;
+}
+#updatesDialog .update-close:hover { background: #ffffff0b; color: #fff; }
+.update-body { padding: 38px 32px 28px; text-align: center; }
+.update-status-mark {
+  display: grid; place-items: center; width: 64px; height: 64px; margin: 0 auto 20px;
+  border-radius: 50%; background: #75d8bf16; border: 1px solid #75d8bf35;
+  color: #87e1c8; font-size: 32px; font-weight: 500;
+}
+#updatesDialog[data-state="error"] .update-status-mark { color: #f1c288; background: #f1c28812; border-color: #f1c28830; }
+#updatesDialog h2 { margin: 0; font-size: 23px; font-weight: 650; letter-spacing: .02em; }
+.update-version { margin: 10px 0 0; color: #a0b5c1; font-size: 14px; font-variant-numeric: tabular-nums; }
+.update-message { margin: 18px 0 0; color: #b8cad3; font-size: 14px; line-height: 1.7; }
+#updateProgress { display: block; width: 100%; height: 7px; margin: 24px 0 0; border: 0; border-radius: 8px; overflow: hidden; accent-color: #78d7be; }
+#updateProgress::-webkit-progress-bar { background: #233f4b; }
+#updateProgress::-webkit-progress-value { background: #78d7be; border-radius: 8px; }
+.update-notes { margin-top: 26px; padding: 20px; background: #081b254f; border: 1px solid #ffffff09; border-radius: 12px; text-align: left; }
+#updatesDialog .update-notes h3 { margin: 0 0 10px; color: #d7e6ed; font-size: 13px; font-weight: 600; }
+#updateNotes { margin: 0; white-space: pre-line; color: #b8cad3; font: 14px/1.8 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; max-height: 28vh; overflow: auto; }
+.update-actions { display: flex; justify-content: flex-end; gap: 10px; padding: 18px 24px; border-top: 1px solid #ffffff0a; background: #0a1c2540; }
+#updatesDialog .update-actions button { min-width: 92px; padding: 9px 16px; border-radius: 10px; font-size: 14px; }
+#updatesDialog .update-primary { background: #7ad8be; border-color: #7ad8be; color: #08241e; font-weight: 600; }
+#updatesDialog .update-primary:hover { background: #99e8d2; }
+#updatesDialog .update-secondary { background: transparent; border-color: #3a5360; color: #c7d9e2; }
+#updatesDialog[data-state="current"] #dismissUpdates { background: #7ad8be; border-color: #7ad8be; color: #08241e; font-weight: 600; }
+
+.update-date { margin: 6px 0 0; color: #849eac; font-size: 12px; }
