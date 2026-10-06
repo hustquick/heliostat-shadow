@@ -25,6 +25,7 @@ jobs:
       - run: cargo clippy --manifest-path rust/Cargo.toml --all-targets --all-features -- -D warnings
       - run: cargo test --manifest-path rust/Cargo.toml
       - run: cargo test --manifest-path rust/Cargo.toml --features android-jni
+      - run: node tests/playback_controls.mjs
       - run: node tests/operation_state.mjs
       - run: node tests/update_ui.mjs
       - run: python -m pytest -q

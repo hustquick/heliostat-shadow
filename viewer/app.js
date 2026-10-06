@@ -777,6 +777,8 @@ function showHeliostatSummary() {
 }
 function controlsBusy(value) {
   busy = value;
+  // Camera and coloring are presentation preferences: keep them interactive
+  // while a playback frame is loading, so open menus are not dismissed.
   for (const id of [
     "plant",
     "date",
@@ -784,13 +786,6 @@ function controlsBusy(value) {
     "prev",
     "next",
     "mirror",
-    "focus",
-    "overview",
-    "viewMode",
-    "viewIso",
-    "viewTop",
-    "efficiencyColor",
-    "towerColor",
   ])
     $(id).disabled = value;
   for (const id of ["designMethod", "currentLayout", "rearrange", "importPlant", "exportCoordinates"])
@@ -877,7 +872,6 @@ async function loadEfficiencies(gen = generation) {
   );
 }
 $("efficiencyColor").onclick = async () => {
-  if (busy) return;
   if (efficiencyEnabled) {
     efficiencyEnabled = false;
     efficiencyData = null;
@@ -894,18 +888,20 @@ $("efficiencyColor").onclick = async () => {
   $("towerColor").setAttribute("aria-pressed", "false");
   $("efficiencyColor").classList.add("active");
   $("efficiencyColor").setAttribute("aria-pressed", "true");
+  // Playback already fetches efficiencies for the next daylight frame. Apply
+  // the preference immediately without starting a competing frame request.
+  showEfficiencyScale();
+  drawDetails();
+  if (busy || !frame?.daylight || !concentrating) return;
   controlsBusy(true);
   try { await loadEfficiencies(); }
   catch (e) {
-    efficiencyEnabled = false;
-    $("efficiencyColor").classList.remove("active");
-    $("efficiencyColor").setAttribute("aria-pressed", "false");
-    showEfficiencyScale();
+    // A failed request must not overwrite a preference changed during playback.
     status(e.message, true);
   } finally { controlsBusy(false); }
 };
 $("towerColor").onclick = () => {
-  if (busy || meta.tower_count < 2) return;
+  if (meta.tower_count < 2) return;
   towerColorEnabled = !towerColorEnabled;
   efficiencyEnabled = false;
   efficiencyData = null;
