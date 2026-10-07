@@ -788,6 +788,13 @@ function showHeliostatSummary() {
     ? `${formatRange([spec.ground_height_m, spec.ground_height_m])} m`
     : "未查到公开数据";
   groundHeight.title = spec.ground_height_note || "未使用模型 z 坐标代替实际离地高度";
+  const heightNote=$("heliostatHeightNote");
+  heightNote.textContent=Number.isFinite(spec.ground_height_m)
+    ? `镜心离地高度 ${formatRange([spec.ground_height_m,spec.ground_height_m])} m。${spec.ground_height_note||"公开项目参数。"} 该展示参数不修改已有镜场坐标。`
+    : "镜心离地高度待确认；未使用模型 z 坐标代替实际离地高度。";
+  if(spec.ground_height_source_url) {
+    const link=document.createElement("a");link.href=spec.ground_height_source_url;link.textContent=" 来源资料";link.target="_blank";link.rel="noopener noreferrer";heightNote.append(link);
+  }
 }
 function controlsBusy(value) {
   busy = value;

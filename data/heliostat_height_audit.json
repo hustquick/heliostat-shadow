@@ -1,0 +1,269 @@
+{
+  "audit_date": "2026-10-07",
+  "definition": "镜面中心相对当地地面的高度；支柱高度仅作为有标注的近似，不是镜面上下尺寸、下缘净空或海拔。",
+  "plants": [
+    {
+      "id": "gemasolar",
+      "name": "Gemasolar（西班牙）",
+      "height_m": 5.675,
+      "status": "published_parameter",
+      "source_url": "https://www.energy.rwth-aachen.de/theses/fischer2021multistep.pdf",
+      "note": "RWTH Aachen 2021 学位论文表 1 的 Pedestal height（支柱/跟踪轴高度）研究参数，作为镜心高度近似；不是现场竣工测量值。 同类论文也报告 5 m，存在文献口径差异；本项目采用与 115.7 m² 镜型一致的 5.675 m。"
+    },
+    {
+      "id": "ps10",
+      "name": "PS10（西班牙）",
+      "height_m": 5.17,
+      "status": "published_parameter",
+      "source_url": "https://www.energy.rwth-aachen.de/theses/fischer2021multistep.pdf",
+      "note": "RWTH Aachen 2021 学位论文表 1 的 Pedestal height（支柱/跟踪轴高度）研究参数，作为镜心高度近似；不是现场竣工测量值。"
+    },
+    {
+      "id": "crescent-dunes",
+      "name": "Crescent Dunes（美国）",
+      "height_m": 5.317,
+      "status": "geometric_assumption",
+      "source_url": "https://solarpaces.nlr.gov/project/crescent-dunes-solar-energy-project",
+      "note": "几何估算（本项目假设）：采用目录模型镜面高度 9.63328 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
+    },
+    {
+      "id": "khi-solar-one",
+      "name": "Khi Solar One（南非）",
+      "height_m": 5.792,
+      "status": "geometric_assumption",
+      "source_url": "https://solarpaces.nlr.gov/project/khi-solar-one",
+      "note": "几何估算（本项目假设）：采用目录模型镜面高度 10.583 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
+    },
+    {
+      "id": "cerro-dominador",
+      "name": "Cerro Dominador（智利）",
+      "height_m": 5.792,
+      "status": "geometric_assumption",
+      "source_url": "https://solarpaces.nlr.gov/project/atacama-i-cerro-dominador-110mw-csp-100mw-pv",
+      "note": "几何估算（本项目假设）：采用目录模型镜面高度 10.583 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
+    },
+    {
+      "id": "noor-iii",
+      "name": "NOOR III（摩洛哥）",
+      "height_m": 5.399,
+      "status": "geometric_assumption",
+      "source_url": "https://solarpaces.nlr.gov/project/noor-iii",
+      "note": "几何估算（本项目假设）：采用目录模型镜面高度 9.79796 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
+    },
+    {
+      "id": "shouhang-dunhuang-i",
+      "name": "首航敦煌一期 10 MW（中国）",
+      "height_m": 5.9,
+      "status": "geometric_assumption",
+      "source_url": "https://solarpaces.nlr.gov/project/shouhang-dunhuang-phase-i-10-mw-tower",
+      "note": "几何估算（本项目假设）：采用目录模型镜面高度 10.8 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
+    },
+    {
+      "id": "shouhang-dunhuang-ii",
+      "name": "首航敦煌二期 100 MW（中国）",
+      "height_m": 5.5,
+      "status": "published_parameter",
+      "source_url": "https://www.tib-op.org/ojs/index.php/solarpaces/article/download/771/1311/30677",
+      "note": "SolarPACES 2023 项目论文表 1 列出 Height of pedestal = 5.5 m；界面将其作为跟踪中心近似离地高度显示。"
+    },
+    {
+      "id": "powerchina-qinghai-gonghe",
+      "name": "中电建青海共和 50 MW（中国）",
+      "height_m": 2.25,
+      "status": "geometric_assumption",
+      "source_url": "https://solarpaces.nlr.gov/project/power-china-qinghai-gonghe-50mw-tower",
+      "note": "几何估算（本项目假设）：采用目录模型镜面高度 3.5 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
+    },
+    {
+      "id": "luneng-haixi",
+      "name": "鲁能海西 50 MW（中国）",
+      "height_m": 5.754,
+      "status": "geometric_assumption",
+      "source_url": "https://solarpaces.nlr.gov/project/luneng-haixi-50mw-tower",
+      "note": "几何估算（本项目假设）：采用目录模型镜面高度 10.5071 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
+    },
+    {
+      "id": "supcon-delingha-10",
+      "name": "中控德令哈 10 MW（中国）",
+      "height_m": 1.132,
+      "status": "geometric_assumption",
+      "source_url": "https://solarpaces.nlr.gov/project/supcon-delingha-10-mw-tower",
+      "note": "几何估算（本项目假设）：采用目录模型镜面高度 1.26491 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
+    },
+    {
+      "id": "supcon-delingha-50",
+      "name": "中控德令哈 50 MW（中国）",
+      "height_m": 2.5,
+      "status": "geometric_assumption",
+      "source_url": "https://solarpaces.nlr.gov/project/supcon-delingha-50-mw-tower",
+      "note": "几何估算（本项目假设）：采用目录模型镜面高度 4 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
+    },
+    {
+      "id": "ceec-hami",
+      "name": "中电工程哈密 50 MW（中国）",
+      "height_m": 3.662,
+      "status": "geometric_assumption",
+      "source_url": "https://solarpaces.nlr.gov/project/ceec-hami-50mw-tower",
+      "note": "几何估算（本项目假设）：采用目录模型镜面高度 6.32456 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
+    },
+    {
+      "id": "yumen-xinneng-beam-down",
+      "name": "玉门鑫能 50 MW 二次反射（中国）",
+      "height_m": 2.289,
+      "status": "geometric_assumption",
+      "source_url": "https://solarpaces.nlr.gov/project/yumen-xinneng-xinchen-50mw-beam-down",
+      "note": "几何估算（本项目假设）：采用目录模型镜面高度 3.57771 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
+    },
+    {
+      "id": "ctg-hengji-guazhou-dual-tower",
+      "name": "三峡恒基能脉瓜州 100 MW 双塔一机（中国）",
+      "height_m": 2.5,
+      "status": "published_parameter",
+      "source_url": "https://eps.ctg.com.cn/cms/channel/1ywgg1/240613245.htm",
+      "note": "三峡集团采购公告表述为定日镜标高 2.5 m；模型按镜心相对统一地面基准的高度使用。"
+    },
+    {
+      "id": "ps20",
+      "name": "PS20（西班牙）",
+      "height_m": 5.17,
+      "status": "published_parameter",
+      "source_url": "https://www.energy.rwth-aachen.de/theses/fischer2021multistep.pdf",
+      "note": "RWTH Aachen 2021 学位论文表 1 的 Pedestal height（支柱/跟踪轴高度）研究参数，作为镜心高度近似；不是现场竣工测量值。"
+    },
+    {
+      "id": "ashalim-megalim",
+      "name": "Ashalim / Megalim（以色列）",
+      "height_m": 2.549,
+      "status": "geometric_assumption",
+      "source_url": "https://solarpaces.nlr.gov/project/ashalim-plot-b-megalim",
+      "note": "几何估算（本项目假设）：采用目录模型镜面高度 4.09878 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
+    },
+    {
+      "id": "redstone",
+      "name": "Redstone（南非）",
+      "height_m": 5.2,
+      "status": "literature_assumption",
+      "source_url": "https://elib.dlr.de/113517/1/Flesch_APO.pdf",
+      "note": "文献假设：Flesch 等 Towards an optimal aiming for molten salt power towers，表 2 为 Redstone 地点的虚拟电厂采用 Pedestal height 5.2 m；不是 Redstone 竣工实测。"
+    },
+    {
+      "id": "dewa-iv-tower",
+      "name": "Noor Energy 1 / DEWA IV 塔式单元（阿联酋）",
+      "height_m": 5.0,
+      "status": "literature_assumption",
+      "source_url": "https://openresearch-repository.anu.edu.au/server/api/core/bitstreams/93f5b1af-f742-4180-93e2-7dde2df6af77/content",
+      "note": "文献假设：ANU 论文 DEWA 案例明确假设 pedestal height 为 5 m，用于安全转动；不是电厂公开工程值。"
+    },
+    {
+      "id": "julich",
+      "name": "Jülich（德国）",
+      "height_m": 1.765,
+      "status": "geometric_assumption",
+      "source_url": "https://solarpaces.nlr.gov/project/julich-solar-tower",
+      "note": "几何估算（本项目假设）：采用目录模型镜面高度 2.52982 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
+    },
+    {
+      "id": "badaling-dahan",
+      "name": "八达岭大汉 1 MW（中国）",
+      "height_m": 4.972,
+      "status": "geometric_assumption",
+      "source_url": "https://solarpaces.nlr.gov/project/badaling-dahan-1-mw-tower",
+      "note": "几何估算（本项目假设）：采用目录模型镜面高度 8.94427 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
+    },
+    {
+      "id": "sundrop",
+      "name": "Sundrop Farms（澳大利亚）",
+      "height_m": 1.159,
+      "status": "geometric_assumption",
+      "source_url": "https://solarpaces.nlr.gov/project/sundrop-csp-project",
+      "note": "几何估算（本项目假设）：采用目录模型镜面高度 1.31821 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
+    },
+    {
+      "id": "lake-cargelligo",
+      "name": "Lake Cargelligo（澳大利亚）",
+      "height_m": 1.914,
+      "status": "geometric_assumption",
+      "source_url": "https://solarpaces.nlr.gov/project/lake-cargelligo",
+      "note": "几何估算（本项目假设）：采用目录模型镜面高度 2.82843 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
+    },
+    {
+      "id": "acme-solar-tower",
+      "name": "ACME Solar Tower（印度）",
+      "height_m": 0.947,
+      "status": "geometric_assumption",
+      "source_url": "https://solarpaces.nlr.gov/project/acme-solar-tower",
+      "note": "几何估算（本项目假设）：采用目录模型镜面高度 0.894427 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
+    },
+    {
+      "id": "solar-one",
+      "name": "Solar One 历史试验电站（美国）",
+      "height_m": 3.328,
+      "status": "geometric_assumption",
+      "source_url": "https://www.heliocon.org/plants/Solar_One.html",
+      "note": "几何估算（本项目假设）：采用目录模型镜面高度 5.65685 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
+    },
+    {
+      "id": "solar-two",
+      "name": "Solar Two 历史试验电站（美国）",
+      "height_m": 3.431,
+      "status": "geometric_assumption",
+      "source_url": "https://www.heliocon.org/plants/Solar_Two.html",
+      "note": "几何估算（本项目假设）：采用目录模型镜面高度 5.86274 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
+    },
+    {
+      "id": "sandia-nsttf",
+      "name": "Sandia NSTTF 光热试验场（美国）",
+      "height_m": 3.22,
+      "status": "geometric_assumption",
+      "source_url": "https://www.heliocon.org/plants/National_Solar_Thermal_Test_Facility.html",
+      "note": "几何估算（本项目假设）：采用目录模型镜面高度 5.44059 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
+    },
+    {
+      "id": "jinta-zhongguang",
+      "name": "金塔中光 100 MW（中国）",
+      "height_m": 2.949,
+      "status": "geometric_assumption",
+      "source_url": "https://www.heliocon.org/plants/Jinta_Zhongguang_Solar_100MW.html",
+      "note": "几何估算（本项目假设）：采用目录模型镜面高度 4.89898 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
+    },
+    {
+      "id": "ctg-golmud-wutumeiren",
+      "name": "三峡格尔木乌图美仁 100 MW（中国）",
+      "height_m": 5.311,
+      "status": "geometric_assumption",
+      "source_url": "https://solarpaces.nlr.gov/project/ctgr-qinghai-golmud100mw-tower-1000mw-pv",
+      "note": "几何估算（本项目假设）：采用目录模型镜面高度 9.62289 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
+    },
+    {
+      "id": "powerchina-toksun",
+      "name": "中电建托克逊 100 MW（中国）",
+      "height_m": 2.949,
+      "status": "geometric_assumption",
+      "source_url": "https://www.heliocon.org/plants/Power%20_China_Toksun_100MW.html",
+      "note": "几何估算（本项目假设）：采用目录模型镜面高度 4.89898 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
+    }
+  ],
+  "candidate_policy": "Redstone及DEWA候选现按用户授权纳入文献假设；德令哈100MW候选仍不适用于50MW项目。",
+  "candidate_review": [
+    {
+      "plant": "redstone",
+      "height_m": 5.2,
+      "source": "https://elib.dlr.de/113517/1/Flesch_APO.pdf",
+      "reason": "文中明确为 Redstone 坐标处的虚拟电厂，非实际项目参数",
+      "decision": "accepted_as_literature_assumption"
+    },
+    {
+      "plant": "dewa-iv-tower",
+      "height_m": 5,
+      "source": "https://openresearch-repository.anu.edu.au/server/api/core/bitstreams/93f5b1af-f742-4180-93e2-7dde2df6af77/content",
+      "reason": "文中明确 assumed，不是实测或工程发布值",
+      "decision": "accepted_as_literature_assumption"
+    },
+    {
+      "plant": "supcon-delingha-50",
+      "height_m": 3.2,
+      "reason": "检索表为德令哈地区100MW设计案例，与目录50MW项目不一致",
+      "decision": "rejected_wrong_project"
+    }
+  ]
+}

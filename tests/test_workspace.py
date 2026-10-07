@@ -260,3 +260,13 @@ def test_generate_and_import_use_explicit_top_plant_not_active_design(tmp_path):
     with pytest.raises(ValueError, match='未知来源电厂'):
         workspace.rearrange(dict(plant_id='unknown', scheme='campo'))
     assert workspace.active_id == active_id
+
+@pytest.mark.parametrize('plant_id,height', [('ps10',5.17),('ps20',5.17)])
+def test_published_pedestal_height_is_reported_without_changing_layout(tmp_path,plant_id,height):
+    workspace=ViewerWorkspace(ROOT,tmp_path)
+    workspace.select(plant_id)
+    summary=workspace.metadata()['heliostat_summary']
+    assert summary['ground_height_m']==height
+    assert summary['ground_height_source_url'].startswith('https://www.energy.rwth-aachen.de/')
+    assert '不是现场竣工测量值' in summary['ground_height_note']
+    assert summary['centre_elevation_range_m']==[0.,0.]

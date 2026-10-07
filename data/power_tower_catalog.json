@@ -35,7 +35,10 @@
     "receiver_geometry_type": "cavity",
     "receiver_audit_sources": [
       "https://solarpaces.nlr.gov/project/planta-solar-10-ps10"
-    ]
+    ],
+    "heliostat_reported_ground_height_m": 5.17,
+    "heliostat_reported_ground_height_source_url": "https://www.energy.rwth-aachen.de/theses/fischer2021multistep.pdf",
+    "heliostat_reported_ground_height_note": "RWTH Aachen 2021 学位论文表 1 的 Pedestal height（支柱/跟踪轴高度）研究参数，作为镜心高度近似；不是现场竣工测量值。"
   },
   {
     "id": "crescent-dunes",
@@ -77,7 +80,10 @@
     "receiver_geometry_type": "external-cylinder",
     "receiver_audit_sources": [
       "https://www.energy.gov/sites/default/files/2017/04/f34/67464.pdf"
-    ]
+    ],
+    "heliostat_reported_ground_height_m": 5.317,
+    "heliostat_reported_ground_height_source_url": "https://solarpaces.nlr.gov/project/crescent-dunes-solar-energy-project",
+    "heliostat_reported_ground_height_note": "几何估算（本项目假设）：采用目录模型镜面高度 9.63328 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
   },
   {
     "id": "khi-solar-one",
@@ -115,7 +121,10 @@
     "receiver_geometry_type": "multiple-cavity",
     "receiver_audit_sources": [
       "https://solarpaces.nlr.gov/project/khi-solar-one"
-    ]
+    ],
+    "heliostat_reported_ground_height_m": 5.792,
+    "heliostat_reported_ground_height_source_url": "https://solarpaces.nlr.gov/project/khi-solar-one",
+    "heliostat_reported_ground_height_note": "几何估算（本项目假设）：采用目录模型镜面高度 10.583 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
   },
   {
     "id": "cerro-dominador",
@@ -153,7 +162,10 @@
     "receiver_geometry_type": "external-cylinder",
     "receiver_audit_sources": [
       "https://www.nrel.gov/docs/fy21osti/79323.pdf"
-    ]
+    ],
+    "heliostat_reported_ground_height_m": 5.792,
+    "heliostat_reported_ground_height_source_url": "https://solarpaces.nlr.gov/project/atacama-i-cerro-dominador-110mw-csp-100mw-pv",
+    "heliostat_reported_ground_height_note": "几何估算（本项目假设）：采用目录模型镜面高度 10.583 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
   },
   {
     "id": "noor-iii",
@@ -193,7 +205,10 @@
     "receiver_geometry_type": "external-cylinder",
     "receiver_audit_sources": [
       "https://www.smarmec.com/en/success-stories/solar-thermal-plant-in-morocco/"
-    ]
+    ],
+    "heliostat_reported_ground_height_m": 5.399,
+    "heliostat_reported_ground_height_source_url": "https://solarpaces.nlr.gov/project/noor-iii",
+    "heliostat_reported_ground_height_note": "几何估算（本项目假设）：采用目录模型镜面高度 9.79796 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
   },
   {
     "id": "shouhang-dunhuang-i",
@@ -232,7 +247,10 @@
     "receiver_geometry_type": "external-cylinder",
     "receiver_audit_sources": [
       "https://solarpaces.nlr.gov/project/shouhang-dunhuang-phase-i-10-mw-tower"
-    ]
+    ],
+    "heliostat_reported_ground_height_m": 5.9,
+    "heliostat_reported_ground_height_source_url": "https://solarpaces.nlr.gov/project/shouhang-dunhuang-phase-i-10-mw-tower",
+    "heliostat_reported_ground_height_note": "几何估算（本项目假设）：采用目录模型镜面高度 10.8 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
   },
   {
     "id": "shouhang-dunhuang-ii",
@@ -334,7 +352,10 @@
     "receiver_geometry_type": "external-cylinder",
     "receiver_audit_sources": [
       "https://www.solarpaces.org/wp-content/uploads/2025/03/Chinas-CSP-blue-book-2024.pdf"
-    ]
+    ],
+    "heliostat_reported_ground_height_m": 2.25,
+    "heliostat_reported_ground_height_source_url": "https://solarpaces.nlr.gov/project/power-china-qinghai-gonghe-50mw-tower",
+    "heliostat_reported_ground_height_note": "几何估算（本项目假设）：采用目录模型镜面高度 3.5 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
   },
   {
     "id": "luneng-haixi",
@@ -373,7 +394,10 @@
     "receiver_geometry_type": "external-cylinder",
     "receiver_audit_sources": [
       "https://solarpaces.nlr.gov/project/luneng-haixi-50mw-tower"
-    ]
+    ],
+    "heliostat_reported_ground_height_m": 5.754,
+    "heliostat_reported_ground_height_source_url": "https://solarpaces.nlr.gov/project/luneng-haixi-50mw-tower",
+    "heliostat_reported_ground_height_note": "几何估算（本项目假设）：采用目录模型镜面高度 10.5071 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
   },
   {
     "id": "supcon-delingha-10",
@@ -412,7 +436,10 @@
     "receiver_geometry_type": "external-cylinder",
     "receiver_audit_sources": [
       "https://solarpaces.nlr.gov/project/supcon-delingha-10-mw-tower"
-    ]
+    ],
+    "heliostat_reported_ground_height_m": 1.132,
+    "heliostat_reported_ground_height_source_url": "https://solarpaces.nlr.gov/project/supcon-delingha-10-mw-tower",
+    "heliostat_reported_ground_height_note": "几何估算（本项目假设）：采用目录模型镜面高度 1.26491 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
   },
   {
     "id": "supcon-delingha-50",
@@ -457,7 +484,10 @@
     "model_field_height_m": 1500.0,
     "model_field_inner_radius_m": 55.0,
     "model_mirror_spacing_m": 10.0,
-    "model_layout_note": "蓝皮书2024矩形边界东西1721 m、南北1500 m；内部10 m六角网格为重建假设，非实场环排坐标。"
+    "model_layout_note": "蓝皮书2024矩形边界东西1721 m、南北1500 m；内部10 m六角网格为重建假设，非实场环排坐标。",
+    "heliostat_reported_ground_height_m": 2.5,
+    "heliostat_reported_ground_height_source_url": "https://solarpaces.nlr.gov/project/supcon-delingha-50-mw-tower",
+    "heliostat_reported_ground_height_note": "几何估算（本项目假设）：采用目录模型镜面高度 4 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
   },
   {
     "id": "ceec-hami",
@@ -497,7 +527,10 @@
     "receiver_audit_sources": [
       "https://www.solarpaces.org/wp-content/uploads/2025/03/Chinas-CSP-blue-book-2024.pdf"
     ],
-    "model_field_outer_radius_m": 1253.14
+    "model_field_outer_radius_m": 1253.14,
+    "heliostat_reported_ground_height_m": 3.662,
+    "heliostat_reported_ground_height_source_url": "https://solarpaces.nlr.gov/project/ceec-hami-50mw-tower",
+    "heliostat_reported_ground_height_note": "几何估算（本项目假设）：采用目录模型镜面高度 6.32456 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
   },
   {
     "id": "yumen-xinneng-beam-down",
@@ -537,7 +570,10 @@
     "receiver_geometry_type": "beam-down-volumetric",
     "receiver_audit_sources": [
       "https://solarpaces.nlr.gov/project/yumen-xinneng-xinchen-50mw-beam-down"
-    ]
+    ],
+    "heliostat_reported_ground_height_m": 2.289,
+    "heliostat_reported_ground_height_source_url": "https://solarpaces.nlr.gov/project/yumen-xinneng-xinchen-50mw-beam-down",
+    "heliostat_reported_ground_height_note": "几何估算（本项目假设）：采用目录模型镜面高度 3.57771 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
   },
   {
     "id": "ctg-hengji-guazhou-dual-tower",
@@ -666,7 +702,10 @@
       "https://solarpaces.nlr.gov/project/planta-solar-20-ps20"
     ],
     "data_checked_date": "2026-10-04",
-    "data_license": "CC BY 4.0"
+    "data_license": "CC BY 4.0",
+    "heliostat_reported_ground_height_m": 5.17,
+    "heliostat_reported_ground_height_source_url": "https://www.energy.rwth-aachen.de/theses/fischer2021multistep.pdf",
+    "heliostat_reported_ground_height_note": "RWTH Aachen 2021 学位论文表 1 的 Pedestal height（支柱/跟踪轴高度）研究参数，作为镜心高度近似；不是现场竣工测量值。"
   },
   {
     "id": "ashalim-megalim",
@@ -708,7 +747,10 @@
       "https://solarpaces.nlr.gov/project/ashalim-plot-b-megalim"
     ],
     "data_checked_date": "2026-10-04",
-    "data_license": "CC BY 4.0"
+    "data_license": "CC BY 4.0",
+    "heliostat_reported_ground_height_m": 2.549,
+    "heliostat_reported_ground_height_source_url": "https://solarpaces.nlr.gov/project/ashalim-plot-b-megalim",
+    "heliostat_reported_ground_height_note": "几何估算（本项目假设）：采用目录模型镜面高度 4.09878 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
   },
   {
     "id": "redstone",
@@ -751,7 +793,10 @@
     ],
     "data_checked_date": "2026-10-04",
     "data_license": "CC BY 4.0",
-    "note": "旧项目档案的预计投运年份不作为实际投运年份；本条用于场址与镜场建模。"
+    "note": "旧项目档案的预计投运年份不作为实际投运年份；本条用于场址与镜场建模。",
+    "heliostat_reported_ground_height_m": 5.2,
+    "heliostat_reported_ground_height_source_url": "https://elib.dlr.de/113517/1/Flesch_APO.pdf",
+    "heliostat_reported_ground_height_note": "文献假设：Flesch 等 Towards an optimal aiming for molten salt power towers，表 2 为 Redstone 地点的虚拟电厂采用 Pedestal height 5.2 m；不是 Redstone 竣工实测。"
   },
   {
     "id": "dewa-iv-tower",
@@ -793,7 +838,10 @@
       "https://solarpaces.nlr.gov/project/noor-energy-1-dewa-iv-100mw-tower-segment"
     ],
     "data_checked_date": "2026-10-04",
-    "data_license": "CC BY 4.0"
+    "data_license": "CC BY 4.0",
+    "heliostat_reported_ground_height_m": 5.0,
+    "heliostat_reported_ground_height_source_url": "https://openresearch-repository.anu.edu.au/server/api/core/bitstreams/93f5b1af-f742-4180-93e2-7dde2df6af77/content",
+    "heliostat_reported_ground_height_note": "文献假设：ANU 论文 DEWA 案例明确假设 pedestal height 为 5 m，用于安全转动；不是电厂公开工程值。"
   },
   {
     "id": "julich",
@@ -835,7 +883,10 @@
       "https://solarpaces.nlr.gov/project/julich-solar-tower"
     ],
     "data_checked_date": "2026-10-04",
-    "data_license": "CC BY 4.0"
+    "data_license": "CC BY 4.0",
+    "heliostat_reported_ground_height_m": 1.765,
+    "heliostat_reported_ground_height_source_url": "https://solarpaces.nlr.gov/project/julich-solar-tower",
+    "heliostat_reported_ground_height_note": "几何估算（本项目假设）：采用目录模型镜面高度 2.52982 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
   },
   {
     "id": "badaling-dahan",
@@ -877,7 +928,10 @@
       "https://solarpaces.nlr.gov/project/badaling-dahan-1-mw-tower"
     ],
     "data_checked_date": "2026-10-04",
-    "data_license": "CC BY 4.0"
+    "data_license": "CC BY 4.0",
+    "heliostat_reported_ground_height_m": 4.972,
+    "heliostat_reported_ground_height_source_url": "https://solarpaces.nlr.gov/project/badaling-dahan-1-mw-tower",
+    "heliostat_reported_ground_height_note": "几何估算（本项目假设）：采用目录模型镜面高度 8.94427 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
   },
   {
     "id": "sundrop",
@@ -919,7 +973,10 @@
       "https://solarpaces.nlr.gov/project/sundrop-csp-project"
     ],
     "data_checked_date": "2026-10-04",
-    "data_license": "CC BY 4.0"
+    "data_license": "CC BY 4.0",
+    "heliostat_reported_ground_height_m": 1.159,
+    "heliostat_reported_ground_height_source_url": "https://solarpaces.nlr.gov/project/sundrop-csp-project",
+    "heliostat_reported_ground_height_note": "几何估算（本项目假设）：采用目录模型镜面高度 1.31821 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
   },
   {
     "id": "lake-cargelligo",
@@ -962,7 +1019,10 @@
     ],
     "data_checked_date": "2026-10-04",
     "data_license": "CC BY 4.0",
-    "note": "项目数据库状态记录为停运（2021 年资料）；未将其标为当前在运。"
+    "note": "项目数据库状态记录为停运（2021 年资料）；未将其标为当前在运。",
+    "heliostat_reported_ground_height_m": 1.914,
+    "heliostat_reported_ground_height_source_url": "https://solarpaces.nlr.gov/project/lake-cargelligo",
+    "heliostat_reported_ground_height_note": "几何估算（本项目假设）：采用目录模型镜面高度 2.82843 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
   },
   {
     "id": "acme-solar-tower",
@@ -1004,7 +1064,10 @@
       "https://solarpaces.nlr.gov/project/acme-solar-tower"
     ],
     "data_checked_date": "2026-10-04",
-    "data_license": "CC BY 4.0"
+    "data_license": "CC BY 4.0",
+    "heliostat_reported_ground_height_m": 0.947,
+    "heliostat_reported_ground_height_source_url": "https://solarpaces.nlr.gov/project/acme-solar-tower",
+    "heliostat_reported_ground_height_note": "几何估算（本项目假设）：采用目录模型镜面高度 0.894427 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
   },
   {
     "id": "solar-one",
@@ -1047,7 +1110,10 @@
     ],
     "data_checked_date": "2026-10-04",
     "data_license": "HelioCon source attribution",
-    "note": "历史退役研究案例；不同资料的额定与实际功率口径存在差异，本条保留 HelioCon 的10 MW 名义值。"
+    "note": "历史退役研究案例；不同资料的额定与实际功率口径存在差异，本条保留 HelioCon 的10 MW 名义值。",
+    "heliostat_reported_ground_height_m": 3.328,
+    "heliostat_reported_ground_height_source_url": "https://www.heliocon.org/plants/Solar_One.html",
+    "heliostat_reported_ground_height_note": "几何估算（本项目假设）：采用目录模型镜面高度 5.65685 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
   },
   {
     "id": "solar-two",
@@ -1090,7 +1156,10 @@
     ],
     "data_checked_date": "2026-10-04",
     "data_license": "HelioCon source attribution",
-    "note": "历史退役研究案例；2025 年气象用于统一方法比较，不代表当年电站运行。"
+    "note": "历史退役研究案例；2025 年气象用于统一方法比较，不代表当年电站运行。",
+    "heliostat_reported_ground_height_m": 3.431,
+    "heliostat_reported_ground_height_source_url": "https://www.heliocon.org/plants/Solar_Two.html",
+    "heliostat_reported_ground_height_note": "几何估算（本项目假设）：采用目录模型镜面高度 5.86274 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
   },
   {
     "id": "sandia-nsttf",
@@ -1134,7 +1203,10 @@
     "data_checked_date": "2026-10-04",
     "data_license": "HelioCon source attribution",
     "capacity_kind": "thermal",
-    "note": "5 MW 为光热试验设施热功率，不是电站电功率。接收器按试验任务更换。"
+    "note": "5 MW 为光热试验设施热功率，不是电站电功率。接收器按试验任务更换。",
+    "heliostat_reported_ground_height_m": 3.22,
+    "heliostat_reported_ground_height_source_url": "https://www.heliocon.org/plants/National_Solar_Thermal_Test_Facility.html",
+    "heliostat_reported_ground_height_note": "几何估算（本项目假设）：采用目录模型镜面高度 5.44059 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
   },
   {
     "id": "jinta-zhongguang",
@@ -1177,7 +1249,10 @@
       "https://www.cosinsolar.com/En/news/detail/id/259.html"
     ],
     "data_checked_date": "2026-10-04",
-    "data_license": "HelioCon source attribution"
+    "data_license": "HelioCon source attribution",
+    "heliostat_reported_ground_height_m": 2.949,
+    "heliostat_reported_ground_height_source_url": "https://www.heliocon.org/plants/Jinta_Zhongguang_Solar_100MW.html",
+    "heliostat_reported_ground_height_note": "几何估算（本项目假设）：采用目录模型镜面高度 4.89898 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
   },
   {
     "id": "ctg-golmud-wutumeiren",
@@ -1220,7 +1295,10 @@
     ],
     "data_checked_date": "2026-10-04",
     "data_license": "CC BY 4.0",
-    "altitude_m": 2900
+    "altitude_m": 2900,
+    "heliostat_reported_ground_height_m": 5.311,
+    "heliostat_reported_ground_height_source_url": "https://solarpaces.nlr.gov/project/ctgr-qinghai-golmud100mw-tower-1000mw-pv",
+    "heliostat_reported_ground_height_note": "几何估算（本项目假设）：采用目录模型镜面高度 9.62289 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
   },
   {
     "id": "powerchina-toksun",
@@ -1263,6 +1341,9 @@
       "https://www.cosinsolar.com/en/cases/detail/id/10.html"
     ],
     "data_checked_date": "2026-10-04",
-    "data_license": "HelioCon source attribution"
+    "data_license": "HelioCon source attribution",
+    "heliostat_reported_ground_height_m": 2.949,
+    "heliostat_reported_ground_height_source_url": "https://www.heliocon.org/plants/Power%20_China_Toksun_100MW.html",
+    "heliostat_reported_ground_height_note": "几何估算（本项目假设）：采用目录模型镜面高度 4.89898 m，镜心离地高度 = 镜面高度 / 2 + 0.5 m 假设下缘净空。仅为平地且镜面竖直时的尺寸估值，不包含基础、驱动轴偏置及地形；不是工程实测。下列来源仅支撑项目/镜型资料，不直接提供此高度。"
   }
 ]

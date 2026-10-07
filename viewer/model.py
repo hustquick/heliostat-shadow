@@ -133,9 +133,9 @@ class ViewerModel:
             width_range_m=[float(widths.min()), float(widths.max())],
             height_range_m=[float(heights.min()), float(heights.max())],
             centre_elevation_range_m=[float(centre_heights.min()), float(centre_heights.max())],
-            ground_height_m=self.config.get('heliostat_pedestal_height_m'),
-            ground_height_source_url=self.config.get('heliostat_pedestal_height_source_url'),
-            ground_height_note=self.config.get('heliostat_pedestal_height_note'),
+            ground_height_m=self.config.get('heliostat_reported_ground_height_m', self.config.get('heliostat_pedestal_height_m')),
+            ground_height_source_url=self.config.get('heliostat_reported_ground_height_source_url', self.config.get('heliostat_pedestal_height_source_url')),
+            ground_height_note=self.config.get('heliostat_reported_ground_height_note', self.config.get('heliostat_pedestal_height_note')),
             reflective_area_m2=float(self.config['reflective_area_m2']),
             mount_types=sorted({mirror.mount_type for mirror in self.mirrors}),
         )

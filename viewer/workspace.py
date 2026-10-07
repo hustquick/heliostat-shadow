@@ -251,6 +251,9 @@ class ViewerWorkspace:
                         receiver_height_m=receiver_height,
                         mirror_width_m=width, mirror_height_m=height,
                         reflective_area_m2=area, year=2025,
+                        heliostat_reported_ground_height_m=item.get('heliostat_reported_ground_height_m',item.get('heliostat_pedestal_height_m')),
+                        heliostat_reported_ground_height_source_url=item.get('heliostat_reported_ground_height_source_url',item.get('heliostat_pedestal_height_source_url')),
+                        heliostat_reported_ground_height_note=item.get('heliostat_reported_ground_height_note',item.get('heliostat_pedestal_height_note')),
                         heliostat_pedestal_height_m=item.get('heliostat_pedestal_height_m'),
                         heliostat_pedestal_height_source_url=item.get(
                             'heliostat_pedestal_height_source_url'),

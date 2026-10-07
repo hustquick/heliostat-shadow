@@ -53,12 +53,23 @@
     {
       "id": "tower-1",
       "name": "主塔",
-      "base": [0.0, 0.0, 0.0],
+      "base": [
+        0.0,
+        0.0,
+        0.0
+      ],
       "receiver": {
-        "centre": [0.0, 0.0, 140.0],
+        "centre": [
+          0.0,
+          0.0,
+          140.0
+        ],
         "radius": 4.0,
         "height": 10.5
       }
     }
-  ]
+  ],
+  "heliostat_reported_ground_height_m": 5.675,
+  "heliostat_reported_ground_height_source_url": "https://www.energy.rwth-aachen.de/theses/fischer2021multistep.pdf",
+  "heliostat_reported_ground_height_note": "RWTH Aachen 2021 学位论文表 1 的 Pedestal height（支柱/跟踪轴高度）研究参数，作为镜心高度近似；不是现场竣工测量值。 同类论文也报告 5 m，存在文献口径差异；本项目采用与 115.7 m² 镜型一致的 5.675 m。"
 }

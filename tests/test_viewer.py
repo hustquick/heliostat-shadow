@@ -103,9 +103,9 @@ def test_metadata_describes_whole_field_heliostat_geometry(model):
         'width_range_m': [12.305, 12.305],
         'height_range_m': [9.752, 9.752],
         'centre_elevation_range_m': [0., 0.],
-        'ground_height_m': None,
-        'ground_height_source_url': None,
-        'ground_height_note': None,
+        'ground_height_m': 5.675,
+        'ground_height_source_url': model.config['heliostat_reported_ground_height_source_url'],
+        'ground_height_note': model.config['heliostat_reported_ground_height_note'],
         'reflective_area_m2': 115.7,
         'mount_types': ['azimuth_elevation'],
     }
