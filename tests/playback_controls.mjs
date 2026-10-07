@@ -23,7 +23,7 @@ const context = vm.createContext({
   },
   animateCamera(fn) { fn(); }, applyViewPreference() {}, overview() {},
 });
-vm.runInContext(`let analysisController = {live:false}, busy = false, efficiencyEnabled = false, towerColorEnabled = false,
+vm.runInContext(`let analysisController = {live:false}, playing = false, busy = false, efficiencyEnabled = false, towerColorEnabled = false,
   efficiencyData = null, frame = {daylight:true, local_time:'12:00'}, concentrating = true,
   meta = {tower_count:2, towers:[{name:'A'},{name:'B'}]},
   towerColors = ['red','blue'], viewPreference = 'overview';`, context);
@@ -72,3 +72,11 @@ run("analysisController.live=false; controlsBusy(false)");
 assert.equal(element("mirror").disabled,false);
 assert.equal(element("submit").disabled,false);
 console.log("Target controls remain stable throughout live mode and unlock on stop.");
+
+run("playing=true; controlsBusy(true); controlsBusy(false)");
+assert.equal(element("mirror").disabled,true);
+assert.equal(element("submit").disabled,true);
+run("playing=false; controlsBusy(false)");
+assert.equal(element("mirror").disabled,false);
+assert.equal(element("submit").disabled,false);
+console.log("Target controls remain stable during hourly playback and unlock on pause.");

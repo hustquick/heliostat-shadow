@@ -802,7 +802,7 @@ function controlsBusy(value) {
     $(id).disabled = value;
   updateDesignMethod();
   // Keep target controls stable throughout live mode, including idle gaps.
-  const targetLocked = value || Boolean(analysisController?.live);
+  const targetLocked = value || playing || Boolean(analysisController?.live);
   $("mirror").disabled = targetLocked;
   document.querySelector("#selectMirror button").disabled = targetLocked;
 }
@@ -994,6 +994,7 @@ function stopPlay() {
   playing = false;
   clearTimeout(playTimer);
   $("play").textContent = "逐时播放";
+  controlsBusy(busy);
 }
 async function playLoop() {
   if (!playing) return;
