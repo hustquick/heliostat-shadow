@@ -1015,7 +1015,7 @@ main > .analysis-panel { grid-column:1 / -1; padding:0; }
 .analysis-method { margin:16px; border-top:1px solid var(--line); padding-top:12px; color:var(--muted); font-size:12px; }
 .analysis-method > summary { display:flex; align-items:center; min-height:28px; }
 .analysis-note { margin:8px 0 0; line-height:1.7; }
-#analysisViewStatus[data-stale=true] { color:#e6ae8c; }
+#analysisStatus[data-stale=true] { color:#e6ae8c; }
 @media(max-width:700px) {
  .analysis-controls { margin:14px; }
  .analysis-instant { grid-template-columns:minmax(0,1fr); gap:14px; }

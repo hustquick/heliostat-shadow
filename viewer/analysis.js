@@ -89,7 +89,6 @@ export function initAnalysis({getContext,post,applyResult,weather=createWeatherC
       if(!ctx?.meta) throw new Error('镜场尚未加载');
       if(ctx.busy) {
         $('analysisStatus').textContent='等待当前镜场计算完成…';
-        $('analysisViewStatus').textContent=$('analysisStatus').textContent;
         await waitForIdle(()=>getContext().busy,signal);
         ctx=getContext();
       }
@@ -110,17 +109,16 @@ export function initAnalysis({getContext,post,applyResult,weather=createWeatherC
     onResult:({result,meteo},info)=>{
       lastResult=result;applyResult(result);
       $('analysisSource').hidden=false;
-      $('analysisSource').textContent=info.live?`Open-Meteo 近实时气象模型，非测站实测 · 数据 ${new Date(meteo.weather_time).toLocaleString('zh-CN',{timeZone:getContext().meta.timezone,hour12:false})} · DNI ${meteo.dni.toFixed(1)} W/m² · 气温 ${meteo.temperature_c.toFixed(1)} °C · 气压 ${meteo.pressure_hpa.toFixed(1)} hPa${meteo.cached?' · 已复用有效缓存':''}`:'气象参数由用户指定；日期、时刻按当前电厂时区解释。';
+      $('analysisSource').textContent=info.live?`Open-Meteo 近实时气象模型，非测站实测 · 数据时间 ${new Date(meteo.weather_time).toLocaleString('zh-CN',{timeZone:getContext().meta.timezone,hour12:false})}${meteo.cached?' · 已复用有效缓存':''}`:'气象参数由用户指定；日期、时刻按当前电厂时区解释。';
       if(!result.daylight) $('analysisSource').textContent+=' · 太阳在地平线以下，效率和接收光学功率为零。';
     },
     onStatus:state=>{
       $('stopAnalysis').disabled=!runner?.running&&!runner?.busy;
       $('runAnalysis').disabled=state.state==='running'||runner?.busy;$('liveAnalysis').disabled=state.state==='running'||runner?.busy;
       if(state.state==='running') $('analysisStatus').textContent=state.live?'正在查询气象并分析设备当前时刻…':'正在计算指定时刻效率…';
-      else if(state.state==='error') {$('analysisStatus').textContent=`分析失败：${state.error}${state.live?'；稍后重试，保留上次结果。':''}`;$('analysisViewStatus').dataset.stale='true';}
-      else if(state.state==='ready') {$('analysisStatus').textContent=`计算耗时 ${(state.elapsed/1000).toFixed(1)} 秒${state.live?` · 更新周期 ${(state.period/1000).toFixed(0)} 秒 · 下次计算 ${new Date(state.nextAt).toLocaleTimeString('zh-CN',{hour12:false})}`:''}`;$('analysisViewStatus').dataset.stale='false';}
+      else if(state.state==='error') {$('analysisStatus').textContent=`分析失败：${state.error}${state.live?'；稍后重试，保留上次结果。':''}`;$('analysisStatus').dataset.stale='true';}
+      else if(state.state==='ready') {$('analysisStatus').textContent=`计算耗时 ${(state.elapsed/1000).toFixed(1)} 秒${state.live?` · 更新周期 ${(state.period/1000).toFixed(0)} 秒 · 下次计算 ${new Date(state.nextAt).toLocaleTimeString('zh-CN',{hour12:false})}`:''}`;$('analysisStatus').dataset.stale='false';}
       else if(state.state==='stopped') $('analysisStatus').textContent='已停止分析；已完成的结果保留。';
-      if(state.state!=='drained') { $('analysisViewStatus').hidden=false; $('analysisViewStatus').textContent=$('analysisStatus').textContent; }
     }
   });
   $('runAnalysis').onclick=()=>{onStart();runner.once();};$('liveAnalysis').onclick=()=>{onStart();runner.start();};$('stopAnalysis').onclick=()=>runner.stop();

@@ -808,7 +808,6 @@ async function loadTime() {
   analysisController?.stop();
   analysisSnapshot = null;
   $("analysisSource").hidden=true;
-  $("analysisViewStatus").hidden=true;
   const gen = ++generation;
   controlsBusy(true);
   const retainEfficiencyColors = efficiencyEnabled && efficiencyData !== null;
