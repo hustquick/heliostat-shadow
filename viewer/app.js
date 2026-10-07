@@ -394,6 +394,8 @@ function drawFrame() {
     overview();
     cameraFramed = true;
   }
+  $("displayTime").dateTime=frame.timestamp;
+  $("displayTime").textContent=new Date(frame.timestamp).toLocaleString("zh-CN",{timeZone:meta.timezone,hour12:false})+" · "+meta.timezone;
   $("weatherDni").textContent = frame.dni.toFixed(1);
   $("weatherElevation").textContent = frame.elevation.toFixed(2);
   $("weatherTemperature").textContent = Number.isFinite(frame.temperature) ? frame.temperature.toFixed(1) : "暂无数据";
@@ -805,6 +807,8 @@ async function loadTime() {
   if (busy) return;
   analysisController?.stop();
   analysisSnapshot = null;
+  $("analysisSource").hidden=true;
+  $("analysisViewStatus").hidden=true;
   const gen = ++generation;
   controlsBusy(true);
   const retainEfficiencyColors = efficiencyEnabled && efficiencyData !== null;
@@ -970,11 +974,8 @@ function setDate(date, time) {
 async function step(delta) {
   if (busy) return;
   analysisController?.stop();
-  if (!meta.timestamps.includes(currentTime)) {
-    status("当前为独立分析时刻，请先选择历史数据日期再逐时播放", true);
-    return;
-  }
-  const i = meta.timestamps.indexOf(currentTime) + delta;
+  const sampleTime=meta.timestamps.includes(currentTime)?currentTime:$("time").value;
+  const i = meta.timestamps.indexOf(sampleTime) + delta;
   if (i < 0 || i >= meta.timestamps.length) {
     stopPlay();
     return;
@@ -1038,6 +1039,7 @@ $("next").onclick = () => {
   step(1);
 };
 $("play").onclick = () => {
+  analysisController?.stop();
   if (playing) stopPlay();
   else {
     playing = true;
@@ -1503,6 +1505,17 @@ analysisController = initAnalysis({
   getContext:()=>({meta,selected,busy,currentTime,frame}),
   post:apiPost,setBusy:controlsBusy,
   onModeChange:()=>stopPlay(),
+  onStart:()=>{
+    stopPlay();
+    const card=document.querySelector("main > .spatial");
+    card.open=true;
+    const heading=card.querySelector("summary");
+    heading.tabIndex=-1;
+    heading.classList.add("navigation-focus");
+    heading.addEventListener("blur",()=>heading.classList.remove("navigation-focus"),{once:true});
+    heading.focus({preventScroll:true});
+    card.scrollIntoView({block:"start",behavior:"smooth"});
+  },
   applyResult:result=>{
     analysisSnapshot=result;
     currentTime=result.timestamp;frame=result.frame;target=result.target;
@@ -1511,9 +1524,10 @@ analysisController = initAnalysis({
     fieldEfficiencyData={...result.efficiencies,mean:result.mean};
     efficiencyData=efficiencyEnabled&&frame.daylight?result.efficiencies:null;
     $("operationState").textContent=frame.daylight?" · 分析工况：太阳跟踪":" · 分析工况：夜间";
-    const item=localItem(currentTime);setDate(item.date,currentTime);
-    if(![...$("time").options].some(option=>option.value===currentTime)) {
-      const option=document.createElement("option");option.value=currentTime;option.textContent=item.label+" · 分析时刻";$("time").append(option);$("time").value=currentTime;
+    // Historical sample controls retain their valid selection. Analysis time
+    // is read-only at the top and may lie outside the archived sample dates.
+    if(meta.timestamps.includes(currentTime)) {
+      const item=localItem(currentTime);setDate(item.date,currentTime);
     }
     drawFrame();drawDetails();draw2D();showEfficiencyScale();
   }

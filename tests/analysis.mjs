@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {adaptivePeriod,createSerialAnalysis,zonedInstant,localInput} from '../viewer/analysis.js';
+import {adaptivePeriod,createSerialAnalysis,zonedInstant,localInput,waitForIdle} from '../viewer/analysis.js';
 import {parseWeather,createWeatherClient} from '../viewer/weather.js';
 assert.equal(adaptivePeriod(90000),112500);
 assert.equal(adaptivePeriod(200),60000);
@@ -43,3 +43,8 @@ assert.deepEqual(await androidRequest('POST','analysis/instant',{}),{ok:true});
 window.heliostatNative.requestAsync=id=>queueMicrotask(()=>window.heliostatNativeComplete(id,'{"error":"broken"}'));
 await assert.rejects(androidRequest('GET','meta',{}),/broken/);
 console.log('analysis scheduler, slow computation, cancellation, timezones, weather validation/cache and asynchronous native bridge passed');
+
+let occupied=true;const waitController=new AbortController();
+const idle=waitForIdle(()=>occupied,waitController.signal);setTimeout(()=>{occupied=false;},10);await idle;
+const canceled=new AbortController();const blocked=waitForIdle(()=>true,canceled.signal);canceled.abort();await assert.rejects(blocked,/停止/);
+console.log('playback-to-analysis drain and abort passed');

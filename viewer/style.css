@@ -790,7 +790,7 @@ main > details:is(.panel,.poseeditor,.mobile-manage) > .carddescription {
 @media(max-width:620px) { #viewMode { min-width:0; width:100%; } }
 
 /* Keep all three field-management actions on one balanced row. */
-#mobileManageActions.management-actions { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+#mobileManageActions.management-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
 .management-actions > button { min-width:0; width:100%; padding:9px 6px; }
 .management-actions > #layoutStatus { grid-column:1 / -1; }
 @media(max-width:620px) { .management-actions { gap:8px; } .management-actions > button { font-size:12px; } }
@@ -995,34 +995,57 @@ main > details > summary.navigation-focus:focus-visible { outline:none; }
 .update-date { margin: 6px 0 0; color: #849eac; font-size: 12px; }
 
 main > .analysis-panel { grid-column:1 / -1; padding:0; }
-.analysis-controls { display:grid; grid-template-columns:minmax(220px,1fr) minmax(0,1.4fr); gap:16px; margin:16px; }
+.analysis-controls { margin:16px; }
+.analysis-controls h3 { margin:0; font-size:13px; font-weight:600; }
+.analysis-live { border-bottom:1px solid var(--line); padding-bottom:16px; margin-bottom:16px; }
+.analysis-live > p { margin:8px 0 12px; color:var(--muted); font-size:12px; line-height:1.6; }
+.analysis-instant { display:grid; grid-template-columns:minmax(220px,1fr) minmax(0,1.4fr); gap:14px; }
+.analysis-instant > h3, .analysis-instant > button { grid-column:1 / -1; }
+.analysis-instant > button { min-height:40px; width:100%; box-sizing:border-box; }
 .analysis-controls label { display:grid; gap:8px; min-width:0; color:var(--muted); font-size:13px; }
 .analysis-controls input { display:block; width:100%; min-width:0; max-width:100%; height:40px; box-sizing:border-box; font-size:14px; }
 .analysis-time { min-width:0; }
 .analysis-timezone { margin:8px 0 0; color:var(--muted); font-size:12px; }
 .analysis-timezone strong { font-weight:500; }
 .analysis-weather { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; align-items:start; min-width:0; }
-.analysis-actions { grid-column:1 / -1; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+.analysis-actions { grid-column:1 / -1; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
 .analysis-actions button { width:100%; min-width:0; min-height:40px; box-sizing:border-box; }
-.analysis-status, #analysisTimestamp, .analysis-source { margin:12px 16px; line-height:1.6; font-size:13px; }
-.analysis-metrics, .analysis-factors { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin:16px; }
-.analysis-metrics div, .analysis-factors div { min-width:0; border:1px solid var(--line); border-radius:8px; padding:12px; background:var(--bg); }
-.analysis-metrics dt, .analysis-factors dt { font-size:12px; color:var(--muted); line-height:1.5; }
-.analysis-metrics dd, .analysis-factors dd { margin:8px 0 0; font-size:18px; color:var(--text); font-variant-numeric:tabular-nums; }
+.analysis-status, .analysis-source { margin:12px 16px; line-height:1.6; font-size:13px; }
 .analysis-source { color:var(--muted); font-size:12px; }
 .analysis-method { margin:16px; border-top:1px solid var(--line); padding-top:12px; color:var(--muted); font-size:12px; }
 .analysis-method > summary { display:flex; align-items:center; min-height:28px; }
 .analysis-note { margin:8px 0 0; line-height:1.7; }
-#analysisResults[data-stale=true] .analysis-metrics { opacity:.55; }
+#analysisViewStatus[data-stale=true] { color:#e6ae8c; }
 @media(max-width:700px) {
- .analysis-controls { grid-template-columns:minmax(0,1fr); margin:14px; gap:14px; }
+ .analysis-controls { margin:14px; }
+ .analysis-instant { grid-template-columns:minmax(0,1fr); gap:14px; }
+ .analysis-instant > button { min-height:44px; font-size:13px; }
  .analysis-controls input { min-height:44px; height:44px; }
  .analysis-controls input[type=datetime-local] { -webkit-appearance:none; appearance:none; text-align:left; }
  .analysis-controls input::-webkit-date-and-time-value { text-align:left; }
  .analysis-weather { gap:8px; }
  .analysis-actions { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
  .analysis-actions button { min-height:44px; padding:8px; font-size:13px; }
- .analysis-actions #stopAnalysis { grid-column:1 / -1; }
- .analysis-metrics, .analysis-factors { grid-template-columns:repeat(2,minmax(0,1fr)); margin:14px; }
- .analysis-status, #analysisTimestamp, .analysis-source, .analysis-method { margin-left:14px; margin-right:14px; }
+ .analysis-status, .analysis-source, .analysis-method { margin-left:14px; margin-right:14px; }
 }
+
+/* Time selection and historical playback belong to the analysis controls. */
+.spatial > .toolbar { display:grid; grid-template-columns:minmax(0,1fr) minmax(110px,.75fr); gap:10px; align-items:end; }
+.spatial > .toolbar #selectMirror { grid-column:1; grid-row:1; display:grid; grid-template-columns:minmax(0,1fr) auto; min-width:0; }
+.spatial > .toolbar #viewMode { grid-column:2; grid-row:1; width:100%; min-width:0; }
+.analysis-history { grid-column:1 / -1; border-bottom:1px solid var(--line); padding-bottom:16px; }
+.analysis-history h4 { margin:0 0 12px; font-size:12px; font-weight:500; color:var(--muted); }
+.analysis-sampletime { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.analysis-sampletime select { width:100%; min-width:0; height:40px; box-sizing:border-box; }
+.analysis-playback { display:grid; grid-template-columns:44px minmax(0,1fr) 44px; gap:10px; margin-top:12px; }
+.analysis-playback #prev { grid-column:1; grid-row:1; }
+.analysis-playback #play { grid-column:2; grid-row:1; }
+.analysis-playback #next { grid-column:3; grid-row:1; }
+.analysis-playback button { min-width:0; min-height:40px; padding:8px; }
+@media(max-width:700px) { .analysis-sampletime { gap:8px; } .analysis-sampletime select,.analysis-playback button { min-height:44px; } }
+
+.spatial > .toolbar { margin:12px 14px; padding:0; }
+
+.current-time-info { display:flex; flex-wrap:wrap; gap:6px 10px; margin:0; padding:0 24px 12px; font-size:12px; line-height:1.6; color:var(--muted); }
+.current-time-info time { color:var(--text); font-variant-numeric:tabular-nums; }
+@media(max-width:700px) { .current-time-info { padding:0 8px 10px; font-size:11px; } }

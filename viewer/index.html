@@ -44,34 +44,7 @@
           <label>电厂 <select id="plant"></select></label>
 
         </section>
-        <section class="toolbar" aria-label="时间与目标镜控制">
-          <label>当地日期 <input type="date" id="date" /></label
-          ><label
-            ><span id="timezoneLabel">时刻</span>
-            <select id="time"></select
-          ></label>
-          <button id="prev" title="上一采样时刻">←</button
-          ><button id="play">逐时播放</button
-          ><button id="next" title="下一采样时刻">→</button>
-          <div class="divider"></div>
-          <form id="selectMirror">
-            <label
-              >目标镜
-              <input
-                id="mirror"
-                list="mirrorIds"
-                value="G261"
-                autocomplete="off"
-                aria-label="目标镜编号" /></label
-            ><datalist id="mirrorIds"></datalist><button type="submit">选择</button>
-          </form>
-          <button id="focus">聚焦目标</button
-          ><button id="overview">全场视角</button
-          ><select id="viewMode" aria-label="三维视图操作">
-            <option value="overview" selected>全场视角</option>
-            <option value="focus">聚焦目标</option>
-          </select>
-        </section>
+
       </div>
       <aside class="heliostat-summary" aria-labelledby="heliostatSummaryTitle">
         <div class="summary-title">
@@ -94,12 +67,32 @@
       <div id="status" hidden role="status" aria-live="polite"><span id="statusHeading">正在载入镜场…</span><span id="statusDetail"></span><time id="statusTime"></time></div>
       <div id="weather"><div><span>DNI</span><span id="weatherDni">—</span><span>W/m²</span></div><div><span>太阳高度</span><span id="weatherElevation">—</span><span>°</span></div><div><span>气温</span><span id="weatherTemperature">—</span><span>℃</span></div></div>
     </div>
+    <p class="current-time-info" aria-live="polite"><span>结果时间</span> <time id="displayTime">—</time></p>
     <main>
       <details class="panel spatial" open>
         <summary class="panelhead">
           <h2>01 / 三维镜场</h2>
 
         </summary>
+        <section class="toolbar" aria-label="目标镜与视图控制">
+          <form id="selectMirror">
+            <label
+              >目标镜
+              <input
+                id="mirror"
+                list="mirrorIds"
+                value="G261"
+                autocomplete="off"
+                aria-label="目标镜编号" /></label
+            ><datalist id="mirrorIds"></datalist><button type="submit">选择</button>
+          </form>
+          <button id="focus">聚焦目标</button
+          ><button id="overview">全场视角</button
+          ><select id="viewMode" aria-label="三维视图操作">
+            <option value="overview" selected>全场视角</option>
+            <option value="focus">聚焦目标</option>
+          </select>
+        </section>
           <div class="paneltools cardcontrols">
             <button id="efficiencyColor" type="button" aria-pressed="false">效率着色</button>
             <button id="towerColor" type="button" aria-pressed="false" hidden>按目标塔着色</button>
@@ -117,6 +110,8 @@
             <button id="viewTop" type="button" aria-label="东-北俯视图" title="东-北俯视图">俯视<br /><small>E–N</small></button>
           </div>
           </div>
+        <p id="analysisViewStatus" class="analysis-status" role="status" aria-live="polite" hidden></p>
+        <p id="analysisSource" class="analysis-source" hidden></p>
         <div id="scene" aria-label="三维镜场，可拖动旋转、滚轮缩放、点击选镜">
         <div class="field-efficiency" aria-live="polite"><span>全场平均光学效率</span><strong id="fieldEfficiency">—</strong></div>
         <div id="efficiencyScale" class="efficiency-scale" hidden>
@@ -203,34 +198,45 @@
       <details id="analysisPanel" class="panel analysis-panel">
         <summary class="panelhead"><h2>04 / 指定时间与实时效率分析</h2></summary>
         <div class="analysis-controls">
-          <div class="analysis-time">
-          <label>电厂当地时间 <input id="analysisTime" type="datetime-local" step="1" min="1900-01-01T00:00" max="2100-12-31T23:59:59" /></label>
-          <p class="analysis-timezone">时区 · <strong id="analysisTimezone">—</strong></p>
+          <section class="analysis-live" aria-label="实时分析控制">
+            <h3>实时分析</h3>
+            <p>按设备当前时间计算，自动查询近实时气象；计算较慢时延长刷新周期。</p>
+            <div class="analysis-actions">
+              <button id="liveAnalysis" type="button">启动实时分析</button>
+              <button id="stopAnalysis" type="button" disabled>停止分析</button>
+            </div>
+          </section>
+          <section class="analysis-instant" aria-label="指定时间分析控制">
+            <h3>指定时间分析</h3>
+            <div class="analysis-history">
+              <h4>历史采样与逐时播放</h4>
+              <div class="analysis-sampletime">
+          <label>当地日期 <input type="date" id="date" /></label
+          ><label
+            ><span id="timezoneLabel">时刻</span>
+            <select id="time"></select
+          ></label>
           </div>
-          <div class="analysis-weather">
-          <label>DNI（W/m²）<input id="analysisDni" type="number" min="0" max="2000" step="0.1" value="800" /></label>
-          <label>气温（°C）<input id="analysisTemperature" type="number" min="-90" max="70" step="0.1" value="12" /></label>
-          <label>气压（hPa）<input id="analysisPressure" type="number" min="100" max="1100" step="0.1" value="1013.25" /></label>
-          </div>
-          <div class="analysis-actions">
-          <button id="runAnalysis" type="button">分析指定时间</button>
-          <button id="liveAnalysis" type="button">启动实时分析</button>
-          <button id="stopAnalysis" type="button" disabled>停止分析</button>
-          </div>
+          <div class="analysis-playback">
+          <button id="prev" title="上一采样时刻">←</button
+          ><button id="play">逐时播放</button
+          ><button id="next" title="下一采样时刻">→</button>
+              </div>
+            </div>
+
+            <div class="analysis-time">
+              <label>任意日期与时刻 <input id="analysisTime" type="datetime-local" step="1" min="1900-01-01T00:00" max="2100-12-31T23:59:59" /></label>
+              <p class="analysis-timezone">时区 · <strong id="analysisTimezone">—</strong></p>
+            </div>
+            <div class="analysis-weather">
+              <label>DNI（W/m²）<input id="analysisDni" type="number" min="0" max="2000" step="0.1" value="800" /></label>
+              <label>气温（°C）<input id="analysisTemperature" type="number" min="-90" max="70" step="0.1" value="12" /></label>
+              <label>气压（hPa）<input id="analysisPressure" type="number" min="100" max="1100" step="0.1" value="1013.25" /></label>
+            </div>
+            <button id="runAnalysis" type="button">分析指定时间</button>
+          </section>
         </div>
         <p id="analysisStatus" class="analysis-status" role="status" aria-live="polite">指定时间使用输入气象参数；实时模式使用设备当前时间并查询近实时气象。</p>
-        <div id="analysisResults" hidden>
-          <p id="analysisTimestamp"></p>
-          <dl class="analysis-metrics">
-            <div><dt>全场光学效率（面积加权）</dt><dd id="analysisMean">—</dd></div>
-            <div><dt>最低逐镜效率</dt><dd id="analysisMin">—</dd></div>
-            <div><dt>最高逐镜效率</dt><dd id="analysisMax">—</dd></div>
-            <div><dt>跟踪工况接收光学功率</dt><dd id="analysisPower">—</dd></div>
-            <div><dt>计算镜数</dt><dd id="analysisCount">—</dd></div>
-          </dl>
-          <dl id="analysisFactors" class="analysis-factors" aria-label="各项效率因子平均值"></dl>
-          <p id="analysisSource" class="analysis-source"></p>
-        </div>
         <details class="analysis-method"><summary>计算口径与气象来源</summary><p class="analysis-note">效率按太阳跟踪工况计算，联合阴影遮挡只扣除一次。各因子为逐镜平均值，其平均值乘积不等于全场效率；DNI 用于接收光学功率，不额外重复扣除云量。三维场景、目标投影和效率着色同步到结果时刻。实时模式串行计算，耗时越长刷新周期越长。气象来源：<a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo</a>，模型数据，非电厂测站实测。</p></details>
       </details>
     <details id="mobileManage" class="mobile-manage">

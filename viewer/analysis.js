@@ -35,7 +35,7 @@ export function localInput(instant, timezone) {
 
 export function createSerialAnalysis({execute,onResult,onStatus,clock=()=>Date.now(),setTimer=setTimeout,clearTimer=clearTimeout,base=BASE_PERIOD_MS,elapsedClock=clock}) {
   let running=false,busy=false,timer=null,generation=0,controller=null;
-  const cancel = () => { generation++;running=false;clearTimer(timer);controller?.abort();onStatus?.({state:'stopped'}); };
+  const cancel = () => { const active=running||busy;generation++;running=false;clearTimer(timer);controller?.abort();if(active)onStatus?.({state:'stopped'}); };
   const run = async live => {
     if(busy) return false;
     const version=generation;busy=true;controller=new AbortController();
@@ -65,18 +65,36 @@ export function createSerialAnalysis({execute,onResult,onStatus,clock=()=>Date.n
   return {start(){cancel();running=true;return run(true);},stop:cancel,once(){cancel();return run(false);},get busy(){return busy;},get running(){return running;}};
 }
 
-export function initAnalysis({getContext,post,applyResult,weather=createWeatherClient(),onModeChange=()=>{},setBusy=()=>{}}) {
+export async function waitForIdle(isBusy, signal) {
+  while (isBusy()) {
+    if (signal.aborted) throw new Error('分析已停止');
+    await new Promise((resolve,reject)=>{
+      let timer;
+      const finish=()=>{signal.removeEventListener('abort',abort);resolve();};
+      const abort=()=>{clearTimeout(timer);signal.removeEventListener('abort',abort);reject(new Error('分析已停止'));};
+      signal.addEventListener('abort',abort,{once:true});
+      timer=setTimeout(finish,50);
+    });
+  }
+  if(signal.aborted) throw new Error('分析已停止');
+}
+
+export function initAnalysis({getContext,post,applyResult,weather=createWeatherClient(),onModeChange=()=>{},onStart=()=>{},setBusy=()=>{}}) {
   const $=id=>document.getElementById(id);
   let lastResult=null;
-  const percent=x=>Number.isFinite(x)?`${(x*100).toFixed(3)}%`:'—';
   const runner=createSerialAnalysis({
     elapsedClock:()=>performance.now(),
-    execute:async ({live,instant,signal})=>{
-      const ctx=getContext();
+    execute:async ({live,signal})=>{
+      let ctx=getContext();
       if(!ctx?.meta) throw new Error('镜场尚未加载');
-      if(ctx.busy) throw new Error('正在处理镜场操作，稍后重试');
+      if(ctx.busy) {
+        $('analysisStatus').textContent='等待当前镜场计算完成…';
+        $('analysisViewStatus').textContent=$('analysisStatus').textContent;
+        await waitForIdle(()=>getContext().busy,signal);
+        ctx=getContext();
+      }
       onModeChange(live?'live':'instant');
-      const time=live?instant:zonedInstant($('analysisTime').value,ctx.meta.timezone);
+      const time=live?new Date().toISOString():zonedInstant($('analysisTime').value,ctx.meta.timezone);
       const number=id=>{if(!$(id).value.trim())throw new Error('请完整填写气象参数');return Number($(id).value);};
       setBusy(true);
       try {
@@ -91,14 +109,7 @@ export function initAnalysis({getContext,post,applyResult,weather=createWeatherC
     },
     onResult:({result,meteo},info)=>{
       lastResult=result;applyResult(result);
-      $('analysisResults').hidden=false;
-      $('analysisTimestamp').textContent=`结果时刻：${new Date(result.timestamp).toLocaleString('zh-CN',{timeZone:getContext().meta.timezone,hour12:false})} · ${getContext().meta.timezone}`;
-      $('analysisMean').textContent=percent(result.mean);$('analysisMin').textContent=percent(result.minimum);$('analysisMax').textContent=percent(result.maximum);
-      $('analysisPower').textContent=`${(result.receiver_incident_power_w/1e6).toFixed(3)} MW`;
-      $('analysisCount').textContent=result.mirror_count.toLocaleString();
-      $('analysisFactors').replaceChildren();
-      const names={eta_cosine:'余弦',eta_shadow:'阴影',eta_blocking:'遮挡',eta_joint:'联合阴影遮挡',mirror_reflectivity:'反射率',mirror_cleanliness:'清洁度',eta_atmosphere:'沿程透过率',eta_intercept:'截获率'};
-      for(const [key,label] of Object.entries(names)) {const item=document.createElement('div'),term=document.createElement('dt'),value=document.createElement('dd');term.textContent=label;value.textContent=percent(result.factors[key]);item.append(term,value);$('analysisFactors').append(item);}
+      $('analysisSource').hidden=false;
       $('analysisSource').textContent=info.live?`Open-Meteo 近实时气象模型，非测站实测 · 数据 ${new Date(meteo.weather_time).toLocaleString('zh-CN',{timeZone:getContext().meta.timezone,hour12:false})} · DNI ${meteo.dni.toFixed(1)} W/m² · 气温 ${meteo.temperature_c.toFixed(1)} °C · 气压 ${meteo.pressure_hpa.toFixed(1)} hPa${meteo.cached?' · 已复用有效缓存':''}`:'气象参数由用户指定；日期、时刻按当前电厂时区解释。';
       if(!result.daylight) $('analysisSource').textContent+=' · 太阳在地平线以下，效率和接收光学功率为零。';
     },
@@ -106,12 +117,13 @@ export function initAnalysis({getContext,post,applyResult,weather=createWeatherC
       $('stopAnalysis').disabled=!runner?.running&&!runner?.busy;
       $('runAnalysis').disabled=state.state==='running'||runner?.busy;$('liveAnalysis').disabled=state.state==='running'||runner?.busy;
       if(state.state==='running') $('analysisStatus').textContent=state.live?'正在查询气象并分析设备当前时刻…':'正在计算指定时刻效率…';
-      else if(state.state==='error') {$('analysisStatus').textContent=`分析失败：${state.error}${state.live?'；稍后重试，保留上次结果。':''}`;$('analysisResults').dataset.stale='true';}
-      else if(state.state==='ready') {$('analysisStatus').textContent=`计算耗时 ${(state.elapsed/1000).toFixed(1)} 秒${state.live?` · 更新周期 ${(state.period/1000).toFixed(0)} 秒 · 下次计算 ${new Date(state.nextAt).toLocaleTimeString('zh-CN',{hour12:false})}`:''}`;$('analysisResults').dataset.stale='false';}
+      else if(state.state==='error') {$('analysisStatus').textContent=`分析失败：${state.error}${state.live?'；稍后重试，保留上次结果。':''}`;$('analysisViewStatus').dataset.stale='true';}
+      else if(state.state==='ready') {$('analysisStatus').textContent=`计算耗时 ${(state.elapsed/1000).toFixed(1)} 秒${state.live?` · 更新周期 ${(state.period/1000).toFixed(0)} 秒 · 下次计算 ${new Date(state.nextAt).toLocaleTimeString('zh-CN',{hour12:false})}`:''}`;$('analysisViewStatus').dataset.stale='false';}
       else if(state.state==='stopped') $('analysisStatus').textContent='已停止分析；已完成的结果保留。';
+      if(state.state!=='drained') { $('analysisViewStatus').hidden=false; $('analysisViewStatus').textContent=$('analysisStatus').textContent; }
     }
   });
-  $('runAnalysis').onclick=()=>runner.once();$('liveAnalysis').onclick=()=>runner.start();$('stopAnalysis').onclick=()=>runner.stop();
+  $('runAnalysis').onclick=()=>{onStart();runner.once();};$('liveAnalysis').onclick=()=>{onStart();runner.start();};$('stopAnalysis').onclick=()=>runner.stop();
   document.addEventListener('visibilitychange',()=>{if(document.hidden)runner.stop();});
   return {stop:()=>runner.stop(),get busy(){return runner.busy;},get live(){return runner.running;},get result(){return lastResult;},initialize(){const ctx=getContext();$('analysisTimezone').textContent=ctx.meta.timezone;$('analysisTime').value=localInput(ctx.currentTime||Date.now(),ctx.meta.timezone);$('analysisTemperature').value=ctx.frame?.temperature??12;}};
 }
