@@ -70,6 +70,7 @@
       <div id="weather"><div><span>DNI</span><span id="weatherDni">—</span><span>W/m²</span></div><div><span>太阳高度</span><span id="weatherElevation">—</span><span>°</span></div><div><span>气温</span><span id="weatherTemperature">—</span><span>℃</span></div></div>
     </div>
     </div>
+    <div hidden aria-hidden="true"><input type="date" id="date" /><select id="time"></select><span id="timezoneLabel"></span></div>
     <main>
       <details class="panel spatial" open>
         <summary class="panelhead">
@@ -198,32 +199,17 @@
       <details id="analysisPanel" class="panel analysis-panel">
         <summary class="panelhead"><h2>04 / 指定时间与实时效率分析</h2></summary>
         <div class="analysis-controls">
-          <section class="analysis-live" aria-label="实时分析控制">
-            <h3>实时分析</h3>
+          <details class="analysis-live" open>
+            <summary>实时分析</summary>
             <p>按设备当前时间计算，自动查询近实时气象；计算较慢时延长刷新周期。</p>
             <div class="analysis-actions">
-              <button id="liveAnalysis" type="button">启动实时分析</button>
+              <button id="liveAnalysis" type="button">实时分析</button>
               <button id="stopAnalysis" type="button" disabled>停止分析</button>
             </div>
-          </section>
-          <section class="analysis-instant" aria-label="指定时间分析控制">
-            <h3>指定时间分析</h3>
-            <div class="analysis-history">
-              <h4>历史采样与逐时播放</h4>
-              <div class="analysis-sampletime">
-          <label>当地日期 <input type="date" id="date" /></label
-          ><label
-            ><span id="timezoneLabel">时刻</span>
-            <select id="time"></select
-          ></label>
-          </div>
-          <div class="analysis-playback">
-          <button id="prev" title="上一采样时刻">←</button
-          ><button id="play">逐时播放</button
-          ><button id="next" title="下一采样时刻">→</button>
-              </div>
-            </div>
-
+          </details>
+          <details class="analysis-instant">
+            <summary>指定时间分析</summary>
+            <div class="analysis-instant-body">
             <div class="analysis-time">
               <label>任意日期与时刻 <input id="analysisTime" type="datetime-local" step="1" min="1900-01-01T00:00" max="2100-12-31T23:59:59" /></label>
               <p class="analysis-timezone">时区 · <strong id="analysisTimezone">—</strong></p>
@@ -234,10 +220,16 @@
               <label>气压（hPa）<input id="analysisPressure" type="number" min="100" max="1100" step="0.1" value="1013.25" /></label>
             </div>
             <button id="runAnalysis" type="button">分析指定时间</button>
-          </section>
+            <div class="analysis-playback">
+              <button id="prev" type="button" title="前一小时">←</button>
+              <button id="play" type="button">逐时播放</button>
+              <button id="next" type="button" title="后一小时">→</button>
+            </div>
+            </div>
+          </details>
         </div>
         <p id="analysisStatus" class="analysis-status" role="status" aria-live="polite">指定时间使用输入气象参数；实时模式使用设备当前时间并查询近实时气象。</p>
-        <details class="analysis-method"><summary>计算口径与气象来源</summary><p class="analysis-note">效率按太阳跟踪工况计算，联合阴影遮挡只扣除一次。各因子为逐镜平均值，其平均值乘积不等于全场效率；DNI 用于接收光学功率，不额外重复扣除云量。三维场景、目标投影和效率着色同步到结果时刻。实时模式串行计算，耗时越长刷新周期越长。气象来源：<a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo</a>，模型数据，非电厂测站实测。</p><p id="analysisSource" class="analysis-source" hidden></p></details>
+
       </details>
     <details id="mobileManage" class="mobile-manage">
       <summary><span class="cardtitle">05 / 镜场设计</span></summary>
@@ -313,7 +305,10 @@
       </form>
       <p class="carddescription">启动：DNI 与太阳高度角均高于启动临界值。停止：两者均低于停止临界值；太阳高度角 ≤ 0° 时直接停止。其他区间保持原状态。</p>
     </details>
-    <details class="mobile-manage" id="mobileParameters"><summary><span class="cardtitle">08 / 模型说明</span></summary><div class="receiver-notes"><div id="source"></div><div id="sourceNote"></div></div></details>
+    <details class="mobile-manage" id="mobileParameters"><summary><span class="cardtitle">08 / 模型说明</span></summary><div class="receiver-notes"><div id="source"></div><div id="sourceNote"></div><h3>实时分析的气象数据</h3>
+      <p>实时分析按设备当前时间计算，采用 <a href="https://open-meteo.com/en/docs" target="_blank" rel="noopener noreferrer">Open-Meteo</a> 自动匹配的近实时天气模型数据，并非电厂测站实测。使用电厂经纬度查询法向直接辐照度（DNI）、气温和地面气压；部分地区的 15 分钟数据由小时模型数据插值。</p>
+      <p>气象查询缓存 5 分钟，超过 20 分钟的样本不用于新计算。查询失败、样本缺失或过期时提示错误并保留上次画面；顶部结果时间对应最后完成的计算。实时任务串行执行，更新周期取严格大于本轮耗时的下一个 5 秒整数倍。</p>
+      <p>指定时间分析使用用户输入的 DNI、气温和气压，按电厂时区解释日期时间。效率按太阳跟踪工况计算，联合阴影遮挡只扣除一次；DNI 用于接收光学功率，不重复扣除云量。分析与逐时播放共用 01–03 的视图，视角、目标镜及着色选择保持一致。</p></div></details>
     </main>
 
 

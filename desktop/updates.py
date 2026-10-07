@@ -4,7 +4,7 @@ import hashlib
 import json
 import math
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import platform
 import re
 import shutil
@@ -54,13 +54,13 @@ def extract_archive(archive, destination):
             raise ValueError('安装包解压大小超限')
         links = []
         for item in bundle.infolist():
-            path = Path(item.filename)
+            path = PurePosixPath(item.filename)
             if ':' in item.filename or path.is_absolute() or '..' in path.parts or '\\' in item.filename:
                 raise ValueError('安装包包含不安全路径')
             if (item.external_attr >> 16) & 0o170000 == 0o120000:
                 target = bundle.read(item).decode('utf-8')
                 resolved = (destination / item.filename).parent / target
-                if Path(target).is_absolute() or not resolved.resolve().is_relative_to(destination.resolve()):
+                if PurePosixPath(target).is_absolute() or ':' in target or '\\' in target or not resolved.resolve().is_relative_to(destination.resolve()):
                     raise ValueError('安装包包含不安全符号链接')
                 links.append((item.filename, target))
         link_names = {name for name, _ in links}
@@ -101,6 +101,7 @@ class UpdateManager:
         self.actor = uuid.uuid4().hex
         self.cancelled = threading.Event()
         self.worker = None
+        self.downloading = False
         self.manifest = self.envelope = self.stage = None
         self.session_file = directory(self.target) / 'session.json' if self.target else None
         self.task_lease = None
@@ -245,7 +246,7 @@ class UpdateManager:
             if action == 'cancel':
                 if self.state['state'] in ('installing', 'waiting-start'): raise ValueError('安装已开始，请使用恢复入口')
                 self.cancelled.set()
-                if not self.worker and self.stage:
+                if not self.worker and not self.downloading and self.stage:
                     self._discard_stage()
                 self.state.update(state='cancelled', error=None); self._persist()
                 return self.status()
@@ -342,6 +343,7 @@ class UpdateManager:
             self.stage = None
 
     def _download(self):
+        self.downloading = True
         try:
             with self.lock:
                 self._discard_stage()
@@ -370,6 +372,8 @@ class UpdateManager:
             try: self._discard_stage()
             except Exception as cleanup: error = ValueError(f'{error}；清理待重试：{cleanup}')
             self._error(error)
+        finally:
+            self.downloading = False
 
     def _install_verified(self):
         try:

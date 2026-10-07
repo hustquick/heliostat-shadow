@@ -122,7 +122,8 @@ def run(path, launch=None, timeout=120):
                         raise ValueError('Refusing destination reparse/symlink')
                     if dest.exists():
                         old.parent.mkdir(parents=True, exist_ok=True); shutil.copy2(dest, old)
-                        with old.open('rb') as stream: os.fsync(stream.fileno())
+                        # Windows FlushFileBuffers requires a writable file handle.
+                        with old.open('r+b') as stream: os.fsync(stream.fileno())
                     plan.append(dict(file=name, old=dest.exists()))
                 state['phase'] = 'replacing'; write(path, state)
                 for entry in plan:

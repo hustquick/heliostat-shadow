@@ -997,11 +997,14 @@ main > details > summary.navigation-focus:focus-visible { outline:none; }
 main > .analysis-panel { grid-column:1 / -1; padding:0; }
 .analysis-controls { margin:16px; }
 .analysis-controls h3 { margin:0; font-size:13px; font-weight:600; }
-.analysis-live { border-bottom:1px solid var(--line); padding-bottom:16px; margin-bottom:16px; }
-.analysis-live > p { margin:8px 0 12px; color:var(--muted); font-size:12px; line-height:1.6; }
-.analysis-instant { display:grid; grid-template-columns:minmax(220px,1fr) minmax(0,1.4fr); gap:14px; }
-.analysis-instant > h3, .analysis-instant > button { grid-column:1 / -1; }
-.analysis-instant > button { min-height:40px; width:100%; box-sizing:border-box; }
+.analysis-live, .analysis-instant { border:1px solid var(--line); border-radius:8px; margin:0 0 12px; padding:0; }
+.analysis-live > summary, .analysis-instant > summary { display:flex; align-items:center; min-height:40px; padding:10px 12px; box-sizing:border-box; font-size:13px; font-weight:600; }
+.analysis-live[open] > summary, .analysis-instant[open] > summary { border-bottom:1px solid var(--line); }
+.analysis-live > .analysis-actions { margin:12px; }
+.analysis-live > p { margin:12px; color:var(--muted); font-size:12px; line-height:1.6; }
+.analysis-instant-body { padding:12px; display:grid; grid-template-columns:minmax(220px,1fr) minmax(0,1.4fr); gap:14px; }
+.analysis-instant-body > button { grid-column:1 / -1; }
+.analysis-instant-body > button { min-height:40px; width:100%; box-sizing:border-box; }
 .analysis-controls label { display:grid; gap:8px; min-width:0; color:var(--muted); font-size:13px; }
 .analysis-controls input { display:block; width:100%; min-width:0; max-width:100%; height:40px; box-sizing:border-box; font-size:14px; }
 .analysis-time { min-width:0; }
@@ -1018,8 +1021,8 @@ main > .analysis-panel { grid-column:1 / -1; padding:0; }
 #analysisStatus[data-stale=true] { color:#e6ae8c; }
 @media(max-width:700px) {
  .analysis-controls { margin:14px; }
- .analysis-instant { grid-template-columns:minmax(0,1fr); gap:14px; }
- .analysis-instant > button { min-height:44px; font-size:13px; }
+ .analysis-instant-body { grid-template-columns:minmax(0,1fr); gap:14px; }
+ .analysis-instant-body > button { min-height:44px; font-size:13px; }
  .analysis-controls input { min-height:44px; height:44px; }
  .analysis-controls input[type=datetime-local] { -webkit-appearance:none; appearance:none; text-align:left; }
  .analysis-controls input::-webkit-date-and-time-value { text-align:left; }
@@ -1037,7 +1040,7 @@ main > .analysis-panel { grid-column:1 / -1; padding:0; }
 .analysis-history h4 { margin:0 0 12px; font-size:12px; font-weight:500; color:var(--muted); }
 .analysis-sampletime { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
 .analysis-sampletime select { width:100%; min-width:0; height:40px; box-sizing:border-box; }
-.analysis-playback { display:grid; grid-template-columns:44px minmax(0,1fr) 44px; gap:10px; margin-top:12px; }
+.analysis-playback { grid-column:1 / -1; display:grid; grid-template-columns:44px minmax(0,1fr) 44px; gap:10px; margin-top:12px; }
 .analysis-playback #prev { grid-column:1; grid-row:1; }
 .analysis-playback #play { grid-column:2; grid-row:1; }
 .analysis-playback #next { grid-column:3; grid-row:1; }
@@ -1057,3 +1060,6 @@ main > .analysis-panel { grid-column:1 / -1; padding:0; }
 .environment-summary > .statusline { margin:0; padding:0; gap:4px; }
 .environment-summary #weather { height:auto; min-height:1.5em; }
 @media(max-width:700px) { .environment-summary { padding:0 8px; } }
+
+.environment-summary.navigation-focus:focus-visible { outline:none; }
+.environment-summary #weatherDni, .environment-summary #weatherElevation, .environment-summary #weatherTemperature { color:var(--text); }

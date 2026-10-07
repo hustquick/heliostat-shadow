@@ -1,8 +1,8 @@
 import {createWeatherClient} from './weather.js';
 
-export const BASE_PERIOD_MS = 60_000;
+export const BASE_PERIOD_MS = 5_000;
 export function adaptivePeriod(computeMs, base = BASE_PERIOD_MS) {
-  return Math.max(base, Math.ceil(Math.max(0, computeMs) * 1.25));
+  return (Math.floor(Math.max(0, computeMs) / base) + 1) * base;
 }
 
 // Convert a plant-local wall clock without borrowing the device timezone.
@@ -81,7 +81,7 @@ export async function waitForIdle(isBusy, signal) {
 
 export function initAnalysis({getContext,post,applyResult,weather=createWeatherClient(),onModeChange=()=>{},onStart=()=>{},setBusy=()=>{}}) {
   const $=id=>document.getElementById(id);
-  let lastResult=null;
+  let lastResult=null,stepping=false;
   const runner=createSerialAnalysis({
     elapsedClock:()=>performance.now(),
     execute:async ({live,signal})=>{
@@ -92,7 +92,7 @@ export function initAnalysis({getContext,post,applyResult,weather=createWeatherC
         await waitForIdle(()=>getContext().busy,signal);
         ctx=getContext();
       }
-      onModeChange(live?'live':'instant');
+      onModeChange(live?'live':stepping?'playback':'instant');
       const time=live?new Date().toISOString():zonedInstant($('analysisTime').value,ctx.meta.timezone);
       const number=id=>{if(!$(id).value.trim())throw new Error('请完整填写气象参数');return Number($(id).value);};
       setBusy(true);
@@ -106,12 +106,7 @@ export function initAnalysis({getContext,post,applyResult,weather=createWeatherC
       return {result,meteo};
       } finally {setBusy(false);}
     },
-    onResult:({result,meteo},info)=>{
-      lastResult=result;applyResult(result);
-      $('analysisSource').hidden=false;
-      $('analysisSource').textContent=info.live?`Open-Meteo 近实时气象模型，非测站实测 · 数据时间 ${new Date(meteo.weather_time).toLocaleString('zh-CN',{timeZone:getContext().meta.timezone,hour12:false})}${meteo.cached?' · 已复用有效缓存':''}`:'气象参数由用户指定；日期、时刻按当前电厂时区解释。';
-      if(!result.daylight) $('analysisSource').textContent+=' · 太阳在地平线以下，效率和接收光学功率为零。';
-    },
+    onResult:({result})=>{lastResult=result;applyResult(result);},
     onStatus:state=>{
       $('stopAnalysis').disabled=!runner?.running&&!runner?.busy;
       $('runAnalysis').disabled=state.state==='running'||runner?.busy;$('liveAnalysis').disabled=state.state==='running'||runner?.busy;
@@ -121,7 +116,20 @@ export function initAnalysis({getContext,post,applyResult,weather=createWeatherC
       else if(state.state==='stopped') $('analysisStatus').textContent='已停止分析；已完成的结果保留。';
     }
   });
-  $('runAnalysis').onclick=()=>{onStart();runner.once();};$('liveAnalysis').onclick=()=>{onStart();runner.start();};$('stopAnalysis').onclick=()=>runner.stop();
+  $('runAnalysis').onclick=()=>{onStart('instant');runner.once();};$('liveAnalysis').onclick=()=>{onStart('live');runner.start();};$('stopAnalysis').onclick=()=>runner.stop();
   document.addEventListener('visibilitychange',()=>{if(document.hidden)runner.stop();});
-  return {stop:()=>runner.stop(),get busy(){return runner.busy;},get live(){return runner.running;},get result(){return lastResult;},initialize(){const ctx=getContext();$('analysisTimezone').textContent=ctx.meta.timezone;$('analysisTime').value=localInput(ctx.currentTime||Date.now(),ctx.meta.timezone);$('analysisTemperature').value=ctx.frame?.temperature??12;}};
+  const advance=async delta=>{
+    if(runner.busy||getContext().busy) return false;
+    if(delta) {
+      try {
+        const time=zonedInstant($('analysisTime').value,getContext().meta.timezone);
+        const shifted=new Date(Date.parse(time)+delta*3600000).toISOString();
+        if(new Date(shifted).getUTCFullYear()<1900||new Date(shifted).getUTCFullYear()>2100) throw new Error('日期超出支持范围');
+        $('analysisTime').value=localInput(shifted,getContext().meta.timezone);
+      } catch(error) { $('analysisStatus').textContent=error.message;return false; }
+    }
+    stepping=true;
+    try{return await runner.once();}finally{stepping=false;}
+  };
+  return {step:advance,focus:onStart,stop:()=>runner.stop(),get busy(){return runner.busy;},get live(){return runner.running;},get result(){return lastResult;},initialize(){const ctx=getContext();$('analysisTimezone').textContent=ctx.meta.timezone;$('analysisTime').value=localInput(ctx.currentTime||Date.now(),ctx.meta.timezone);$('analysisTemperature').value=ctx.frame?.temperature??12;}};
 }

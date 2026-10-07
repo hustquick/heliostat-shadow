@@ -44,6 +44,7 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with: {dotnet-version: "8.0.x"}
       - run: python -m pip install -r requirements.txt -r requirements-build.txt
+      - run: python -m pytest tests/test_windows_update.py tests/test_updates.py -q
       - run: choco install innosetup --no-progress -y
       - shell: pwsh
         run: |
@@ -52,7 +53,7 @@ jobs:
       - shell: pwsh
         run: ./scripts/smoke_windows_server.ps1
       - shell: pwsh
-        run: ./scripts/test_windows_update.ps1
+        run: ./scripts/test_windows_update.ps1 -SkipUnitTests
       - uses: actions/upload-artifact@v4
         with:
           name: Heliostat-Viewer-Windows

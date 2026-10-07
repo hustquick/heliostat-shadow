@@ -52,6 +52,14 @@ def gh(*args):
 
 
 def main():
+    source_commit = os.environ.get('GITHUB_SHA')
+    def source_is_current():
+        if not source_commit: return True
+        head = json.loads(gh('api', 'repos/hustquick/heliostat-shadow/git/ref/heads/main'))['object']['sha']
+        return head == source_commit
+    if not source_is_current():
+        print('Skip publication: a newer main commit superseded this build')
+        return
     assets = Path(sys.argv[1])
     version = (ROOT / 'VERSION').read_text().strip()
     tag = 'v' + version
@@ -75,9 +83,15 @@ def main():
     if not existing:
         gh('release', 'create', tag, '--draft', '--target', os.environ.get('GITHUB_SHA', 'main'),
            '--title', f'塔式镜场设计与优化 {tag}', '--notes-file', str(ROOT / 'RELEASE_NOTES.md'))
+    # Draft retries must use the new source commit and release notes as well.
+    gh('release', 'edit', tag, '--target', source_commit or 'main',
+       '--title', f'塔式镜场设计与优化 {tag}', '--notes-file', str(ROOT / 'RELEASE_NOTES.md'))
     # Only drafts can be retried; a published release is never overwritten.
     packages = [str(p) for p in assets.rglob('*') if p.is_file()]
     gh('release', 'upload', tag, *packages, '--clobber')
+    if not source_is_current():
+        print('Leave draft unpublished: a newer main commit arrived during upload')
+        return
     gh('release', 'edit', tag, '--draft=false', '--latest')
     print(f'Published complete signed release {tag}')
 

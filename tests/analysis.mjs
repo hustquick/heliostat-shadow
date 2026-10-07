@@ -1,8 +1,11 @@
 import assert from 'node:assert/strict';
 import {adaptivePeriod,createSerialAnalysis,zonedInstant,localInput,waitForIdle} from '../viewer/analysis.js';
 import {parseWeather,createWeatherClient} from '../viewer/weather.js';
-assert.equal(adaptivePeriod(90000),112500);
-assert.equal(adaptivePeriod(200),60000);
+assert.equal(adaptivePeriod(90000),95000);
+assert.equal(adaptivePeriod(200),5000);
+assert.equal(adaptivePeriod(500),5000);
+assert.equal(adaptivePeriod(5000),10000);
+assert.equal(adaptivePeriod(12000),15000);
 assert.equal(zonedInstant('2026-10-07T12:34:56','Asia/Shanghai'),'2026-10-07T04:34:56.000Z');
 assert.equal(localInput('2026-10-07T04:34:56Z','Asia/Shanghai'),'2026-10-07T12:34:56');
 for(const s of ['2026-02-30T12:00','2026-03-08T02:30','2026-11-01T01:30']) assert.throws(()=>zonedInstant(s,'America/New_York'));
@@ -17,12 +20,12 @@ assert.equal((await weather(site)).cached,false);assert.equal((await weather(sit
 await weather({...site,longitude:111});assert.equal(calls,2);
 now+=301000;await weather(site);assert.equal(calls,3);
 await assert.rejects(createWeatherClient(async()=>({ok:false,status:503}),()=>now)(site),/503/);
-// A 90-second calculation is still the sole task; start-to-start period grows to 112.5s (22.5s rest).
+// A 90-second calculation is still the sole task; start-to-start period grows to 95s (5s rest).
 let release,active=0,maxActive=0,results=[],timers=[];
 const execute=async({instant})=>{active++;maxActive=Math.max(maxActive,active);await new Promise(r=>release=r);active--;return instant;};
 const scheduler=createSerialAnalysis({execute,clock:()=>now,onResult:r=>results.push(r),setTimer:(fn,ms)=>{timers.push({fn,ms});return timers.length;},clearTimer:()=>{}});
 const first=scheduler.start();assert.equal(scheduler.busy,true);assert.equal(timers.length,0);
-now+=90000;release();await first;assert.equal(timers.at(-1).ms,22500);assert.equal(results.length,1);
+now+=90000;release();await first;assert.equal(timers.at(-1).ms,5000);assert.equal(results.length,1);
 const next=timers.pop().fn();assert.equal(active,1);
 scheduler.stop();const restart=scheduler.start();await restart;assert.equal(active,1);release();await next;
 assert.equal(results.length,1);assert.equal(maxActive,1);assert.equal(timers.at(-1).ms,0);
@@ -31,11 +34,11 @@ scheduler.stop();const one=scheduler.once();scheduler.stop();release();await one
 // Failed long tasks use the same adaptive retry, not immediate catch-up.
 let failedDelay;
 const failed=createSerialAnalysis({clock:()=>now,execute:async()=>{now+=90000;throw new Error('network');},setTimer:(fn,ms)=>{failedDelay=ms;return 1;},clearTimer:()=>{}});
-await failed.start();assert.equal(failedDelay,22500);failed.stop();
+await failed.start();assert.equal(failedDelay,5000);failed.stop();
 // Device clock changes do not affect a monotonic duration measurement.
 let monotonic=0,delay;
 const adjusted=createSerialAnalysis({clock:()=>now,elapsedClock:()=>monotonic,execute:async()=>{now-=3600000;monotonic+=90000;return {};},setTimer:(fn,ms)=>{delay=ms;return 1;},clearTimer:()=>{}});
-await adjusted.start();assert.equal(delay,22500);adjusted.stop();
+await adjusted.start();assert.equal(delay,5000);adjusted.stop();
 // Android bridge returns asynchronously and propagates structured errors.
 globalThis.window={heliostatNative:{requestAsync(id){queueMicrotask(()=>window.heliostatNativeComplete(id,'{"ok":true}'));}}};
 const {androidRequest}=await import('../viewer/native-bridge.js');

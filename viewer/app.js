@@ -807,7 +807,6 @@ async function loadTime() {
   if (busy) return;
   analysisController?.stop();
   analysisSnapshot = null;
-  $("analysisSource").hidden=true;
   const gen = ++generation;
   controlsBusy(true);
   const retainEfficiencyColors = efficiencyEnabled && efficiencyData !== null;
@@ -971,18 +970,8 @@ function setDate(date, time) {
   if (time) $("time").value = time;
 }
 async function step(delta) {
-  if (busy) return;
-  analysisController?.stop();
-  const sampleTime=meta.timestamps.includes(currentTime)?currentTime:$("time").value;
-  const i = meta.timestamps.indexOf(sampleTime) + delta;
-  if (i < 0 || i >= meta.timestamps.length) {
-    stopPlay();
-    return;
-  }
-  const utc = meta.timestamps[i],
-    item = localItem(utc);
-  setDate(item.date, utc);
-  await loadTime();
+  if(busy) return false;
+  return analysisController?.step(delta);
 }
 function stopPlay() {
   playing = false;
@@ -991,7 +980,7 @@ function stopPlay() {
 }
 async function playLoop() {
   if (!playing) return;
-  if (!busy) await step(1);
+  if (!busy && !(await step(1))) { stopPlay(); return; }
   if (playing) playTimer = setTimeout(playLoop, 1000);
 }
 function localItem(utc) {
@@ -1037,14 +1026,14 @@ $("next").onclick = () => {
   stopPlay();
   step(1);
 };
-$("play").onclick = () => {
+$("play").onclick = async () => {
+  if(playing) {stopPlay();return;}
+  if(busy||analysisController?.busy) return;
   analysisController?.stop();
-  if (playing) stopPlay();
-  else {
-    playing = true;
-    $("play").textContent = "暂停";
-    playLoop();
-  }
+  analysisController?.focus();
+  playing=true;$("play").textContent="暂停";
+  if(!(await step(0))) {stopPlay();return;}
+  if(playing) playTimer=setTimeout(playLoop,1000);
 };
 $("selectMirror").onsubmit = (e) => {
   e.preventDefault();
@@ -1503,17 +1492,17 @@ const openUpdates = initUpdates(api, apiPost);
 analysisController = initAnalysis({
   getContext:()=>({meta,selected,busy,currentTime,frame}),
   post:apiPost,setBusy:controlsBusy,
-  onModeChange:()=>stopPlay(),
+  onModeChange:mode=>{if(mode!=="playback")stopPlay();},
   onStart:()=>{
     stopPlay();
     const card=document.querySelector("main > .spatial");
     card.open=true;
-    const heading=card.querySelector("summary");
-    heading.tabIndex=-1;
-    heading.classList.add("navigation-focus");
-    heading.addEventListener("blur",()=>heading.classList.remove("navigation-focus"),{once:true});
-    heading.focus({preventScroll:true});
-    card.scrollIntoView({block:"start",behavior:"smooth"});
+    const destination=document.querySelector(".environment-summary");
+    destination.tabIndex=-1;
+    destination.classList.add("navigation-focus");
+    destination.addEventListener("blur",()=>destination.classList.remove("navigation-focus"),{once:true});
+    destination.focus({preventScroll:true});
+    destination.scrollIntoView({block:"center",behavior:"smooth"});
   },
   applyResult:result=>{
     analysisSnapshot=result;
