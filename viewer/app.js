@@ -9,6 +9,8 @@ import {fieldColors as colors} from "./palette.js";
 let analysisController, analysisSnapshot = null;
 let desktopInitializationFinished = false, desktopInitializationConfirmed = false, desktopViewerReady = false, desktopInitializationConfirming = false;
 const $ = (id) => document.getElementById(id);
+const mobileClient = Boolean(window.heliostatNative?.requestAsync || window.webkit?.messageHandlers?.heliostatNative);
+document.documentElement.classList.toggle("mobile-client", mobileClient);
 for (const swatch of document.querySelectorAll("[data-loss-color]"))
   swatch.style.backgroundColor = colors[swatch.dataset.lossColor];
 
