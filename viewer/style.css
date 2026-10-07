@@ -1065,3 +1065,19 @@ main > .analysis-panel { grid-column:1 / -1; padding:0; }
 .environment-summary #weatherDni, .environment-summary #weatherElevation, .environment-summary #weatherTemperature { color:var(--text); }
 
 .environment-summary #weather > div > span[data-missing=true] { flex-basis:8ch; width:8ch; }
+
+/* Compact shared header: keep environment information with its plant selector. */
+.controlstack { display:flex; flex-direction:column; justify-content:center; gap:12px; }
+.controlstack > .environment-summary { margin:0; padding:0; width:100%; box-sizing:border-box; }
+.cardcontrols .orientation-widget #viewIso { display:flex; align-items:center; justify-content:center; min-width:0; }
+.cardcontrols .orientation-widget svg { display:block; width:100%; max-width:58px; height:auto; aspect-ratio:76 / 68; overflow:hidden; flex:none; }
+@media(max-width:620px) { .cardcontrols .orientation-widget svg { max-width:32px; } }
+
+/* Header columns share their natural compact height and the main card gap. */
+.controlarea { margin-bottom:12px; align-items:stretch; }
+.controlstack { justify-content:space-between; }
+.heliostat-summary { min-height:0; box-sizing:border-box; padding:8px 12px; display:flex; flex-direction:column; justify-content:center; }
+.heliostat-summary .summary-title { padding-bottom:4px; }
+.heliostat-summary dl { margin-top:4px; gap:4px 12px; }
+.heliostat-summary dt { line-height:1.3; }
+.heliostat-summary dd { font-size:12px; line-height:1.3; }

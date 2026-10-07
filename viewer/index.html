@@ -45,6 +45,13 @@
 
         </section>
 
+    <div class="environment-summary" aria-label="结果时间与气象摘要">
+    <p class="current-time-info" aria-live="polite"><span>结果时间</span> <time id="displayTime">—</time></p>
+    <div class="statusline">
+      <div id="status" hidden role="status" aria-live="polite"><span id="statusHeading">正在载入镜场…</span><span id="statusDetail"></span><time id="statusTime"></time></div>
+      <div id="weather"><div><span>DNI</span><span id="weatherDni">—</span><span>W/m²</span></div><div><span>太阳高度</span><span id="weatherElevation">—</span><span>°</span></div><div><span>气温</span><span id="weatherTemperature">—</span><span>℃</span></div></div>
+    </div>
+    </div>
       </div>
       <aside class="heliostat-summary" aria-labelledby="heliostatSummaryTitle">
         <div class="summary-title">
@@ -62,13 +69,6 @@
           </div>
         </dl>
       </aside>
-    </div>
-    <div class="environment-summary" aria-label="结果时间与气象摘要">
-    <p class="current-time-info" aria-live="polite"><span>结果时间</span> <time id="displayTime">—</time></p>
-    <div class="statusline">
-      <div id="status" hidden role="status" aria-live="polite"><span id="statusHeading">正在载入镜场…</span><span id="statusDetail"></span><time id="statusTime"></time></div>
-      <div id="weather"><div><span>DNI</span><span id="weatherDni">—</span><span>W/m²</span></div><div><span>太阳高度</span><span id="weatherElevation">—</span><span>°</span></div><div><span>气温</span><span id="weatherTemperature">—</span><span>℃</span></div></div>
-    </div>
     </div>
     <div hidden aria-hidden="true"><input type="date" id="date" /><select id="time"></select><span id="timezoneLabel"></span></div>
     <main>
