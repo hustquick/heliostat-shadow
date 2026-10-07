@@ -1,6 +1,6 @@
 import {androidRequest} from './native-bridge.js';
 import {initUpdates} from "./updates.js";
-import {initAnalysis,zonedInstant,localInput,historicalSample} from "./analysis.js";
+import {initAnalysis,zonedInstant,localInput,historicalSample,waitForIdle} from "./analysis.js";
 
 import {defaultOperationParameters, validateOperationParameters, nextOperationState, parkedVertices} from "./operation.js";
 import * as THREE from "three";
@@ -801,10 +801,7 @@ function controlsBusy(value) {
   for (const id of ["designMethod", "currentLayout", "rearrange", "importPlant", "exportCoordinates"])
     $(id).disabled = value;
   updateDesignMethod();
-  // Keep target controls stable throughout live mode, including idle gaps.
-  const targetLocked = value || playing || Boolean(analysisController?.live);
-  $("mirror").disabled = targetLocked;
-  document.querySelector("#selectMirror button").disabled = targetLocked;
+  // Target selection remains interactive; requests wait for the active frame.
 }
 async function loadTime() {
   if (busy) return;
@@ -932,13 +929,15 @@ $("towerColor").onclick = () => {
     ? `已按当前目标塔着色 · ${meta.towers.map((tower, i) => `${tower.name} ${towerColors[i % towerColors.length]}`).join(" · ")}`
     : `已关闭目标塔着色 · ${frame.local_time}`);
 };
+let targetSelectionRequest = 0;
 async function selectTarget(id) {
-  if (busy) return;
+  const request = ++targetSelectionRequest;
+  await waitForIdle(()=>busy,new AbortController().signal);
+  if(request !== targetSelectionRequest) return;
   if (!meta.mirror_ids.includes(id)) {
     status("未找到该镜面，请输入当前镜场中的有效编号", true);
     return;
   }
-  stopPlay();
   controlsBusy(true);
   try {
     const result = analysisSnapshot?.timestamp === currentTime

@@ -66,17 +66,17 @@ assert.equal(requests, 1);
 console.log('Playback controls remain interactive; view/color preferences survive frame updates and delayed errors.');
 
 run("analysisController.live=true; controlsBusy(true); controlsBusy(false)");
-assert.equal(element("mirror").disabled,true);
-assert.equal(element("submit").disabled,true);
+assert.equal(element("mirror").disabled,false);
+assert.equal(element("submit").disabled,false);
 run("analysisController.live=false; controlsBusy(false)");
 assert.equal(element("mirror").disabled,false);
 assert.equal(element("submit").disabled,false);
-console.log("Target controls remain stable throughout live mode and unlock on stop.");
+console.log("Target controls remain stable throughout live mode and remain interactive.");
 
 run("playing=true; controlsBusy(true); controlsBusy(false)");
-assert.equal(element("mirror").disabled,true);
-assert.equal(element("submit").disabled,true);
+assert.equal(element("mirror").disabled,false);
+assert.equal(element("submit").disabled,false);
 run("playing=false; controlsBusy(false)");
 assert.equal(element("mirror").disabled,false);
 assert.equal(element("submit").disabled,false);
-console.log("Target controls remain stable during hourly playback and unlock on pause.");
+console.log("Target controls remain stable during hourly playback and remain interactive.");
