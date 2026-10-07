@@ -1250,14 +1250,15 @@ async function init() {
     resize();
     cameraTransition = null;
     topView();
-    const heading = card.querySelector("summary");
-    // Programmatic navigation must not paint a clipped keyboard focus ring.
-    heading.classList.add("navigation-focus");
-    heading.addEventListener("blur", () => heading.classList.remove("navigation-focus"), {once:true});
-    heading.addEventListener("keydown", () => heading.classList.remove("navigation-focus"), {once:true});
-    heading.focus({preventScroll:true});
-    card.scrollIntoView({block:"start", behavior:"instant"});
-    history.replaceState(null, "", location.pathname + location.search);
+    const destination = document.querySelector(".environment-summary");
+    destination.tabIndex = -1;
+    destination.classList.add("navigation-focus");
+    destination.addEventListener("blur", () => destination.classList.remove("navigation-focus"), {once:true});
+    destination.focus({preventScroll:true});
+    destination.scrollIntoView({block:"center", behavior:"instant"});
+    // Keep navigation-carried analysis state until restoreAnalysisMode consumes it.
+    if(!new URLSearchParams(location.hash.slice(1)).has("analysis"))
+      history.replaceState(null, "", location.pathname + location.search);
   }
 }
 async function confirmDesktopInitialization() {
@@ -1297,6 +1298,7 @@ async function restoreAnalysisMode(saved) {
   if(!saved) {
     const transfer=new URLSearchParams(location.hash.slice(1)).get("analysis");
     const raw=transfer||sessionStorage.getItem(analysisTransferKey);
+    if(transfer) history.replaceState(null,"",location.pathname+location.search);
     sessionStorage.removeItem(analysisTransferKey);
     if(!raw) return;
     try {saved=JSON.parse(raw);} catch {return;}
