@@ -28,6 +28,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: {node-version: "22"}
       - run: node tests/analysis.mjs
+      - run: node tests/analysis_transfer.mjs
       - run: node tests/playback_controls.mjs
       - run: node tests/operation_state.mjs
       - run: node tests/update_ui.mjs

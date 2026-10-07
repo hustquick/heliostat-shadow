@@ -134,5 +134,5 @@ export function initAnalysis({getContext,post,applyResult,weather=createWeatherC
   });
   $('runAnalysis').onclick=()=>{onStart('instant');runner.once();};$('liveAnalysis').onclick=()=>{onStart('live');runner.start();};$('stopAnalysis').onclick=()=>runner.stop();
   document.addEventListener('visibilitychange',()=>{if(document.hidden)runner.stop();});
-  return {focus:onStart,stop:()=>runner.stop(),get busy(){return runner.busy;},get live(){return runner.running;},get result(){return lastResult;},initialize(){const ctx=getContext();$('analysisTimezone').textContent=ctx.meta.timezone;$('analysisTime').value=localInput(ctx.currentTime||Date.now(),ctx.meta.timezone);$('analysisTemperature').value=ctx.frame?.temperature??12;}};
+  return {resume:live=>live?runner.start():runner.once(),focus:onStart,stop:()=>runner.stop(),get busy(){return runner.busy;},get live(){return runner.running;},get result(){return lastResult;},initialize(){const ctx=getContext();$('analysisTimezone').textContent=ctx.meta.timezone;$('analysisTime').value=localInput(ctx.currentTime||Date.now(),ctx.meta.timezone);$('analysisTemperature').value=ctx.frame?.temperature??12;}};
 }

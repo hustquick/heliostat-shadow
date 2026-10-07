@@ -1277,6 +1277,7 @@ async function confirmDesktopInitialization() {
 init().then(() => {
   desktopInitializationFinished = true;
   confirmDesktopInitialization();
+  restoreAnalysisMode();
 }).catch((e) => status(e.message, true));
 
 function reloadLayoutInTopView() {
@@ -1285,12 +1286,46 @@ function reloadLayoutInTopView() {
   location.reload();
 }
 
+const analysisTransferKey = "heliostat-analysis-transfer";
+function captureAnalysisMode() {
+  return {mode:analysisController?.live?"live":playing?"playback":analysisSnapshot?"instant":"historical",
+    time:$("analysisTime").value,dni:$("analysisDni").value,
+    temperature:$("analysisTemperature").value,pressure:$("analysisPressure").value};
+}
+async function restoreAnalysisMode(saved) {
+  if(!saved) {
+    const raw=sessionStorage.getItem(analysisTransferKey);
+    sessionStorage.removeItem(analysisTransferKey);
+    if(!raw) return;
+    try {saved=JSON.parse(raw);} catch {return;}
+  }
+  if(saved.mode==="historical") return;
+  $("analysisTime").value=saved.time;
+  $("analysisDni").value=saved.dni;
+  $("analysisTemperature").value=saved.temperature;
+  $("analysisPressure").value=saved.pressure;
+  if(saved.mode==="playback") {
+    playing=true;$("play").textContent="暂停";
+    if(!(await step(0))) {stopPlay();$("analysisPanel").open=true;return;}
+    if(playing) playTimer=setTimeout(playLoop,1000);
+  } else analysisController.resume(saved.mode==="live");
+}
+let switchingLayout=false;
 async function selectLayout(id) {
-  analysisController?.stop();
-  if (!id || busy) return;
+  if(!id||switchingLayout) return;
+  switchingLayout=true;
+  const saved=captureAnalysisMode();
+  stopPlay();analysisController?.stop();
+  await waitForIdle(()=>busy,new AbortController().signal);
   controlsBusy(true); status("正在载入镜场…");
-  try { await apiPost("plants/select", {plant_id:id}); reloadLayoutInTopView(); }
-  catch(e) { status(e.message,true); controlsBusy(false); }
+  try {
+    await apiPost("plants/select", {plant_id:id});
+    sessionStorage.setItem(analysisTransferKey,JSON.stringify(saved));
+    reloadLayoutInTopView();
+  } catch(e) {
+    status(e.message,true);controlsBusy(false);switchingLayout=false;
+    await restoreAnalysisMode(saved);
+  }
 }
 $("plant").onchange = () => selectLayout($("plant").value);
 $("importPlant").onclick=()=>$("importDialog").showModal();
