@@ -1,8 +1,13 @@
+import {androidRequest} from './native-bridge.js';
 import {initUpdates} from "./updates.js";
+import {initAnalysis} from "./analysis.js";
+
 import {defaultOperationParameters, validateOperationParameters, nextOperationState, parkedVertices} from "./operation.js";
 import * as THREE from "three";
 import { OrbitControls } from "./vendor/OrbitControls.js";
 import {fieldColors as colors} from "./palette.js";
+let analysisController, analysisSnapshot = null;
+let desktopInitializationFinished = false, desktopInitializationConfirmed = false, desktopViewerReady = false, desktopInitializationConfirming = false;
 const $ = (id) => document.getElementById(id);
 for (const swatch of document.querySelectorAll("[data-loss-color]"))
   swatch.style.backgroundColor = colors[swatch.dataset.lossColor];
@@ -713,6 +718,9 @@ renderer.domElement.addEventListener("pointermove", (e) => {
 });
 renderer.domElement.addEventListener("pointerleave", () => setHover(null));
 async function nativeRequest(method, path, payload) {
+  if (window.heliostatNative?.requestAsync) {
+    return androidRequest(method, path, payload);
+  }
   if (window.heliostatNative?.request) {
     const raw = await window.heliostatNative.request(method, path, JSON.stringify(payload));
     const data = typeof raw === "string" ? JSON.parse(raw) : raw;
@@ -795,6 +803,8 @@ function controlsBusy(value) {
 }
 async function loadTime() {
   if (busy) return;
+  analysisController?.stop();
+  analysisSnapshot = null;
   const gen = ++generation;
   controlsBusy(true);
   const retainEfficiencyColors = efficiencyEnabled && efficiencyData !== null;
@@ -826,6 +836,8 @@ async function loadTime() {
         ? `已更新 · ${frame.local_time} · 点击“效率着色”显示逐镜总光学效率`
         : `夜间 · ${frame.local_time} · 几何效率不适用`,
     );
+    desktopViewerReady = true;
+    if (desktopInitializationFinished) confirmDesktopInitialization();
   } catch (e) {
     stopPlay();
     status(e.message, true);
@@ -860,7 +872,7 @@ async function loadEfficiencies(gen = generation) {
   if (!concentrating) { showEfficiencyScale(); return status("停止聚光 · 全场镜面朝下平躺，聚光输出为 0"); }
   if (!frame?.daylight) throw new Error("太阳在地平线以下，不能进行效率着色");
   status(`正在计算全部 ${meta.mirror_ids.length.toLocaleString()} 面镜的总光学效率…`);
-  const data = await api("efficiencies", {time: currentTime});
+  const data = analysisSnapshot?.timestamp === currentTime ? {...analysisSnapshot.efficiencies,mean:analysisSnapshot.mean} : await api("efficiencies", {time: currentTime});
   if (gen !== generation || data.timestamp !== frame.timestamp) return;
   efficiencyData = data;
   fieldEfficiencyData = data;
@@ -924,7 +936,11 @@ async function selectTarget(id) {
   stopPlay();
   controlsBusy(true);
   try {
-    const result = await api("target", { time: currentTime, mirror: id });
+    const result = analysisSnapshot?.timestamp === currentTime
+      ? (await apiPost("analysis/instant", {time:currentTime,mirror:id,dni:analysisSnapshot.weather.dni,
+          temperature_c:analysisSnapshot.weather.temperature_c,pressure_hpa:analysisSnapshot.weather.pressure_hpa,
+          weather_source:analysisSnapshot.weather.source,weather_time:analysisSnapshot.weather.time,target_only:true})).target
+      : await api("target", { time: currentTime, mirror: id });
     selected = id;
     target = result;
     $("mirror").value = id;
@@ -953,6 +969,11 @@ function setDate(date, time) {
 }
 async function step(delta) {
   if (busy) return;
+  analysisController?.stop();
+  if (!meta.timestamps.includes(currentTime)) {
+    status("当前为独立分析时刻，请先选择历史数据日期再逐时播放", true);
+    return;
+  }
   const i = meta.timestamps.indexOf(currentTime) + delta;
   if (i < 0 || i >= meta.timestamps.length) {
     stopPlay();
@@ -995,6 +1016,7 @@ function localItem(utc) {
   };
 }
 $("date").onchange = () => {
+  analysisController?.stop();
   stopPlay();
   if (!timesByDate.has($("date").value)) {
     status("日期不在历史数据范围内", true);
@@ -1112,6 +1134,12 @@ function showLayoutSelectors() {
   updateDesignMethod();
 }
 async function init() {
+  if (window.webkit?.messageHandlers?.heliostatUpdateHealthy || window.chrome?.webview) {
+    const preferences = await api("update/preferences");
+    for (const [key, value] of Object.entries(preferences)) {
+      if (key.startsWith("heliostat-operation-") && localStorage.getItem(key) === null) localStorage.setItem(key, value);
+    }
+  }
   meta = await api("meta");
   readOperationParameters();
   mirrorIndex = new Map(meta.mirror_ids.map((id, i) => [id, i]));
@@ -1200,6 +1228,7 @@ async function init() {
   setDate(item.date, item.utc);
   $("plane").disabled = true;
   await loadTime();
+  analysisController?.initialize();
   if (location.hash === "#layout-field-top") {
     const card = document.querySelector("main > .spatial");
     card.open = true;
@@ -1221,7 +1250,25 @@ async function init() {
     history.replaceState(null, "", location.pathname + location.search);
   }
 }
-init().catch((e) => status(e.message, true));
+async function confirmDesktopInitialization() {
+  if (desktopInitializationConfirmed || desktopInitializationConfirming || !desktopInitializationFinished || !desktopViewerReady) return;
+  if (!window.webkit?.messageHandlers?.heliostatUpdateHealthy && !window.chrome?.webview) return;
+  try {
+    desktopInitializationConfirming = true;
+    const health = await api("health");
+    if (health.status !== "ok") return;
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    if (!frame || !target || !meta || renderer.getContext().isContextLost()) return;
+    desktopInitializationConfirmed = true;
+    window.webkit?.messageHandlers?.heliostatUpdateHealthy?.postMessage("ready");
+    window.chrome?.webview?.postMessage("update-healthy");
+  } catch (error) { console.error("Update initialization confirmation failed", error); }
+  finally { desktopInitializationConfirming = false; }
+}
+init().then(() => {
+  desktopInitializationFinished = true;
+  confirmDesktopInitialization();
+}).catch((e) => status(e.message, true));
 
 function reloadLayoutInTopView() {
   // Carry the destination through reload in desktop and native WebViews.
@@ -1230,6 +1277,7 @@ function reloadLayoutInTopView() {
 }
 
 async function selectLayout(id) {
+  analysisController?.stop();
   if (!id || busy) return;
   controlsBusy(true); status("正在载入镜场…");
   try { await apiPost("plants/select", {plant_id:id}); reloadLayoutInTopView(); }
@@ -1245,7 +1293,7 @@ $("importForm").onsubmit=async(e)=>{
   const body=Object.fromEntries([...f.entries()].filter(([k])=>k!=="file")); body.csv=await file.text(); body.plant_id=meta.environment_plant_id || meta.active_plant;
   $("importDialog").close(); stopPlay(); controlsBusy(true);
   $("designProgress").hidden=false; $("designProgress").textContent="正在校验并导入布局…";
-  try { await apiPost("plants/import",body); reloadLayoutInTopView(); }
+  try { analysisController?.stop(); await apiPost("plants/import",body); reloadLayoutInTopView(); }
   catch(err){ $("designProgress").hidden=true; status(err.message,true); controlsBusy(false); }
 };
 $("rearrangeForm").onsubmit=async(e)=>{
@@ -1254,7 +1302,7 @@ $("rearrangeForm").onsubmit=async(e)=>{
   if (body.scheme === "imported") return $("importDialog").showModal();
   stopPlay(); controlsBusy(true);
   $("designProgress").hidden=false; $("designProgress").textContent="正在基于当前电厂生成布局…";
-  try { await apiPost("layout/rearrange",body); reloadLayoutInTopView(); }
+  try { analysisController?.stop(); await apiPost("layout/rearrange",body); reloadLayoutInTopView(); }
   catch(err){ $("designProgress").hidden=true; status(err.message,true); controlsBusy(false); }
 };
 
@@ -1436,6 +1484,7 @@ function updateOperationState() {
 $("operationForm").onsubmit = async event => {
   event.preventDefault();
   if (busy) return status("请等待当前计算完成后应用启停参数", true);
+  analysisController?.stop();
   controlsBusy(true);
   try {
     operationParameters = validateOperationParameters(Object.fromEntries(Object.keys(defaultOperationParameters).map(key=>[key, Number($(key).value)])));
@@ -1448,3 +1497,24 @@ $("operationForm").onsubmit = async event => {
 };
 
 const openUpdates = initUpdates(api, apiPost);
+
+
+analysisController = initAnalysis({
+  getContext:()=>({meta,selected,busy,currentTime,frame}),
+  post:apiPost,setBusy:controlsBusy,
+  onModeChange:()=>stopPlay(),
+  applyResult:result=>{
+    analysisSnapshot=result;
+    currentTime=result.timestamp;frame=result.frame;target=result.target;
+    generation++;
+    concentrating=frame.daylight;
+    fieldEfficiencyData={...result.efficiencies,mean:result.mean};
+    efficiencyData=efficiencyEnabled&&frame.daylight?result.efficiencies:null;
+    $("operationState").textContent=frame.daylight?" · 分析工况：太阳跟踪":" · 分析工况：夜间";
+    const item=localItem(currentTime);setDate(item.date,currentTime);
+    if(![...$("time").options].some(option=>option.value===currentTime)) {
+      const option=document.createElement("option");option.value=currentTime;option.textContent=item.label+" · 分析时刻";$("time").append(option);$("time").value=currentTime;
+    }
+    drawFrame();drawDetails();draw2D();showEfficiencyScale();
+  }
+});

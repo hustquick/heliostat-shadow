@@ -13,6 +13,7 @@ use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::sync::{Mutex, OnceLock};
 use thiserror::Error;
 
+pub mod analysis;
 pub mod energy;
 
 const VECTOR_TOL: f64 = 1e-12;
@@ -1106,7 +1107,11 @@ impl MobileRuntime {
             .and_then(serde_json::Value::as_f64)
             .unwrap_or(0.0);
         let temperature = weather.temperature_series_c.get(index).copied();
-        let pressure_hpa = 1013.25 * (1.0 - 2.25577e-5 * altitude).max(0.01).powf(5.25588);
+        let pressure_hpa = plant
+            .config
+            .get("analysis_pressure_hpa")
+            .and_then(serde_json::Value::as_f64)
+            .unwrap_or(1013.25 * (1.0 - 2.25577e-5 * altitude).max(0.01).powf(5.25588));
         let refraction =
             RefractionCorrection::new(pressure_hpa, temperature.unwrap_or(weather.temperature_c))
                 .map_err(|e| e.to_string())?;
@@ -1418,6 +1423,10 @@ impl MobileRuntime {
             ("POST", "plants/import") => self.import_csv(payload),
             ("POST", "analysis/optimize-step") => {
                 energy::optimize_step(&self.bundle.plants[self.active], payload)
+            }
+            ("POST", "analysis/instant") => {
+                let plant = &self.bundle.plants[self.active];
+                analysis::instant(plant, self.environment(plant), payload)
             }
             ("POST", "analysis/energy") => {
                 let samples: Vec<energy::EnergySample> =
@@ -2220,6 +2229,12 @@ mod python {
     }
 
     #[pyfunction]
+    fn analyze_instant_json(py: Python<'_>, payload: String) -> PyResult<String> {
+        py.detach(|| analysis::instant_json(&payload))
+            .map_err(PyValueError::new_err)
+    }
+
+    #[pyfunction]
     fn optimize_energy_step_json(payload: &str) -> PyResult<String> {
         let value: serde_json::Value =
             serde_json::from_str(payload).map_err(|e| PyValueError::new_err(e.to_string()))?;
@@ -2234,6 +2249,7 @@ mod python {
         module.add_function(wrap_pyfunction!(compute_field_json, module)?)?;
         module.add_function(wrap_pyfunction!(resolve_towers_json, module)?)?;
         module.add_function(wrap_pyfunction!(evaluate_energy_json, module)?)?;
+        module.add_function(wrap_pyfunction!(analyze_instant_json, module)?)?;
         module.add_function(wrap_pyfunction!(optimize_energy_step_json, module)?)?;
         module.add("CORE_VERSION", env!("CARGO_PKG_VERSION"))?;
         Ok(())

@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
 
@@ -11,6 +13,7 @@ public sealed class ViewerForm : Form
     private string? portFile;
     private StreamWriter? log;
     private bool closing;
+    private string? launchedIdentity;
 
     public ViewerForm()
     {
@@ -62,14 +65,27 @@ public sealed class ViewerForm : Form
     {
         try
         {
-            var appData = Path.Combine(Environment.GetFolderPath(
+            launchedIdentity = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "server", "_internal", "viewer", "version.json"));
+            var appData = Environment.GetEnvironmentVariable("HELIOSTAT_VIEWER_DATA") ?? Path.Combine(Environment.GetFolderPath(
                 Environment.SpecialFolder.LocalApplicationData), "Heliostat Viewer");
             Directory.CreateDirectory(appData);
             var webData = Path.Combine(appData, "WebView2");
             var environment = await CoreWebView2Environment.CreateAsync(null, webData);
             await webView.EnsureCoreWebView2Async(environment);
             webView.CoreWebView2.WebMessageReceived += (_, e) => {
-                if (e.Source.StartsWith("http://127.0.0.1:") && e.TryGetWebMessageAsString() == "update-quit") Close();
+                if (webView.Source?.ToString() != e.Source || !e.Source.StartsWith("http://127.0.0.1:")) return;
+                var message = e.TryGetWebMessageAsString();
+                if (message == "update-quit") Close();
+                if (message == "update-healthy" && server is { HasExited: false })
+                {
+                    var helper = new ProcessStartInfo(Path.Combine(AppContext.BaseDirectory, "server", "heliostat-viewer-server.exe"))
+                    { UseShellExecute = false, CreateNoWindow = true };
+                    helper.Environment["HELIOSTAT_CONFIRM_IDENTITY"] = launchedIdentity ?? "";
+                    helper.ArgumentList.Add("--windows-healthy");
+                    helper.ArgumentList.Add(AppContext.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar));
+                    try { Process.Start(helper)?.Dispose(); }
+                    catch (Exception error) { WriteLog($"Update initialization confirmation failed: {error.Message}"); }
+                }
             };
             webView.NavigateToString("""
                 <!doctype html><meta charset="utf-8"><style>
@@ -135,6 +151,12 @@ public sealed class ViewerForm : Form
 
     private void Fail(string message)
     {
+        var appData = Environment.GetEnvironmentVariable("HELIOSTAT_VIEWER_DATA") ?? Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Heliostat Viewer");
+        var target = Path.GetFullPath(AppContext.BaseDirectory).TrimEnd(Path.DirectorySeparatorChar).ToLowerInvariant();
+        var key = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(target))).ToLowerInvariant()[..24];
+        var recovery = Path.Combine(appData, "Updates", key, "transaction", "recover.cmd");
+        if (File.Exists(recovery)) message += $"\n更新恢复入口：{recovery}\n退出应用及计算服务，等待更新助手启动超时结束后运行此文件。";
         MessageBox.Show(this, message, "塔式镜场设计与优化", MessageBoxButtons.OK, MessageBoxIcon.Error);
         Close();
     }

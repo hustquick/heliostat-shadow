@@ -8,6 +8,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKSc
     private var server: Process?
     private var portFile: URL?
     private var shuttingDown = false
+    private let launchedBuild = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? ""
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         createMenu()
@@ -62,6 +63,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKSc
     }
 
     func userContentController(_ controller: WKUserContentController, didReceive message: WKScriptMessage) {
+        if message.name == "heliostatUpdateHealthy" {
+            guard message.frameInfo.isMainFrame, message.frameInfo.securityOrigin.host == "127.0.0.1" else { return }
+            confirmUpdateHealth(); return
+        }
         if message.name == "heliostatUpdateQuit" { NSApp.terminate(nil); return }
         guard let body = message.body as? [String: String], let text = body["text"] else { return }
         let panel = NSSavePanel()
@@ -78,6 +83,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKSc
         configuration.websiteDataStore = .nonPersistent()
         configuration.userContentController.add(self, name: "heliostatExport")
         configuration.userContentController.add(self, name: "heliostatUpdateQuit")
+        configuration.userContentController.add(self, name: "heliostatUpdateHealthy")
         webView = WKWebView(frame: .zero, configuration: configuration)
         webView.setValue(false, forKey: "drawsBackground")
         webView.loadHTMLString("""
@@ -122,8 +128,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKSc
             .appendingPathComponent("heliostat-viewer-\(token).port")
         portFile = port
 
-        let logs = FileManager.default.homeDirectoryForCurrentUser
-            .appendingPathComponent("Library/Logs", isDirectory: true)
+        let logs: URL
+        if let dataPath = ProcessInfo.processInfo.environment["HELIOSTAT_VIEWER_DATA"] {
+            logs = URL(fileURLWithPath: dataPath).appendingPathComponent("Logs", isDirectory: true)
+        } else {
+            logs = FileManager.default.homeDirectoryForCurrentUser
+                .appendingPathComponent("Library/Logs", isDirectory: true)
+        }
         try? FileManager.default.createDirectory(at: logs, withIntermediateDirectories: true)
         let logURL = logs.appendingPathComponent("heliostat-shadow-viewer.log")
         FileManager.default.createFile(atPath: logURL.path, contents: nil)
@@ -176,11 +187,28 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKSc
         }
     }
 
+    private func confirmUpdateHealth() {
+        guard webView.url?.host == "127.0.0.1", server?.isRunning == true,
+              let resources = Bundle.main.resourceURL else { return }
+        let helper = Process()
+        helper.executableURL = resources.appendingPathComponent("server/heliostat-viewer-server")
+        helper.arguments = ["--macos-healthy", Bundle.main.bundlePath + ".update-state/state.json"]
+        var environment = ProcessInfo.processInfo.environment
+        environment["HELIOSTAT_CONFIRM_BUILD"] = launchedBuild
+        helper.environment = environment
+        do { try helper.run() }
+        catch { NSLog("Update health confirmation failed: %@", error.localizedDescription) }
+    }
+
     private func showFailure(_ message: String) {
         let alert = NSAlert()
         alert.alertStyle = .critical
         alert.messageText = "塔式镜场设计与优化无法启动"
+        let recovery = Bundle.main.bundlePath + ".update-state/recover.command"
         alert.informativeText = message
+        if FileManager.default.fileExists(atPath: recovery) {
+            alert.informativeText += "\n更新恢复入口：\(recovery)\n退出本应用，等待更新助手启动超时结束后双击该文件。"
+        }
         alert.addButton(withTitle: "退出")
         alert.runModal()
         NSApp.terminate(nil)

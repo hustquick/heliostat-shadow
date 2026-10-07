@@ -34,6 +34,8 @@ def make_manifest(assets, key):
         path = files[name]
         entries[target] = {'url': f'{REPO}/releases/download/v{version}/{name}', 'size': path.stat().st_size,
                            'sha256': hashlib.file_digest(path.open('rb'), 'sha256').hexdigest()}
+    entries['macos-arm64'].update(channel='desktop', system='macos', arch='arm64', minOS='12.0')
+    entries['windows-x64'].update(channel='desktop', system='windows', arch='x64', minOS='10.0')
     raw = json.dumps({'schema': 1, 'version': version, 'build': build,
                       'notes': (ROOT / 'RELEASE_NOTES.md').read_text(),
                       'date': datetime.now(ZoneInfo('Asia/Shanghai')).date().isoformat(), 'platforms': entries},

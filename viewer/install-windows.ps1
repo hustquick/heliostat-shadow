@@ -1,33 +1,13 @@
 param([string]$Target, [string]$Staged, [int]$ParentId)
 $ErrorActionPreference = 'Stop'
-$parent = Get-Process -Id $ParentId -ErrorAction SilentlyContinue
-if ($parent -and -not $parent.WaitForExit(120000)) { throw 'Application did not exit' }
-# Keep the existing install directory (and uninstaller) for installed and portable builds.
-$backup = Join-Path $env:LOCALAPPDATA ('Heliostat Viewer\Updates\backup-' + [DateTime]::UtcNow.Ticks)
-New-Item $backup -ItemType Directory -Force | Out-Null
-$copied = @()
-function Get-StagedFiles([string]$Directory, [string]$Relative = '') {
-    foreach ($item in Get-ChildItem -LiteralPath $Directory) {
-        $name = if ($Relative) { Join-Path $Relative $item.Name } else { $item.Name }
-        if ($item.PSIsContainer) { Get-StagedFiles $item.FullName $name }
-        else { [PSCustomObject]@{ Source = $item.FullName; Relative = $name } }
-    }
-}
-try {
-    Get-StagedFiles $Staged | ForEach-Object {
-        $relative = $_.Relative
-        $dest = Join-Path $Target $relative
-        $old = Join-Path $backup $relative
-        if (Test-Path $dest) { New-Item (Split-Path $old) -ItemType Directory -Force | Out-Null; Copy-Item $dest $old }
-        New-Item (Split-Path $dest) -ItemType Directory -Force | Out-Null
-        $copied += $relative
-        Copy-Item -LiteralPath $_.Source -Destination $dest -Force
-    }
-} catch {
-    foreach ($relative in $copied) {
-        $old = Join-Path $backup $relative; $dest = Join-Path $Target $relative
-        if (Test-Path $old) { Copy-Item $old $dest -Force } else { Remove-Item $dest -Force -ErrorAction SilentlyContinue }
-    }
-    throw
-}
-Start-Process (Join-Path $Target 'HeliostatViewer.exe')
+# Legacy wrapper; the normal update entry now launches the copied bundled runtime
+# directly. An existing signed transaction is required, never reconstruct one here.
+$identity = [IO.Path]::GetFullPath($Target).TrimEnd([IO.Path]::DirectorySeparatorChar).ToLowerInvariant()
+$sha = [Security.Cryptography.SHA256]::Create()
+$key = ([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($identity)))).Replace('-', '').ToLower().Substring(0,24)
+$base = if ($env:HELIOSTAT_VIEWER_DATA) { $env:HELIOSTAT_VIEWER_DATA } else { Join-Path $env:LOCALAPPDATA 'Heliostat Viewer' }
+$state = Join-Path $base "Updates\$key\transaction\state.json"
+$runtime = Join-Path (Split-Path $Staged) 'helper-runtime\heliostat-viewer-server.exe'
+if (-not (Test-Path -LiteralPath $state)) { throw 'No authorized update transaction exists' }
+& $runtime --windows-update $state
+if ($LASTEXITCODE -ne 0) { throw 'Update failed; consult the persistent transaction and recover.cmd' }

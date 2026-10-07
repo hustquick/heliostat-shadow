@@ -78,3 +78,12 @@ def optimize_energy_step(mirrors, samples, config, candidates, threshold_wh):
     moves = [dict(index=int(i),xy=list(map(float,xy))) for i,xy,*_ in candidates]
     return json.loads(_heliostat_rust.optimize_energy_step_json(json.dumps(dict(plant=plant,samples=inputs,
         candidates=moves,threshold_wh=float(threshold_wh)))))
+
+
+def analyze_instant(mirrors, config, payload):
+    if not available() or not hasattr(_heliostat_rust, 'analyze_instant_json'):
+        raise ValueError('指定时间/实时分析需要新版共享 Rust 内核，请重新构建应用')
+    plant = dict(id=payload.get('plant_id', 'analysis'), name='analysis', layout_status='model',
+                 reported_mirrors=len(mirrors), source='model', note='', config=config, metadata={},
+                 mirrors=[_mirror_payload(m) for m in mirrors])
+    return json.loads(_heliostat_rust.analyze_instant_json(json.dumps(dict(plant=plant, payload=payload))))

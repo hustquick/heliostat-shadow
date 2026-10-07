@@ -58,6 +58,24 @@ import Foundation
         return result
     }
 
+    // Heavy field analysis must not block WebKit or the main actor.
+    static func analysisRequest(payload: Any) async -> String? {
+        if !initialized { _ = initializeOfflineBundle() }
+        guard let data = try? JSONSerialization.data(withJSONObject: [
+            "method": "POST", "path": "analysis/instant", "payload": payload
+        ]), let input = String(data: data, encoding: .utf8) else { return nil }
+        return await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                let result: String? = input.withCString { pointer in
+                    guard let output = heliostat_mobile_request_json(pointer) else { return nil }
+                    defer { heliostat_free_string(output) }
+                    return String(cString: output)
+                }
+                continuation.resume(returning: result)
+            }
+        }
+    }
+
     private static func rawRequest(method: String, path: String, payload: Any) -> String? {
         guard let data = try? JSONSerialization.data(withJSONObject: ["method": method, "path": path, "payload": payload]),
               let input = String(data: data, encoding: .utf8) else { return nil }

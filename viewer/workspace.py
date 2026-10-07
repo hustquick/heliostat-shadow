@@ -446,6 +446,13 @@ class ViewerWorkspace:
             score += np.maximum(0, normal@sun)
         return score/len(suns)*atmospheric_transmittance(distance)
 
+    def analyze_instant(self, payload):
+        from rust_core import analyze_instant
+        with self.lock:
+            model = self.active
+            values = dict(payload, plant_id=self.active_id)
+            return analyze_instant(model.mirrors, model.config, values)
+
     def optical_energy(self, payload):
         from scripts.annual_energy import Sample, evaluate_energy
         from scripts.optimize_ps10_greedy import receiver_for

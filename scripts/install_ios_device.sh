@@ -15,8 +15,9 @@ if [[ -z "${TEAM_ID}" ]]; then
   exit 2
 fi
 
-APP_DIR="${ROOT}/build/ios-device/塔式镜场设计与优化.app"
-mkdir -p "${ROOT}/build/ios-device"
+DEVICE_BUILD="${IOS_DEVICE_BUILD_DIR:-${ROOT}/build/ios-device}"
+APP_DIR="${DEVICE_BUILD}/塔式镜场设计与优化.app"
+mkdir -p "${DEVICE_BUILD}"
 
 # A device install must rebuild the native core as well as the WebView files.
 # Otherwise Rust changes can leave the phone running an older calculation engine.
@@ -49,7 +50,7 @@ xcodebuild \
   DEVELOPMENT_TEAM="${TEAM_ID}" CODE_SIGN_STYLE=Automatic \
   PRODUCT_BUNDLE_IDENTIFIER="${BUNDLE_ID}" \
   MARKETING_VERSION="$(cat "${ROOT}/VERSION")" CURRENT_PROJECT_VERSION="$(cat "${ROOT}/BUILD_NUMBER")" \
-  CONFIGURATION_BUILD_DIR="${ROOT}/build/ios-device" build
+  CONFIGURATION_BUILD_DIR="${DEVICE_BUILD}" build
 
 if ! output="$(xcrun devicectl device install app --device "${DEVICE_ID}" "${APP_DIR}" 2>&1)"; then
   print -r -- "${output}" >&2

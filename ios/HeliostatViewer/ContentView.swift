@@ -52,9 +52,13 @@ private struct OfflineViewerWebView: UIViewRepresentable {
             }
             guard let body = message.body as? [String: Any],
                   let method = body["method"] as? String,
-                  let path = body["path"] as? String,
-                  let result = NativeCore.request(method: method, path: path,
-                                                  payload: body["payload"] ?? [:]),
+                  let path = body["path"] as? String else {
+                return (nil, "本地镜场接口调用失败")
+            }
+            let result = path == "analysis/instant" && method == "POST"
+                ? await NativeCore.analysisRequest(payload: body["payload"] ?? [:])
+                : NativeCore.request(method: method, path: path, payload: body["payload"] ?? [:])
+            guard let result,
                   let data = result.data(using: .utf8),
                   let object = try? JSONSerialization.jsonObject(with: data) else {
                 return (nil, "本地镜场接口调用失败")

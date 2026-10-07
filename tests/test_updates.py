@@ -142,3 +142,116 @@ def test_update_routes_reject_cross_origin_install_requests(identity):
         assert '来源' in response.json()['error']
     finally:
         server.shutdown();server.server_close();thread.join()
+
+
+def test_download_network_failure_preserves_installed_app(identity, monkeypatch, tmp_path):
+    root, _, _ = identity
+    target = tmp_path / 'installed'; target.mkdir()
+    (target / 'keep').write_text('old application')
+    manager = UpdateManager(root); manager.target = target
+    def fail(*args, **kwargs): raise ConnectionError('download failed')
+    monkeypatch.setattr(manager.http, 'get', fail)
+    manager.platform = 'windows-x64'
+    manager.manifest = {'platforms': {'windows-x64': {'url': REPO, 'size': 10, 'sha256': 'a'*64}}}
+    manager._download()
+    assert manager.status()['state'] == 'error' and manager.stage is None
+    assert (target / 'keep').read_text() == 'old application'
+
+
+def test_cancel_during_download_preserves_app_and_discards_owned_stage(identity, monkeypatch, tmp_path):
+    root, _, _ = identity
+    manager = UpdateManager(root); manager.platform = 'windows-x64'
+    manager.manifest = {'platforms': {'windows-x64': {'url': REPO, 'size': 20, 'sha256': 'a'*64}}}
+    class CancelResponse(Response):
+        def iter_content(self, _):
+            manager.start('cancel')
+            yield b'download'
+    monkeypatch.setattr(manager.http, 'get', lambda *a, **k: CancelResponse())
+    manager._download()
+    assert manager.status()['state'] == 'cancelled' and manager.stage is None
+
+
+def test_cancel_does_not_start_an_overlapping_task(identity, monkeypatch):
+    import threading
+    root, _, _ = identity
+    manager = UpdateManager(root)
+    released, running = threading.Event(), threading.Event()
+    def check():
+        running.set(); released.wait(3)
+    monkeypatch.setattr(manager, '_check', check)
+    manager.start('check'); assert running.wait(1)
+    worker = manager.worker
+    manager.start('cancel'); manager.start('check')
+    assert manager.worker is worker
+    released.set(); worker.join(3)
+    assert manager.worker is None
+
+
+def test_interrupted_download_is_recoverable_and_unknown_stage_is_not_deleted(identity, monkeypatch, tmp_path):
+    from desktop.update_storage import write
+    root, _, _ = identity
+    user = tmp_path/'private'; monkeypatch.setenv('HELIOSTAT_VIEWER_DATA',str(user))
+    target=tmp_path/'installed';target.mkdir();monkeypatch.setenv('HELIOSTAT_APP_PATH',str(target))
+    manager=UpdateManager(root)
+    unknown=tmp_path/'heliostat-update-unknown';unknown.mkdir();(unknown/'user-data').write_text('keep')
+    write(manager.session_file,{'status':{'state':'downloading'},'envelope':None,'stage':str(unknown)})
+    restarted=UpdateManager(root)
+    assert restarted.status()['state']=='error' and restarted.stage is None
+    assert (unknown/'user-data').read_text()=='keep'
+
+
+def test_ready_stage_reauthenticated_after_restart_and_tampering_rejected(identity, monkeypatch, tmp_path):
+    from desktop import updates
+    from desktop.update_storage import write
+    root, key, _=identity
+    monkeypatch.setenv('HELIOSTAT_VIEWER_DATA',str(tmp_path/'private'))
+    target=tmp_path/'installed';target.mkdir();monkeypatch.setenv('HELIOSTAT_APP_PATH',str(target))
+    monkeypatch.setattr(updates,'desktop_platform',lambda:'windows-x64')
+    stream=io.BytesIO()
+    with zipfile.ZipFile(stream,'w') as z:
+        z.writestr('HeliostatViewer.exe','app')
+        z.writestr('server/_internal/viewer/version.json','{"version":"1.0.4","build":20005}')
+    content=stream.getvalue()
+    envelope=signed(key,platforms={'windows-x64':{'url':REPO+'/releases/download/v1.0.4/package.zip','size':len(content),'sha256':hashlib.sha256(content).hexdigest()}})
+    manager=UpdateManager(root);manager.envelope=envelope;manager.manifest=verify_manifest(envelope,manager.public_key())
+    monkeypatch.setattr(manager.http,'get',lambda *a,**k:Response(content=content))
+    manager._download();assert manager.status()['state']=='ready'
+    (manager.stage/'unpacked/HeliostatViewer.exe').write_text('tampered unpacked')
+    restored=UpdateManager(root)
+    assert restored.status()['state']=='ready'
+    assert (restored.stage/'unpacked/HeliostatViewer.exe').read_text()=='app'
+    (restored.stage/'package.zip').write_bytes(b'corrupt')
+    rejected=UpdateManager(root)
+    assert rejected.status()['state']=='error'
+
+
+def test_operation_preferences_survive_update_cleanup_and_restart(identity, monkeypatch, tmp_path):
+    from desktop.update_storage import remove_stage, write
+    root, _, _ = identity
+    monkeypatch.setenv('HELIOSTAT_VIEWER_DATA',str(tmp_path/'user-data'))
+    target=tmp_path/'installed';target.mkdir();monkeypatch.setenv('HELIOSTAT_APP_PATH',str(target))
+    manager=UpdateManager(root)
+    values={'heliostat-operation-gemasolar':'{"startDni":400,"startElevation":15,"stopDni":100,"stopElevation":5}'}
+    manager._save_preferences(values)
+    stage=manager.session_file.parent/'heliostat-update-owned';stage.mkdir();write(stage/'owner.json',{'app':'heliostat-shadow'})
+    remove_stage(stage)
+    assert UpdateManager(root).preferences()==values
+    with pytest.raises(ValueError): manager._save_preferences({'unrelated-user-key':'{}'})
+    assert manager.preferences()==values
+
+
+def test_duplicate_native_window_cannot_start_a_second_update(identity, monkeypatch, tmp_path):
+    import threading
+    root, _, _=identity
+    monkeypatch.setenv('HELIOSTAT_VIEWER_DATA',str(tmp_path/'private'))
+    target=tmp_path/'installed';target.mkdir();monkeypatch.setenv('HELIOSTAT_APP_PATH',str(target))
+    first=UpdateManager(root);entered=threading.Event();release=threading.Event()
+    def paused_check():
+        entered.set();release.wait(3);first.state.update(state='current')
+    monkeypatch.setattr(first,'_check',paused_check)
+    first.start('check');assert entered.wait(1)
+    second=UpdateManager(root)
+    assert second.status()['state']=='checking'
+    with pytest.raises(ValueError,match='另一个'):second.start('check')
+    worker=first.worker;release.set();worker.join(3)
+    assert second.status()['state']=='current'

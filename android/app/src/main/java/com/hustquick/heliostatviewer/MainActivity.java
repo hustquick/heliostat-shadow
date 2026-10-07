@@ -21,6 +21,7 @@ import org.json.JSONObject;
 
 public final class MainActivity extends Activity {
     private WebView webView;
+    private final java.util.concurrent.ExecutorService computations = java.util.concurrent.Executors.newSingleThreadExecutor();
     private ValueCallback<Uri[]> fileCallback;
     private static final int FILE_REQUEST = 41;
     private static final int EXPORT_REQUEST = 42;
@@ -105,6 +106,16 @@ public final class MainActivity extends Activity {
     }
 
     public final class OfflineBridge {
+        @JavascriptInterface public void requestAsync(String id, String method, String path, String payload) {
+            computations.execute(() -> {
+                String result = request(method, path, payload);
+                runOnUiThread(() -> {
+                    if (webView != null) webView.evaluateJavascript(
+                        "window.heliostatNativeComplete?.(" + JSONObject.quote(id) + "," + JSONObject.quote(result) + ")", null);
+                });
+            });
+        }
+
         @JavascriptInterface public void saveFile(String name, String text) {
             runOnUiThread(() -> {
                 exportContent = text.getBytes(java.nio.charset.StandardCharsets.UTF_8);
@@ -148,7 +159,8 @@ public final class MainActivity extends Activity {
     }
 
     @Override protected void onDestroy() {
-        if (webView != null) webView.destroy();
+        computations.shutdownNow();
+        if (webView != null) { webView.destroy(); webView = null; }
         super.onDestroy();
     }
 }

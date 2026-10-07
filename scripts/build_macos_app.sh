@@ -7,7 +7,7 @@ PYTHON_BIN="${PYTHON_BIN:-${HOME}/venv/bin/python}"
 VERSION="${1:-$(<"${ROOT}/VERSION")}"
 ARCH="$(uname -m)"
 BUILD_ROOT="${ROOT}/build/macos"
-OUTPUT_ROOT="${ROOT}/dist/macos"
+OUTPUT_ROOT="${MACOS_OUTPUT_DIR:-${ROOT}/dist/macos}"
 APP="${OUTPUT_ROOT}/塔式镜场设计与优化.app"
 CONTENTS="${APP}/Contents"
 SERVER_NAME="heliostat-viewer-server"
@@ -95,6 +95,8 @@ cat > "${CONTENTS}/Info.plist" <<PLIST
 </dict></plist>
 PLIST
 
+# Finder/iCloud metadata must not be carried into a signed application.
+xattr -cr "${APP}"
 codesign --force --deep --sign - --timestamp=none "${APP}"
 codesign --verify --deep --strict --verbose=2 "${APP}"
 

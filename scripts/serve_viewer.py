@@ -48,6 +48,8 @@ class ViewerHandler(SimpleHTTPRequestHandler):
 
             if url.path == '/api/update/status':
                 data = self.server.updater.status()
+            elif url.path == '/api/update/preferences':
+                data = self.server.updater.preferences()
             elif url.path == '/api/health':
                 data = {'status': 'ok', 'rust_core': rust_available(),
                         'rust_core_version': rust_version()}
@@ -82,13 +84,15 @@ class ViewerHandler(SimpleHTTPRequestHandler):
                 origin = self.headers.get('Origin')
                 if origin and origin != 'http://' + self.headers.get('Host', ''):
                     raise ValueError('更新请求来源无效')
-                result = self.server.updater.start(self.path.rsplit('/', 1)[1])
+                result = self.server.updater.start(self.path.rsplit('/', 1)[1], data)
             elif self.path == '/api/plants/select':
                 result = self.model.select(str(data.get('plant_id', '')))
             elif self.path == '/api/plants/import':
                 result = self.model.import_csv(data)
             elif self.path == '/api/analysis/optimize-step':
                 result = self.model.optimize_energy_step(data)
+            elif self.path == '/api/analysis/instant':
+                result = self.model.analyze_instant(data)
             elif self.path == '/api/analysis/energy':
                 result = self.model.optical_energy(data)
             elif self.path == '/api/layout/rearrange':
