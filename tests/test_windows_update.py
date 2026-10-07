@@ -161,3 +161,23 @@ def test_old_running_window_cannot_confirm_new_installation(transaction,monkeypa
     monkeypatch.setenv('HELIOSTAT_CONFIRM_IDENTITY','{"version":"1.0.1","build":1}')
     update.healthy(path)
     assert not (path.parent/'healthy').exists() and (path.parent/'backup').exists()
+
+def test_pending_cleanup_retries_transient_runtime_sharing(transaction, monkeypatch):
+    import sys
+    target,stage,path=transaction
+    runtime=stage/'helper-runtime';runtime.mkdir();(runtime/'heliostat-viewer-server.exe').write_text('helper')
+    original=sys.executable
+    monkeypatch.setattr(sys,'executable',str(runtime/'heliostat-viewer-server.exe'))
+    update.run(path,lambda _:confirm(path))
+    monkeypatch.setattr(sys,'executable',original)
+    remove=update.shutil.rmtree
+    attempts=[]
+    def sharing_once(folder,*args,**kwargs):
+        if Path(folder)==runtime:
+            attempts.append(folder)
+            if len(attempts)==1: raise PermissionError('helper runtime still closing')
+        return remove(folder,*args,**kwargs)
+    monkeypatch.setattr(update.shutil,'rmtree',sharing_once)
+    update.healthy(path)
+    assert len(attempts)==2
+    assert not path.exists() and not stage.exists()

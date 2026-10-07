@@ -209,31 +209,29 @@ def _healthy(path):
     if state['phase'] in ('awaiting-health','recovery-required','healthy','cleanup-pending') and identity(target)==state['expected']:
         confirmed(target, state['expected'], state['token'])
         (path.parent/'healthy').write_text(state['token'])
-        if state['phase']=='cleanup-pending':
-            with transaction_lock(path) as locked:
-                if locked:
-                    try: cleanup(path,state,stage)
-                    except Exception as error:
-                        state['error']=str(error); write(path,state)
-                        with (path.parent/'errors.log').open('a') as log: log.write(str(error)+'\n')
-        else:
-            run(path)
-            # The running helper owns the lock; wait for it to exit before
-            # deleting its copied runtime, without holding up the UI process.
-            deadline=time.monotonic()+150
-            while path.exists() and time.monotonic()<deadline:
-                try:
-                    record=json.loads(path.read_text())
-                    if record['phase'] in ('healthy','cleanup-pending'):
-                        with transaction_lock(path) as locked:
-                            if locked:
-                                cleanup(path,record,stage); break
-                    elif record['phase']=='complete': break
-                except Exception as error:
+        if state['phase']!='cleanup-pending':
+            try: run(path)
+            except OSError:
+                # Startup was confirmed; transient sharing failures are retried below.
+                pass
+        # Helper process shutdown and Windows file sharing can outlive release
+        # of the transaction lock. Retry from the installed runtime in both
+        # the first confirmation and later cleanup-pending startup paths.
+        deadline=time.monotonic()+150
+        while path.exists() and time.monotonic()<deadline:
+            record=None
+            try:
+                record=json.loads(path.read_text())
+                if record['phase'] in ('healthy','cleanup-pending'):
+                    with transaction_lock(path) as locked:
+                        if locked:
+                            cleanup(path,record,stage); break
+                elif record['phase']=='complete': break
+            except OSError as error:
+                if record is not None:
                     record['error']=str(error); write(path,record)
                     with (path.parent/'errors.log').open('a') as log: log.write(str(error)+'\n')
-                    break
-                time.sleep(.2)
+            time.sleep(.2)
         finalize(path)
     elif state['phase'] in ('rolled-back','aborted') and identity(target)==state['old']:
         with transaction_lock(path) as locked:

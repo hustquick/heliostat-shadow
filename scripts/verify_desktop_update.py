@@ -142,6 +142,8 @@ def main():
             'real installed native process start','service and main viewer initialization callback','backup and stage cleanup','operation preferences and sentinel mirror-data hashes unchanged'])
         print(json.dumps(result,ensure_ascii=False,indent=2))
     except Exception as error:
+        for diagnostic in [manager._transaction(), manager._transaction().parent/'errors.log', directory(target)/'install.log']:
+            if diagnostic.exists(): print(str(diagnostic)+':\n'+diagnostic.read_text(errors='replace')[-12000:])
         result.update(passed=False,error=str(error));print(json.dumps(result,ensure_ascii=False,indent=2));raise
     finally:
         (folder/'result.json').write_text(json.dumps(result,ensure_ascii=False,indent=2))
