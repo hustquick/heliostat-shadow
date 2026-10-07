@@ -7,6 +7,7 @@ import * as THREE from "three";
 import { OrbitControls } from "./vendor/OrbitControls.js";
 import {fieldColors as colors} from "./palette.js";
 let analysisController, analysisSnapshot = null;
+let selectedAnalysisMode="historical";
 let desktopInitializationFinished = false, desktopInitializationConfirmed = false, desktopViewerReady = false, desktopInitializationConfirming = false;
 const $ = (id) => document.getElementById(id);
 const mobileClient = Boolean(window.heliostatNative?.requestAsync || window.webkit?.messageHandlers?.heliostatNative);
@@ -1050,7 +1051,7 @@ $("play").onclick = async () => {
   if(busy||analysisController?.busy) return;
   analysisController?.stop();
   analysisController?.focus();
-  playing=true;$("play").textContent="暂停";
+  selectedAnalysisMode="playback";playing=true;$("play").textContent="暂停";
   if(!(await step(0))) {stopPlay();return;}
   if(playing) playTimer=setTimeout(playLoop,1000);
 };
@@ -1238,7 +1239,7 @@ async function init() {
   $("plane").disabled = true;
   await loadTime();
   analysisController?.initialize();
-  if (location.hash === "#layout-field-top") {
+  if (location.hash.startsWith("#layout-field-top")) {
     const card = document.querySelector("main > .spatial");
     card.open = true;
     viewPreference = "overview";
@@ -1288,24 +1289,28 @@ function reloadLayoutInTopView() {
 
 const analysisTransferKey = "heliostat-analysis-transfer";
 function captureAnalysisMode() {
-  return {mode:analysisController?.live?"live":playing?"playback":analysisSnapshot?"instant":"historical",
+  return {mode:selectedAnalysisMode,
     time:$("analysisTime").value,dni:$("analysisDni").value,
     temperature:$("analysisTemperature").value,pressure:$("analysisPressure").value};
 }
 async function restoreAnalysisMode(saved) {
   if(!saved) {
-    const raw=sessionStorage.getItem(analysisTransferKey);
+    const transfer=new URLSearchParams(location.hash.slice(1)).get("analysis");
+    const raw=transfer||sessionStorage.getItem(analysisTransferKey);
     sessionStorage.removeItem(analysisTransferKey);
     if(!raw) return;
     try {saved=JSON.parse(raw);} catch {return;}
   }
+  selectedAnalysisMode=saved.mode;
   if(saved.mode==="historical") return;
   $("analysisTime").value=saved.time;
   $("analysisDni").value=saved.dni;
   $("analysisTemperature").value=saved.temperature;
   $("analysisPressure").value=saved.pressure;
   if(saved.mode==="playback") {
-    playing=true;$("play").textContent="暂停";
+    selectedAnalysisMode="playback";playing=true;$("play").textContent="暂停";
+    try { historicalSample(zonedInstant(saved.time,meta.timezone),meta.timestamps); }
+    catch { $("analysisTime").value=localInput(meta.default_time,meta.timezone); }
     if(!(await step(0))) {stopPlay();$("analysisPanel").open=true;return;}
     if(playing) playTimer=setTimeout(playLoop,1000);
   } else analysisController.resume(saved.mode==="live");
@@ -1321,7 +1326,8 @@ async function selectLayout(id) {
   try {
     await apiPost("plants/select", {plant_id:id});
     sessionStorage.setItem(analysisTransferKey,JSON.stringify(saved));
-    reloadLayoutInTopView();
+    history.replaceState(null,"",location.pathname+location.search+"#layout-field-top&analysis="+encodeURIComponent(JSON.stringify(saved)));
+    location.reload();
   } catch(e) {
     status(e.message,true);controlsBusy(false);switchingLayout=false;
     await restoreAnalysisMode(saved);
@@ -1551,7 +1557,7 @@ analysisController = initAnalysis({
     const ids={dni:"weatherDni",temperature_c:"weatherTemperature"};
     for(const field of fields) {const id=ids[field];if(id){$(id).textContent="数据缺失";$(id).dataset.missing="true";}}
   },
-  onModeChange:mode=>{if(mode!=="playback")stopPlay();},
+  onModeChange:mode=>{selectedAnalysisMode=mode;if(mode!=="playback")stopPlay();},
   onStart:()=>{
     stopPlay();
     const card=document.querySelector("main > .spatial");
