@@ -23,7 +23,7 @@ const context = vm.createContext({
   },
   animateCamera(fn) { fn(); }, applyViewPreference() {}, overview() {},
 });
-vm.runInContext(`let busy = false, efficiencyEnabled = false, towerColorEnabled = false,
+vm.runInContext(`let analysisController = {live:false}, busy = false, efficiencyEnabled = false, towerColorEnabled = false,
   efficiencyData = null, frame = {daylight:true, local_time:'12:00'}, concentrating = true,
   meta = {tower_count:2, towers:[{name:'A'},{name:'B'}]},
   towerColors = ['red','blue'], viewPreference = 'overview';`, context);
@@ -64,3 +64,11 @@ await element('efficiencyColor').onclick();
 assert.equal(run('efficiencyEnabled'), true, 'retain preference for next daylight frame');
 assert.equal(requests, 1);
 console.log('Playback controls remain interactive; view/color preferences survive frame updates and delayed errors.');
+
+run("analysisController.live=true; controlsBusy(true); controlsBusy(false)");
+assert.equal(element("mirror").disabled,true);
+assert.equal(element("submit").disabled,true);
+run("analysisController.live=false; controlsBusy(false)");
+assert.equal(element("mirror").disabled,false);
+assert.equal(element("submit").disabled,false);
+console.log("Target controls remain stable throughout live mode and unlock on stop.");

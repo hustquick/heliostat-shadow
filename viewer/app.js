@@ -796,13 +796,15 @@ function controlsBusy(value) {
     "time",
     "prev",
     "next",
-    "mirror",
   ])
     $(id).disabled = value;
   for (const id of ["designMethod", "currentLayout", "rearrange", "importPlant", "exportCoordinates"])
     $(id).disabled = value;
   updateDesignMethod();
-  document.querySelector("#selectMirror button").disabled = value;
+  // Keep target controls stable throughout live mode, including idle gaps.
+  const targetLocked = value || Boolean(analysisController?.live);
+  $("mirror").disabled = targetLocked;
+  document.querySelector("#selectMirror button").disabled = targetLocked;
 }
 async function loadTime() {
   if (busy) return;
@@ -1507,6 +1509,7 @@ const openUpdates = initUpdates(api, apiPost);
 analysisController = initAnalysis({
   getContext:()=>({meta,selected,busy,currentTime,frame}),
   post:apiPost,setBusy:controlsBusy,
+  onStatusChange:()=>controlsBusy(busy),
   onWeatherMissing:fields=>{
     const ids={dni:"weatherDni",temperature_c:"weatherTemperature"};
     for(const field of fields) {const id=ids[field];if(id){$(id).textContent="数据缺失";$(id).dataset.missing="true";}}

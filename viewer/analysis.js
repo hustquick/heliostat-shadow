@@ -90,7 +90,7 @@ export async function waitForIdle(isBusy, signal) {
   if(signal.aborted) throw new Error('分析已停止');
 }
 
-export function initAnalysis({getContext,post,applyResult,weather=createWeatherClient(),onModeChange=()=>{},onStart=()=>{},onWeatherMissing=()=>{},setBusy=()=>{}}) {
+export function initAnalysis({getContext,post,applyResult,weather=createWeatherClient(),onModeChange=()=>{},onStart=()=>{},onWeatherMissing=()=>{},onStatusChange=()=>{},setBusy=()=>{}}) {
   const $=id=>document.getElementById(id);
   let lastResult=null;
   const runner=createSerialAnalysis({
@@ -123,6 +123,7 @@ export function initAnalysis({getContext,post,applyResult,weather=createWeatherC
     },
     onResult:({result})=>{lastResult=result;applyResult(result);},
     onStatus:state=>{
+      onStatusChange(state);
       $('stopAnalysis').disabled=!runner?.running&&!runner?.busy;
       $('runAnalysis').disabled=state.state==='running'||runner?.busy;$('liveAnalysis').disabled=runner?.running||state.state==='running'||runner?.busy;
       if(state.state==='running') $('analysisStatus').textContent=state.live?'正在查询气象并分析设备当前时刻…':'正在计算指定时刻效率…';
