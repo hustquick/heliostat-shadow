@@ -62,7 +62,7 @@ def test_failed_start_and_recovery(transaction,monkeypatch):
     target,stage,path=transaction
     with pytest.raises(TimeoutError): update.run(path,lambda _:None,timeout=0)
     assert (path.parent/'backup').exists()
-    monkeypatch.setattr(update.subprocess,'Popen',lambda *a,**k:None)
+    monkeypatch.setattr(update,'launch_application',lambda *a:None)
     update.recover(path)
     assert update.identity(target)['build']==1
     assert (target/'user-settings.txt').read_text()=='settings'
@@ -140,7 +140,7 @@ def test_real_windows_file_sharing_failure_retains_recovery(transaction,monkeypa
         with pytest.raises(PermissionError):update.run(path,lambda _:None)
         assert (path.parent/'backup').exists()
     finally:kernel.CloseHandle(ctypes.c_void_p(handle))
-    monkeypatch.setattr(update.subprocess,'Popen',lambda *a,**k:None)
+    monkeypatch.setattr(update,'launch_application',lambda *a:None)
     update.recover(path)
     assert update.identity(target)['build']==1
 

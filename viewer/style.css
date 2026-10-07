@@ -1063,3 +1063,5 @@ main > .analysis-panel { grid-column:1 / -1; padding:0; }
 
 .environment-summary.navigation-focus:focus-visible { outline:none; }
 .environment-summary #weatherDni, .environment-summary #weatherElevation, .environment-summary #weatherTemperature { color:var(--text); }
+
+.environment-summary #weather > div > span[data-missing=true] { flex-basis:8ch; width:8ch; }

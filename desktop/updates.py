@@ -54,7 +54,11 @@ def extract_archive(archive, destination):
             raise ValueError('安装包解压大小超限')
         links = []
         for item in bundle.infolist():
-            path = PurePosixPath(item.filename)
+            # ZipInfo normalizes backslashes on Windows; validate the original
+            # central-directory name before that platform-specific conversion.
+            if item.orig_filename != item.filename:
+                raise ValueError('安装包包含不安全路径')
+            path = PurePosixPath(item.orig_filename)
             if ':' in item.filename or path.is_absolute() or '..' in path.parts or '\\' in item.filename:
                 raise ValueError('安装包包含不安全路径')
             if (item.external_attr >> 16) & 0o170000 == 0o120000:

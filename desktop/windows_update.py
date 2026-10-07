@@ -12,6 +12,10 @@ import uuid
 from desktop.update_storage import directory, owned_stage, write, authenticate_stage, confirmed, remove_stage, remove_transaction
 
 
+def launch_application(app):
+    return subprocess.Popen([str(app/'HeliostatViewer.exe')], cwd=app)
+
+
 def identity(target):
     return json.loads((target / 'server/_internal/viewer/version.json').read_text())
 
@@ -103,7 +107,7 @@ def run(path, launch=None, timeout=120):
     with transaction_lock(path) as locked:
         if not locked: return
         state, target, stage = load(path)
-        launch = launch or (lambda app: subprocess.Popen([str(app/'HeliostatViewer.exe')], cwd=app))
+        launch = launch or launch_application
         old_exited = False
         try:
             if state['phase'] == 'prepared':
@@ -250,7 +254,7 @@ def recover(path):
             result=subprocess.run(['powershell.exe','-NoProfile','-EncodedCommand',encoded],capture_output=True)
             if result.returncode: raise RuntimeError('Quit the application and its server before running recover.cmd')
         rollback(path,state,target)
-        subprocess.Popen([str(target/'HeliostatViewer.exe')],cwd=target)
+        launch_application(target)
 
 
 from contextlib import contextmanager

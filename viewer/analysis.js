@@ -33,6 +33,17 @@ export function localInput(instant, timezone) {
   return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}:${p.second}`;
 }
 
+export function historicalSample(instant, timestamps) {
+  const wanted=Date.parse(instant);
+  let selected=null,distance=Infinity;
+  for(const time of timestamps) {
+    const gap=Math.abs(Date.parse(time)-wanted);
+    if(gap<distance) {distance=gap;selected=time;}
+  }
+  if(!selected||distance>30*60000) throw new Error('所选时刻没有历史气象样本；逐时播放需在该电厂历史数据范围内');
+  return selected;
+}
+
 export function createSerialAnalysis({execute,onResult,onStatus,clock=()=>Date.now(),setTimer=setTimeout,clearTimer=clearTimeout,base=BASE_PERIOD_MS,elapsedClock=clock}) {
   let running=false,busy=false,timer=null,generation=0,controller=null;
   const cancel = () => { const active=running||busy;generation++;running=false;clearTimer(timer);controller?.abort();if(active)onStatus?.({state:'stopped'}); };
@@ -79,9 +90,9 @@ export async function waitForIdle(isBusy, signal) {
   if(signal.aborted) throw new Error('分析已停止');
 }
 
-export function initAnalysis({getContext,post,applyResult,weather=createWeatherClient(),onModeChange=()=>{},onStart=()=>{},setBusy=()=>{}}) {
+export function initAnalysis({getContext,post,applyResult,weather=createWeatherClient(),onModeChange=()=>{},onStart=()=>{},onWeatherMissing=()=>{},setBusy=()=>{}}) {
   const $=id=>document.getElementById(id);
-  let lastResult=null,stepping=false;
+  let lastResult=null;
   const runner=createSerialAnalysis({
     elapsedClock:()=>performance.now(),
     execute:async ({live,signal})=>{
@@ -92,12 +103,16 @@ export function initAnalysis({getContext,post,applyResult,weather=createWeatherC
         await waitForIdle(()=>getContext().busy,signal);
         ctx=getContext();
       }
-      onModeChange(live?'live':stepping?'playback':'instant');
+      onModeChange(live?'live':'instant');
       const time=live?new Date().toISOString():zonedInstant($('analysisTime').value,ctx.meta.timezone);
       const number=id=>{if(!$(id).value.trim())throw new Error('请完整填写气象参数');return Number($(id).value);};
       setBusy(true);
       try {
-      const meteo=live?await weather(ctx.meta.site_location,signal):{
+      let meteo;
+      if(live) {
+        try { meteo=await weather(ctx.meta.site_location,signal); }
+        catch(error) { if(!signal.aborted) onWeatherMissing(error.missingFields||['dni','temperature_c','pressure_hpa']);throw error; }
+      } else meteo={
         dni:number('analysisDni'),temperature_c:number('analysisTemperature'),pressure_hpa:number('analysisPressure'),weather_source:'manual',weather_time:time};
       if(signal.aborted) throw new Error('分析已停止');
       const result=await post('analysis/instant',{time,mirror:ctx.selected,...meteo});
@@ -109,7 +124,7 @@ export function initAnalysis({getContext,post,applyResult,weather=createWeatherC
     onResult:({result})=>{lastResult=result;applyResult(result);},
     onStatus:state=>{
       $('stopAnalysis').disabled=!runner?.running&&!runner?.busy;
-      $('runAnalysis').disabled=state.state==='running'||runner?.busy;$('liveAnalysis').disabled=state.state==='running'||runner?.busy;
+      $('runAnalysis').disabled=state.state==='running'||runner?.busy;$('liveAnalysis').disabled=runner?.running||state.state==='running'||runner?.busy;
       if(state.state==='running') $('analysisStatus').textContent=state.live?'正在查询气象并分析设备当前时刻…':'正在计算指定时刻效率…';
       else if(state.state==='error') {$('analysisStatus').textContent=`分析失败：${state.error}${state.live?'；稍后重试，保留上次结果。':''}`;$('analysisStatus').dataset.stale='true';}
       else if(state.state==='ready') {$('analysisStatus').textContent=`计算耗时 ${(state.elapsed/1000).toFixed(1)} 秒${state.live?` · 更新周期 ${(state.period/1000).toFixed(0)} 秒 · 下次计算 ${new Date(state.nextAt).toLocaleTimeString('zh-CN',{hour12:false})}`:''}`;$('analysisStatus').dataset.stale='false';}
@@ -118,18 +133,5 @@ export function initAnalysis({getContext,post,applyResult,weather=createWeatherC
   });
   $('runAnalysis').onclick=()=>{onStart('instant');runner.once();};$('liveAnalysis').onclick=()=>{onStart('live');runner.start();};$('stopAnalysis').onclick=()=>runner.stop();
   document.addEventListener('visibilitychange',()=>{if(document.hidden)runner.stop();});
-  const advance=async delta=>{
-    if(runner.busy||getContext().busy) return false;
-    if(delta) {
-      try {
-        const time=zonedInstant($('analysisTime').value,getContext().meta.timezone);
-        const shifted=new Date(Date.parse(time)+delta*3600000).toISOString();
-        if(new Date(shifted).getUTCFullYear()<1900||new Date(shifted).getUTCFullYear()>2100) throw new Error('日期超出支持范围');
-        $('analysisTime').value=localInput(shifted,getContext().meta.timezone);
-      } catch(error) { $('analysisStatus').textContent=error.message;return false; }
-    }
-    stepping=true;
-    try{return await runner.once();}finally{stepping=false;}
-  };
-  return {step:advance,focus:onStart,stop:()=>runner.stop(),get busy(){return runner.busy;},get live(){return runner.running;},get result(){return lastResult;},initialize(){const ctx=getContext();$('analysisTimezone').textContent=ctx.meta.timezone;$('analysisTime').value=localInput(ctx.currentTime||Date.now(),ctx.meta.timezone);$('analysisTemperature').value=ctx.frame?.temperature??12;}};
+  return {focus:onStart,stop:()=>runner.stop(),get busy(){return runner.busy;},get live(){return runner.running;},get result(){return lastResult;},initialize(){const ctx=getContext();$('analysisTimezone').textContent=ctx.meta.timezone;$('analysisTime').value=localInput(ctx.currentTime||Date.now(),ctx.meta.timezone);$('analysisTemperature').value=ctx.frame?.temperature??12;}};
 }

@@ -45,7 +45,8 @@ def test_manifest_tamper_and_wrong_origin_are_rejected(identity):
 @pytest.mark.parametrize('name', ['../escape', '/absolute', 'dir/../../escape', 'dir\\escape'])
 def test_archive_cannot_write_outside_stage(tmp_path, name):
     archive = tmp_path / 'bad.zip'
-    with zipfile.ZipFile(archive, 'w') as z: z.writestr(name, b'bad')
+    info = zipfile.ZipInfo(); info.filename = name
+    with zipfile.ZipFile(archive, 'w') as z: z.writestr(info, b'bad')
     with pytest.raises(ValueError): extract_archive(archive, tmp_path / 'out')
 
 
@@ -113,6 +114,7 @@ def test_numeric_version_comparison():
 
 def test_publication_rejects_existing_version_and_nonincreasing_build(identity, monkeypatch):
     from scripts import publish_release
+    monkeypatch.delenv("GITHUB_SHA", raising=False)
     root, key, _ = identity
     (root / 'VERSION').write_text('1.0.4')
     (root / 'BUILD_NUMBER').write_text('20004')

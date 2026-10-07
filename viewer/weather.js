@@ -1,7 +1,7 @@
 // Common Open-Meteo adapter used unchanged by all four WebViews.
 const ENDPOINT = 'https://api.open-meteo.com/v1/forecast';
 export const WEATHER_CACHE_MS = 5 * 60_000;
-export const WEATHER_MAX_AGE_MS = 20 * 60_000;
+export const WEATHER_MAX_AGE_MS = 30 * 60_000;
 
 export function parseWeather(data, now = Date.now()) {
   if (data?.error) throw new Error(data.reason || '气象服务返回错误');
@@ -16,8 +16,15 @@ export function parseWeather(data, now = Date.now()) {
   if (index < 0 || now - series.time[index] * 1000 > WEATHER_MAX_AGE_MS) throw new Error('气象数据已过期或设备时钟与服务时间不一致');
   const dni = series.direct_normal_irradiance_instant?.[index];
   const temperature = series.temperature_2m?.[index], pressure = series.surface_pressure?.[index];
-  if (!Number.isFinite(dni) || dni < 0 || dni > 2000 || !Number.isFinite(temperature) || temperature < -90 || temperature > 70 || !Number.isFinite(pressure) || pressure < 100 || pressure > 1100)
-    throw new Error('当前气象样本不完整或数值异常');
+  const missing=[];
+  if(!Number.isFinite(dni)||dni<0||dni>2000) missing.push('dni');
+  if(!Number.isFinite(temperature)||temperature < -90||temperature > 70) missing.push('temperature_c');
+  if(!Number.isFinite(pressure)||pressure < 100||pressure > 1100) missing.push('pressure_hpa');
+  if(missing.length) {
+    const error=new Error('当前气象样本不完整或数值异常');
+    error.missingFields=missing;
+    throw error;
+  }
   return {dni, temperature_c: temperature, pressure_hpa: pressure,
     weather_source:'open-meteo-model',weather_time:new Date(series.time[index]*1000).toISOString(),
     fetched_at:new Date(now).toISOString(), grid_latitude:data.latitude,grid_longitude:data.longitude};

@@ -1,6 +1,6 @@
 import {androidRequest} from './native-bridge.js';
 import {initUpdates} from "./updates.js";
-import {initAnalysis} from "./analysis.js";
+import {initAnalysis,zonedInstant,localInput,historicalSample} from "./analysis.js";
 
 import {defaultOperationParameters, validateOperationParameters, nextOperationState, parkedVertices} from "./operation.js";
 import * as THREE from "three";
@@ -396,9 +396,10 @@ function drawFrame() {
   }
   $("displayTime").dateTime=frame.timestamp;
   $("displayTime").textContent=new Date(frame.timestamp).toLocaleString("zh-CN",{timeZone:meta.timezone,hour12:false})+" · "+meta.timezone;
+  for(const id of ["weatherDni","weatherElevation","weatherTemperature"]) $(id).removeAttribute("data-missing");
   $("weatherDni").textContent = frame.dni.toFixed(1);
   $("weatherElevation").textContent = frame.elevation.toFixed(2);
-  $("weatherTemperature").textContent = Number.isFinite(frame.temperature) ? frame.temperature.toFixed(1) : "暂无数据";
+  $("weatherTemperature").textContent = Number.isFinite(frame.temperature) ? frame.temperature.toFixed(1) : "数据缺失";
 }
 function svgPath(parts) {
   return parts
@@ -971,7 +972,21 @@ function setDate(date, time) {
 }
 async function step(delta) {
   if(busy) return false;
-  return analysisController?.step(delta);
+  try {
+    const value=$("analysisTime").value;
+    const currentLocal=localInput(currentTime,meta.timezone);
+    const matchesCurrent=value===currentLocal||(value===currentLocal.slice(0,16)&&currentLocal.endsWith(":00"));
+    const instant=matchesCurrent?currentTime:zonedInstant(value,meta.timezone);
+    const utc=historicalSample(new Date(Date.parse(instant)+delta*3600000).toISOString(),meta.timestamps);
+    analysisController?.stop();
+    const item=localItem(utc);setDate(item.date,utc);
+    $("analysisTime").value=localInput(utc,meta.timezone);
+    await loadTime();
+    if(frame?.timestamp!==utc||!target) return false;
+    $("analysisDni").value=frame.dni;
+    if(Number.isFinite(frame.temperature)) $("analysisTemperature").value=frame.temperature;
+    return true;
+  } catch(error) { $("analysisStatus").textContent=error.message;status(error.message,true);return false; }
 }
 function stopPlay() {
   playing = false;
@@ -1492,6 +1507,10 @@ const openUpdates = initUpdates(api, apiPost);
 analysisController = initAnalysis({
   getContext:()=>({meta,selected,busy,currentTime,frame}),
   post:apiPost,setBusy:controlsBusy,
+  onWeatherMissing:fields=>{
+    const ids={dni:"weatherDni",temperature_c:"weatherTemperature"};
+    for(const field of fields) {const id=ids[field];if(id){$(id).textContent="数据缺失";$(id).dataset.missing="true";}}
+  },
   onModeChange:mode=>{if(mode!=="playback")stopPlay();},
   onStart:()=>{
     stopPlay();

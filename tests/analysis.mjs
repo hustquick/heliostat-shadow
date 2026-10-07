@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {adaptivePeriod,createSerialAnalysis,zonedInstant,localInput,waitForIdle} from '../viewer/analysis.js';
+import {adaptivePeriod,createSerialAnalysis,zonedInstant,localInput,waitForIdle,historicalSample} from '../viewer/analysis.js';
 import {parseWeather,createWeatherClient} from '../viewer/weather.js';
 assert.equal(adaptivePeriod(90000),95000);
 assert.equal(adaptivePeriod(200),5000);
@@ -12,8 +12,8 @@ for(const s of ['2026-02-30T12:00','2026-03-08T02:30','2026-11-01T01:30']) asser
 let now=1800000000000;
 const sample=()=>({latitude:30,longitude:110,minutely_15_units:{direct_normal_irradiance_instant:'W/m²',temperature_2m:'°C',surface_pressure:'hPa'},minutely_15:{time:[now/1000-100,now/1000+800],direct_normal_irradiance_instant:[800,900],temperature_2m:[20,21],surface_pressure:[1000,1001]}});
 assert.equal(parseWeather(sample(),now).dni,800);
-for(const field of ['direct_normal_irradiance_instant','temperature_2m','surface_pressure']) {const data=sample();data.minutely_15[field][0]=null;assert.throws(()=>parseWeather(data,now));}
-assert.throws(()=>parseWeather(sample(),now+2100000));
+for(const field of ['direct_normal_irradiance_instant','temperature_2m','surface_pressure']) {const data=sample();data.minutely_15[field][0]=null;assert.throws(()=>parseWeather(data,now),error=>Array.isArray(error.missingFields)&&error.missingFields.length===1);}
+assert.throws(()=>parseWeather(sample(),now+2700000));
 let calls=0;const weather=createWeatherClient(async()=>{calls++;return {ok:true,json:async()=>sample()};},()=>now);
 const site={latitude:30,longitude:110};
 assert.equal((await weather(site)).cached,false);assert.equal((await weather(site)).cached,true);assert.equal(calls,1);
@@ -51,3 +51,10 @@ let occupied=true;const waitController=new AbortController();
 const idle=waitForIdle(()=>occupied,waitController.signal);setTimeout(()=>{occupied=false;},10);await idle;
 const canceled=new AbortController();const blocked=waitForIdle(()=>true,canceled.signal);canceled.abort();await assert.rejects(blocked,/停止/);
 console.log('playback-to-analysis drain and abort passed');
+
+const archived=['2025-03-20T06:00:00Z','2025-03-20T07:00:00Z'];
+assert.equal(historicalSample('2025-03-20T06:00:00Z',archived),archived[0]);
+assert.equal(historicalSample('2025-03-20T06:10:00Z',archived),archived[0]);
+assert.equal(historicalSample('2025-03-20T07:00:00Z',archived),archived[1]);
+assert.throws(()=>historicalSample('2026-03-20T06:00:00Z',archived),/历史/);
+console.log('historical sampling alignment and out-of-range protection passed');
