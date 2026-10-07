@@ -1049,3 +1049,11 @@ main > .analysis-panel { grid-column:1 / -1; padding:0; }
 .current-time-info { display:flex; flex-wrap:wrap; gap:6px 10px; margin:0; padding:0 24px 12px; font-size:12px; line-height:1.6; color:var(--muted); }
 .current-time-info time { color:var(--text); font-variant-numeric:tabular-nums; }
 @media(max-width:700px) { .current-time-info { padding:0 8px 10px; font-size:11px; } }
+
+/* Current time and weather are one compact group with equal outer spacing. */
+.controlarea { padding-bottom:0; }
+.environment-summary { display:grid; gap:4px; margin:12px 0; padding:0 24px; }
+.environment-summary > .current-time-info { padding:0; }
+.environment-summary > .statusline { margin:0; padding:0; gap:4px; }
+.environment-summary #weather { height:auto; min-height:1.5em; }
+@media(max-width:700px) { .environment-summary { padding:0 8px; } }

@@ -456,7 +456,7 @@ function alignPlantSelectorWidth() {
   const {width, left} = card.getBoundingClientRect();
   document.documentElement.style.setProperty("--primary-card-width", `${width}px`);
   $("plant").parentElement.style.maxWidth = `${width}px`;
-  for (const selector of [".controlarea", ".statusline"]) {
+  for (const selector of [".controlarea", ".environment-summary"]) {
     const row = document.querySelector(selector);
     row.style.paddingLeft = `${left}px`; row.style.paddingRight = `${left}px`;
   }
