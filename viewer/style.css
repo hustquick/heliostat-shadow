@@ -994,16 +994,35 @@ main > details > summary.navigation-focus:focus-visible { outline:none; }
 
 .update-date { margin: 6px 0 0; color: #849eac; font-size: 12px; }
 
-main > .analysis-panel { grid-column: 1 / -1; padding-bottom: 16px; }
-.analysis-controls { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; padding: 16px; }
-.analysis-controls label { display: grid; gap: 6px; font-size: 13px; }
-.analysis-controls input { max-width: 240px; width: 100%; box-sizing: border-box; }
-.analysis-controls input[type=number] { width: 130px; }
-.analysis-status, #analysisTimestamp, .analysis-source, .analysis-note { margin: 12px 16px; line-height: 1.6; }
-.analysis-metrics, .analysis-factors { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin: 16px; }
-.analysis-metrics div, .analysis-factors div { border: 1px solid #29404b; border-radius: 10px; padding: 12px; background: #0b1922; }
-.analysis-metrics dt, .analysis-factors dt { font-size: 12px; color: #9fb6c3; }
-.analysis-metrics dd, .analysis-factors dd { margin: 8px 0 0; font-size: 20px; color: #e4f4fc; font-variant-numeric: tabular-nums; }
-.analysis-note, .analysis-source { color: #9fb6c3; font-size: 12px; }
-#analysisResults[data-stale=true] .analysis-metrics { opacity: .55; }
-@media (max-width: 700px) { .analysis-controls { display: grid; grid-template-columns: 1fr 1fr; } .analysis-controls label:first-child { grid-column: 1 / -1; } .analysis-controls input, .analysis-controls input[type=number] { width: 100%; max-width: none; } .analysis-controls button { min-height: 44px; } }
+main > .analysis-panel { grid-column:1 / -1; padding:0; }
+.analysis-controls { display:grid; grid-template-columns:minmax(220px,1fr) minmax(0,1.4fr); gap:16px; margin:16px; }
+.analysis-controls label { display:grid; gap:8px; min-width:0; color:var(--muted); font-size:13px; }
+.analysis-controls input { display:block; width:100%; min-width:0; max-width:100%; height:40px; box-sizing:border-box; font-size:14px; }
+.analysis-time { min-width:0; }
+.analysis-timezone { margin:8px 0 0; color:var(--muted); font-size:12px; }
+.analysis-timezone strong { font-weight:500; }
+.analysis-weather { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; align-items:start; min-width:0; }
+.analysis-actions { grid-column:1 / -1; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+.analysis-actions button { width:100%; min-width:0; min-height:40px; box-sizing:border-box; }
+.analysis-status, #analysisTimestamp, .analysis-source { margin:12px 16px; line-height:1.6; font-size:13px; }
+.analysis-metrics, .analysis-factors { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin:16px; }
+.analysis-metrics div, .analysis-factors div { min-width:0; border:1px solid var(--line); border-radius:8px; padding:12px; background:var(--bg); }
+.analysis-metrics dt, .analysis-factors dt { font-size:12px; color:var(--muted); line-height:1.5; }
+.analysis-metrics dd, .analysis-factors dd { margin:8px 0 0; font-size:18px; color:var(--text); font-variant-numeric:tabular-nums; }
+.analysis-source { color:var(--muted); font-size:12px; }
+.analysis-method { margin:16px; border-top:1px solid var(--line); padding-top:12px; color:var(--muted); font-size:12px; }
+.analysis-method > summary { display:flex; align-items:center; min-height:28px; }
+.analysis-note { margin:8px 0 0; line-height:1.7; }
+#analysisResults[data-stale=true] .analysis-metrics { opacity:.55; }
+@media(max-width:700px) {
+ .analysis-controls { grid-template-columns:minmax(0,1fr); margin:14px; gap:14px; }
+ .analysis-controls input { min-height:44px; height:44px; }
+ .analysis-controls input[type=datetime-local] { -webkit-appearance:none; appearance:none; text-align:left; }
+ .analysis-controls input::-webkit-date-and-time-value { text-align:left; }
+ .analysis-weather { gap:8px; }
+ .analysis-actions { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+ .analysis-actions button { min-height:44px; padding:8px; font-size:13px; }
+ .analysis-actions #stopAnalysis { grid-column:1 / -1; }
+ .analysis-metrics, .analysis-factors { grid-template-columns:repeat(2,minmax(0,1fr)); margin:14px; }
+ .analysis-status, #analysisTimestamp, .analysis-source, .analysis-method { margin-left:14px; margin-right:14px; }
+}

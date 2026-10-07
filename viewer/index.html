@@ -95,33 +95,6 @@
       <div id="weather"><div><span>DNI</span><span id="weatherDni">—</span><span>W/m²</span></div><div><span>太阳高度</span><span id="weatherElevation">—</span><span>°</span></div><div><span>气温</span><span id="weatherTemperature">—</span><span>℃</span></div></div>
     </div>
     <main>
-      <details id="analysisPanel" class="panel analysis-panel" open>
-        <summary class="panelhead"><h2>指定时间与实时效率分析</h2></summary>
-        <div class="analysis-controls">
-          <label>电厂当地时间 <input id="analysisTime" type="datetime-local" step="1" min="1900-01-01T00:00" max="2100-12-31T23:59:59" /></label>
-          <span>时区 <strong id="analysisTimezone">—</strong></span>
-          <label>DNI（W/m²）<input id="analysisDni" type="number" min="0" max="2000" step="0.1" value="800" /></label>
-          <label>气温（°C）<input id="analysisTemperature" type="number" min="-90" max="70" step="0.1" value="12" /></label>
-          <label>气压（hPa）<input id="analysisPressure" type="number" min="100" max="1100" step="0.1" value="1013.25" /></label>
-          <button id="runAnalysis" type="button">分析指定时间</button>
-          <button id="liveAnalysis" type="button">启动实时分析</button>
-          <button id="stopAnalysis" type="button" disabled>停止分析</button>
-        </div>
-        <p id="analysisStatus" class="analysis-status" role="status" aria-live="polite">指定时间使用输入气象参数；实时模式使用设备当前时间并查询近实时气象。</p>
-        <div id="analysisResults" hidden>
-          <p id="analysisTimestamp"></p>
-          <dl class="analysis-metrics">
-            <div><dt>全场光学效率（面积加权）</dt><dd id="analysisMean">—</dd></div>
-            <div><dt>最低逐镜效率</dt><dd id="analysisMin">—</dd></div>
-            <div><dt>最高逐镜效率</dt><dd id="analysisMax">—</dd></div>
-            <div><dt>跟踪工况接收光学功率</dt><dd id="analysisPower">—</dd></div>
-            <div><dt>计算镜数</dt><dd id="analysisCount">—</dd></div>
-          </dl>
-          <dl id="analysisFactors" class="analysis-factors" aria-label="各项效率因子平均值"></dl>
-          <p id="analysisSource" class="analysis-source"></p>
-        </div>
-        <p class="analysis-note">效率按太阳跟踪工况计算，联合阴影遮挡只扣除一次。各因子为逐镜平均值，其平均值乘积不等于全场效率；DNI 用于接收光学功率，不额外重复扣除云量。三维场景、目标投影和效率着色同步到结果时刻。实时模式串行计算，耗时越长刷新周期越长。气象来源：<a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo</a>，模型数据，非电厂测站实测。</p>
-      </details>
       <details class="panel spatial" open>
         <summary class="panelhead">
           <h2>01 / 三维镜场</h2>
@@ -227,8 +200,41 @@
           悬停表格或二维着色区，高亮对应镜面；点击编号切换目标。单镜遮挡面积可能重叠，不能直接相加。
         </p>
       </details>
+      <details id="analysisPanel" class="panel analysis-panel">
+        <summary class="panelhead"><h2>04 / 指定时间与实时效率分析</h2></summary>
+        <div class="analysis-controls">
+          <div class="analysis-time">
+          <label>电厂当地时间 <input id="analysisTime" type="datetime-local" step="1" min="1900-01-01T00:00" max="2100-12-31T23:59:59" /></label>
+          <p class="analysis-timezone">时区 · <strong id="analysisTimezone">—</strong></p>
+          </div>
+          <div class="analysis-weather">
+          <label>DNI（W/m²）<input id="analysisDni" type="number" min="0" max="2000" step="0.1" value="800" /></label>
+          <label>气温（°C）<input id="analysisTemperature" type="number" min="-90" max="70" step="0.1" value="12" /></label>
+          <label>气压（hPa）<input id="analysisPressure" type="number" min="100" max="1100" step="0.1" value="1013.25" /></label>
+          </div>
+          <div class="analysis-actions">
+          <button id="runAnalysis" type="button">分析指定时间</button>
+          <button id="liveAnalysis" type="button">启动实时分析</button>
+          <button id="stopAnalysis" type="button" disabled>停止分析</button>
+          </div>
+        </div>
+        <p id="analysisStatus" class="analysis-status" role="status" aria-live="polite">指定时间使用输入气象参数；实时模式使用设备当前时间并查询近实时气象。</p>
+        <div id="analysisResults" hidden>
+          <p id="analysisTimestamp"></p>
+          <dl class="analysis-metrics">
+            <div><dt>全场光学效率（面积加权）</dt><dd id="analysisMean">—</dd></div>
+            <div><dt>最低逐镜效率</dt><dd id="analysisMin">—</dd></div>
+            <div><dt>最高逐镜效率</dt><dd id="analysisMax">—</dd></div>
+            <div><dt>跟踪工况接收光学功率</dt><dd id="analysisPower">—</dd></div>
+            <div><dt>计算镜数</dt><dd id="analysisCount">—</dd></div>
+          </dl>
+          <dl id="analysisFactors" class="analysis-factors" aria-label="各项效率因子平均值"></dl>
+          <p id="analysisSource" class="analysis-source"></p>
+        </div>
+        <details class="analysis-method"><summary>计算口径与气象来源</summary><p class="analysis-note">效率按太阳跟踪工况计算，联合阴影遮挡只扣除一次。各因子为逐镜平均值，其平均值乘积不等于全场效率；DNI 用于接收光学功率，不额外重复扣除云量。三维场景、目标投影和效率着色同步到结果时刻。实时模式串行计算，耗时越长刷新周期越长。气象来源：<a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo</a>，模型数据，非电厂测站实测。</p></details>
+      </details>
     <details id="mobileManage" class="mobile-manage">
-      <summary><span class="cardtitle">04 / 镜场设计</span></summary>
+      <summary><span class="cardtitle">05 / 镜场设计</span></summary>
       <div class="cardcontrols field-management">
         <form id="rearrangeForm" class="design-form">
           <div class="design-toolbar">
@@ -256,7 +262,7 @@
       <p class="carddescription">设计基于当前电厂，原厂布局保留；各方案共用该电厂的位置、时区与气象资料。</p>
     </details>
     <details class="poseeditor">
-      <summary><span class="cardtitle">05 / 镜面朝向与图案展示</span></summary>
+      <summary><span class="cardtitle">06 / 镜面朝向与图案展示</span></summary>
       <div class="poseheader"><p>文字、图片与自定义朝向</p><button id="poseReset">恢复跟踪</button></div>
       <div class="posedesign">
         <section class="posecard"><h3>文字图案</h3>
@@ -286,7 +292,7 @@
       <p class="carddescription">展示姿态与光学计算分开；效率按太阳跟踪姿态计算。</p>
     </details>
     <details class="poseeditor" id="operationSettings">
-      <summary><span class="cardtitle">06 / 聚光启停参数</span> </summary>
+      <summary><span class="cardtitle">07 / 聚光启停参数</span> </summary>
       <div class="cardcontrols"><span id="operationState" role="status"></span></div>
 
       <form id="operationForm" class="posecard">
@@ -301,7 +307,7 @@
       </form>
       <p class="carddescription">启动：DNI 与太阳高度角均高于启动临界值。停止：两者均低于停止临界值；太阳高度角 ≤ 0° 时直接停止。其他区间保持原状态。</p>
     </details>
-    <details class="mobile-manage" id="mobileParameters"><summary><span class="cardtitle">07 / 模型说明</span></summary><div class="receiver-notes"><div id="source"></div><div id="sourceNote"></div></div></details>
+    <details class="mobile-manage" id="mobileParameters"><summary><span class="cardtitle">08 / 模型说明</span></summary><div class="receiver-notes"><div id="source"></div><div id="sourceNote"></div></div></details>
     </main>
 
 
